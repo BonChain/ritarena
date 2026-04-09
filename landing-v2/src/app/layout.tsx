@@ -60,6 +60,9 @@ export default function RootLayout({
           '--font-score': "'Space Mono', monospace",
         } as React.CSSProperties}
       >
+        <div className="arena-grid-bg" />
+        <div className="arena-grid-dots" />
+        <div className="arena-noise" />
         <Navbar />
         {children}
         <Footer />
