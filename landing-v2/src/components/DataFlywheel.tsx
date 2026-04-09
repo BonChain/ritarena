@@ -17,7 +17,6 @@ function StepIcon({ type }: { type: string }) {
         <path d="M14.5 17.5L3 6V3h3l11.5 11.5" />
         <path d="M13 19l6-6" />
         <path d="M16 16l4 4" />
-        <path d="M19 21l2-2" />
       </svg>
     ),
     data: (
@@ -47,7 +46,7 @@ export default function DataFlywheel() {
   return (
     <section className="py-24 px-6">
       <div className="max-w-5xl mx-auto">
-        <AnimatedSection className="text-center mb-16">
+        <AnimatedSection className="text-center mb-20">
           <h2
             className="text-3xl md:text-5xl tracking-tight mb-3"
             style={{ fontFamily: "var(--font-display)", fontWeight: 900 }}
@@ -64,10 +63,10 @@ export default function DataFlywheel() {
 
         {/* Orbital flywheel */}
         <AnimatedSection>
-          <div className="relative mx-auto" style={{ width: "min(100%, 500px)", aspectRatio: "1" }}>
+          <div className="relative mx-auto" style={{ width: "min(100%, 420px)", height: "420px" }}>
             {/* Center rotating arrow */}
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full flex items-center justify-center"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full flex items-center justify-center z-10"
               style={{
                 background: "rgba(20,241,149,0.06)",
                 border: "1px solid rgba(20,241,149,0.15)",
@@ -82,24 +81,24 @@ export default function DataFlywheel() {
             </motion.div>
 
             {/* SVG connecting arcs */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 500 500" fill="none">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 420 420" fill="none">
               <circle
-                cx="250"
-                cy="250"
-                r="180"
+                cx="210"
+                cy="210"
+                r="140"
                 stroke="rgba(20,241,149,0.08)"
                 strokeWidth="1"
                 strokeDasharray="8 8"
               />
               <motion.circle
-                cx="250"
-                cy="250"
-                r="180"
+                cx="210"
+                cy="210"
+                r="140"
                 stroke="url(#flywheel-gradient)"
                 strokeWidth="2"
-                strokeDasharray="200 932"
+                strokeDasharray="160 720"
                 strokeLinecap="round"
-                animate={{ strokeDashoffset: [0, -1132] }}
+                animate={{ strokeDashoffset: [0, -880] }}
                 transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
               />
               <defs>
@@ -112,27 +111,34 @@ export default function DataFlywheel() {
 
             {/* 4 nodes positioned around the circle */}
             {STEPS.map((step, i) => {
-              const angle = (i * 90 - 90) * (Math.PI / 180); // start from top
-              const radius = 180;
-              const cx = 50 + Math.cos(angle) * (radius / 2.5); // percentage
-              const cy = 50 + Math.sin(angle) * (radius / 2.5);
+              const angle = (i * 90 - 90) * (Math.PI / 180);
+              const r = 140;
+              // Position in pixels from center (210, 210)
+              const px = 210 + Math.cos(angle) * r;
+              const py = 210 + Math.sin(angle) * r;
+              // Convert to percentage of 420px container
+              const left = (px / 420) * 100;
+              const top = (py / 420) * 100;
 
               return (
                 <motion.div
                   key={step.title}
-                  className="absolute flex flex-col items-center text-center"
+                  className="absolute flex flex-col items-center text-center z-10"
                   style={{
-                    left: `${cx}%`,
-                    top: `${cy}%`,
+                    left: `${left}%`,
+                    top: `${top}%`,
                     transform: "translate(-50%, -50%)",
-                    width: "120px",
+                    width: "110px",
                   }}
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ margin: "-80px" }}
                   transition={{ duration: 0.5, delay: 0.15 * i }}
                 >
-                  <div className="arena-icon mb-2">
+                  <div
+                    className="arena-icon mb-2"
+                    style={{ background: "rgba(10,10,15,0.9)" }}
+                  >
                     <StepIcon type={step.icon} />
                   </div>
                   <div
@@ -154,7 +160,7 @@ export default function DataFlywheel() {
         <AnimatedSection delay={0.2}>
           <div className="grid md:grid-cols-3 gap-4 mt-12">
             {[
-              { value: "∞", label: "Training datasets per arena", sub: "Every match = ML data" },
+              { value: "\u221E", label: "Training datasets per arena", sub: "Every match = ML data" },
               { value: "2x", label: "Premium with Human vs AI", sub: "Comparative behavioral data" },
               { value: "$0.003", label: "Per arena verification", sub: "Merkle roots on Solana" },
             ].map((item, i) => (
