@@ -1,19 +1,24 @@
 // ==============================================
-// MOCK DATA — Replace with real data as available
+// CONSTANTS & MOCK DATA
 // ==============================================
 
-// Live stats ticker in hero
-export const LIVE_STATS = {
-  battlesInProgress: 42,   // TODO: replace with real count
-  agentsForged: 1247,       // TODO: replace with real count
-  solInPrizes: 89.4,        // TODO: replace with real SOL amount
-  creatorsEarning: 23,      // TODO: replace with real count
+// Nav links (page routes for multi-page site)
+export const NAV_LINKS = [
+  { label: "Home", href: "/" },
+  { label: "Arena", href: "/arena" },
+  { label: "Creators", href: "/creators" },
+  { label: "Developers", href: "/developers" },
+  { label: "About", href: "/about" },
+];
+
+// Social links
+export const SOCIAL_LINKS = {
+  github: "https://github.com/ritarena",
+  twitter: "https://x.com/ritarena",
+  telegram: "https://t.me/ritarena",
 };
 
-// Waitlist base count (add to actual signups)
-export const WAITLIST_BASE_COUNT = 47; // TODO: update as real signups grow
-
-// Arena mockup data for hero section
+// Arena mockup data
 export const MOCK_ARENA = {
   name: "GRID WARS #7",
   prize: "940 USDC",
@@ -36,59 +41,12 @@ export const MOCK_ARENA = {
 
 // Features data
 export const FEATURES = [
-  {
-    icon: "⚔️",
-    title: "Game-Type Agnostic",
-    description: "Trading battles, prediction tournaments, visual combat, custom games. Same engine, different rules.",
-  },
-  {
-    icon: "🔒",
-    title: "On-Chain Enforcement",
-    description: "Escrow, scoring, elimination, and prizes enforced by Anchor program. Verifiable, not trust-based.",
-  },
-  {
-    icon: "🤖 vs 👤",
-    title: "Human vs AI",
-    description: "Humans and AI agents compete in the same arena. Same rules. Same leaderboard. Who's better?",
-  },
-  {
-    icon: "📊",
-    title: "Training Data Built-In",
-    description: "Every action logged in RL format. Merkle roots on-chain. The competition generates the dataset.",
-  },
-  {
-    icon: "💰",
-    title: "Creator Economy",
-    description: "Set your own fee (0-20%). Earn from every agent that enters your arena. Roblox model for AI games.",
-  },
-  {
-    icon: "🎨",
-    title: "UI Kit Included",
-    description: "Drop-in React components: leaderboard, event feed, elimination cards, chat, tipping. 5 lines of code.",
-  },
-];
-
-// "Without vs With" comparison
-export const WITHOUT_RITARENA = [
-  "Build escrow program from scratch",
-  "Implement delegate keypair security",
-  "Write scoring and PnL tracking",
-  "Build elimination logic",
-  "Handle prize distribution",
-  "Build leaderboard UI",
-  "Implement real-time event feed",
-  "Security audit everything",
-];
-
-export const WITH_RITARENA = [
-  "Escrow — handled",
-  "Security — handled",
-  "Scoring — handled",
-  "Elimination — handled",
-  "Prizes — handled",
-  "Leaderboard UI — handled",
-  "Event feed — handled",
-  "Creator fees — handled",
+  { icon: "⚔️", title: "Game-Type Agnostic", description: "Trading battles, prediction tournaments, visual combat, custom games. Same engine, different rules." },
+  { icon: "🔒", title: "On-Chain Enforcement", description: "Escrow, scoring, elimination, and prizes enforced by Anchor program. Verifiable, not trust-based." },
+  { icon: "🤖 vs 👤", title: "Human vs AI", description: "Humans and AI agents compete in the same arena. Same rules. Same leaderboard. Who's better?" },
+  { icon: "📊", title: "Training Data Built-In", description: "Every action logged in RL format. Merkle roots on-chain. The competition generates the dataset." },
+  { icon: "💰", title: "Creator Economy", description: "Set your own fee (0-20%). Earn from every agent that enters your arena. Roblox model for AI games." },
+  { icon: "🎨", title: "UI Kit Included", description: "Drop-in React components: leaderboard, event feed, elimination cards, chat, tipping. 5 lines of code." },
 ];
 
 // SDK code example
@@ -105,17 +63,28 @@ const arena = await ArenaProtocol.createArena({
 
 // Arena is live on Solana. Done.`;
 
-// Social links
-export const SOCIAL_LINKS = {
-  github: "https://github.com/ritarena",       // TODO: create repo
-  twitter: "https://x.com/ritarena",           // TODO: create account
-  telegram: "https://t.me/ritarena",           // TODO: create group
+// Spectator chat mock data
+export const MOCK_CHAT = [
+  { username: "anon_whale", avatar: "A", text: "NeuralHunter is insane this round \u{1F525}" },
+  { username: "defi_degen", avatar: "D", text: "Watch ShadowStrike's flanking, it's about to do the same thing" },
+  { username: "sol_maxi", avatar: "S", text: "Tipped 2 SOL to NeuralHunter. Let's gooo" },
+];
+
+// Tip widget mock data
+export const MOCK_TIP_AGENT = {
+  name: "NeuralHunter",
+  emoji: "\u{1F916}",
+  rank: 1,
+  arena: "Neural Warfare",
+  totalTips: 89.4,
+  tipCount: 347,
+  amounts: [0.1, 0.5, 1.0, 5.0],
 };
 
-// Nav links
-export const NAV_LINKS = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Features", href: "#features" },
-  { label: "Builders", href: "#builders" },
-  { label: "GitHub", href: "https://github.com/ritarena", external: true },
+// Data flywheel steps
+export const FLYWHEEL_STEPS = [
+  { icon: "⚔️", title: "Arena Runs", desc: "Agents compete in real-time battles" },
+  { icon: "📊", title: "Actions Logged", desc: "State, action, reward, next_state in RL format" },
+  { icon: "🔗", title: "Verified On-Chain", desc: "Merkle roots on Solana — $0.003/arena" },
+  { icon: "🧠", title: "Training Data API", desc: "Revenue stream for creators and protocol" },
 ];

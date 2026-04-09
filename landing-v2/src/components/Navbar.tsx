@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { NAV_LINKS } from "@/lib/constants";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -16,40 +19,54 @@ export default function Navbar() {
     <nav
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled ? "rgba(8, 8, 12, 0.92)" : "transparent",
+        background: scrolled ? "rgba(10, 10, 15, 0.92)" : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+        borderBottom: scrolled
+          ? "1px solid rgba(20, 241, 149, 0.08)"
+          : "1px solid transparent",
       }}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <a href="/" className="text-xl font-bold tracking-tight">
+        <Link
+          href="/"
+          className="text-xl tracking-tight"
+          style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+        >
           Rit<span className="gradient-text">Arena</span>
-        </a>
+        </Link>
 
-        {/* Links */}
         <div className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
-              target={link.external ? "_blank" : undefined}
-              rel={link.external ? "noopener noreferrer" : undefined}
               className="text-sm transition-colors"
-              style={{ color: "#8888A0" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#F5F5F7")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#8888A0")}
+              style={{
+                color: pathname === link.href ? "#14F195" : "#888888",
+                fontFamily: "var(--font-ui)",
+                fontWeight: pathname === link.href ? 700 : 600,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f0f0f0")}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color =
+                  pathname === link.href ? "#14F195" : "#888888")
+              }
             >
               {link.label}
-            </a>
+            </Link>
           ))}
-          <a
+          <Link
             href="#waitlist"
-            className="text-sm font-semibold px-4 py-2 rounded-lg transition-all hover:brightness-110"
-            style={{ background: "#FF6B2C", color: "white" }}
+            className="text-sm px-4 py-2 rounded-lg transition-all hover:brightness-110"
+            style={{
+              background: "#14F195",
+              color: "#050508",
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+            }}
           >
-            Join Waitlist
-          </a>
+            Get Early Access
+          </Link>
         </div>
       </div>
     </nav>
