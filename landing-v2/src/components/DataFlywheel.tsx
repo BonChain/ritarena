@@ -4,41 +4,49 @@ import { motion } from "framer-motion";
 import AnimatedSection from "./AnimatedSection";
 
 const STEPS = [
-  { icon: "sword", title: "Arena Runs", desc: "Agents compete in real-time" },
-  { icon: "data", title: "Actions Logged", desc: "State \u2192 Action \u2192 Reward" },
-  { icon: "chain", title: "Verified On-Chain", desc: "Merkle roots \u00B7 $0.003" },
-  { icon: "brain", title: "Training API", desc: "Revenue for creators" },
-];
-
-function StepIcon({ type }: { type: string }) {
-  const icons: Record<string, React.ReactNode> = {
-    sword: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+  {
+    title: "Arena Runs",
+    desc: "Agents compete in real-time battles, generating thousands of decisions per match.",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
         <path d="M14.5 17.5L3 6V3h3l11.5 11.5" /><path d="M13 19l6-6" /><path d="M16 16l4 4" />
       </svg>
     ),
-    data: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-        <rect x="3" y="3" width="18" height="18" rx="3" /><path d="M3 9h18M9 3v18" /><circle cx="15" cy="15" r="2" fill="currentColor" />
+  },
+  {
+    title: "Actions Logged",
+    desc: "Every move recorded in RL format: state, action, reward, next_state.",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
+        <rect x="3" y="3" width="18" height="18" rx="3" /><path d="M3 9h18M9 3v18" /><circle cx="15" cy="15" r="2" fill="#14F195" />
       </svg>
     ),
-    chain: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+  },
+  {
+    title: "Verified On-Chain",
+    desc: "Merkle roots anchored to Solana. $0.003 per arena. Tamper-proof.",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9945FF" strokeWidth="1.5" strokeLinecap="round">
         <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
       </svg>
     ),
-    brain: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+    purple: true,
+  },
+  {
+    title: "Training Data API",
+    desc: "Sell datasets to ML teams. The competition funds itself.",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9945FF" strokeWidth="1.5" strokeLinecap="round">
         <path d="M12 2a7 7 0 017 7c0 2.5-1.5 4.5-3 6l-1 4h-6l-1-4c-1.5-1.5-3-3.5-3-6a7 7 0 017-7z" /><path d="M9 19h6M10 22h4" />
       </svg>
     ),
-  };
-  return <>{icons[type]}</>;
-}
+    purple: true,
+  },
+];
 
 export default function DataFlywheel() {
   return (
-    <section className="py-20 md:py-24 px-6">
+    <section className="py-20 md:py-28 px-6">
       <div className="max-w-5xl mx-auto">
         <AnimatedSection className="text-center mb-16 md:mb-20">
           <h2
@@ -55,117 +63,95 @@ export default function DataFlywheel() {
           </h2>
         </AnimatedSection>
 
-        {/* Orbital flywheel — CSS circle + absolutely positioned nodes */}
-        <AnimatedSection>
-          <div className="relative mx-auto w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] md:w-[440px] md:h-[440px]">
+        {/* ── Vertical Pipeline ── */}
+        <div className="max-w-xl mx-auto relative">
+          {/* Vertical glowing line */}
+          <div
+            className="absolute left-6 sm:left-8 top-0 bottom-0 w-px"
+            style={{ background: "rgba(20,241,149,0.08)" }}
+          />
+          {/* Animated pulse running down the line */}
+          <motion.div
+            className="absolute left-6 sm:left-8 w-px"
+            style={{
+              height: "80px",
+              background: "linear-gradient(to bottom, transparent, #14F195, #9945FF, transparent)",
+              filter: "blur(1px)",
+            }}
+            animate={{ top: ["-80px", "calc(100% + 80px)"] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          />
 
-            {/* CSS Circle ring — perfectly centered */}
-            <div
-              className="absolute rounded-full"
-              style={{
-                top: "15%",
-                left: "15%",
-                width: "70%",
-                height: "70%",
-                border: "1px dashed rgba(20,241,149,0.08)",
-              }}
-            />
+          {/* Steps */}
+          <div className="space-y-0">
+            {STEPS.map((step, i) => {
+              const isLast = i === STEPS.length - 1;
+              const accentColor = step.purple ? "#9945FF" : "#14F195";
 
-            {/* Animated arc — uses a rotating conic gradient mask */}
-            <motion.div
-              className="absolute rounded-full"
-              style={{
-                top: "15%",
-                left: "15%",
-                width: "70%",
-                height: "70%",
-                border: "2px solid transparent",
-                background: "linear-gradient(#0a0a0f, #0a0a0f) padding-box, linear-gradient(135deg, #14F195, #9945FF) border-box",
-                mask: "conic-gradient(from 0deg, black 0deg, black 90deg, transparent 90deg, transparent 360deg)",
-                WebkitMask: "conic-gradient(from 0deg, black 0deg, black 90deg, transparent 90deg, transparent 360deg)",
-              }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            />
+              return (
+                <motion.div
+                  key={step.title}
+                  className="relative flex gap-5 sm:gap-7"
+                  style={{ paddingBottom: isLast ? 0 : "48px" }}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ margin: "-60px" }}
+                  transition={{ duration: 0.5, delay: i * 0.12 }}
+                >
+                  {/* Node dot on the line */}
+                  <div className="relative flex-shrink-0 w-12 sm:w-16 flex justify-center">
+                    <div
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center z-10"
+                      style={{
+                        background: "rgba(10,10,15,0.95)",
+                        border: `1px solid ${step.purple ? "rgba(153,69,255,0.2)" : "rgba(20,241,149,0.2)"}`,
+                        boxShadow: `0 0 20px ${step.purple ? "rgba(153,69,255,0.06)" : "rgba(20,241,149,0.06)"}`,
+                      }}
+                    >
+                      {step.icon}
+                    </div>
+                  </div>
 
-            {/* Center rotating icon */}
-            <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center z-10"
-              style={{
-                background: "rgba(10,10,15,0.95)",
-                border: "1px solid rgba(20,241,149,0.15)",
-              }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
-                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
-                <path d="M12 8l4 4-4 4" />
-              </svg>
-            </motion.div>
-
-            {/* Top node */}
-            <motion.div
-              className="absolute z-10 flex flex-col items-center text-center"
-              style={{ top: "15%", left: "50%", transform: "translate(-50%, -50%)", width: "110px" }}
-              initial={{ opacity: 0, scale: 0.5 }} whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ margin: "-80px" }} transition={{ duration: 0.5, delay: 0 }}
-            >
-              <div className="arena-icon mb-1.5" style={{ background: "rgba(10,10,15,0.95)", color: "#14F195" }}>
-                <StepIcon type="sword" />
-              </div>
-              <div className="text-[11px] sm:text-xs" style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "#14F195" }}>Arena Runs</div>
-              <div className="text-[9px] sm:text-[10px]" style={{ color: "#888888" }}>Agents compete in real-time</div>
-            </motion.div>
-
-            {/* Right node */}
-            <motion.div
-              className="absolute z-10 flex flex-col items-center text-center"
-              style={{ top: "50%", left: "85%", transform: "translate(-50%, -50%)", width: "110px" }}
-              initial={{ opacity: 0, scale: 0.5 }} whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ margin: "-80px" }} transition={{ duration: 0.5, delay: 0.15 }}
-            >
-              <div className="arena-icon mb-1.5" style={{ background: "rgba(10,10,15,0.95)", color: "#14F195" }}>
-                <StepIcon type="data" />
-              </div>
-              <div className="text-[11px] sm:text-xs" style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "#14F195" }}>Actions Logged</div>
-              <div className="text-[9px] sm:text-[10px]" style={{ color: "#888888" }}>State &rarr; Action &rarr; Reward</div>
-            </motion.div>
-
-            {/* Bottom node */}
-            <motion.div
-              className="absolute z-10 flex flex-col items-center text-center"
-              style={{ top: "85%", left: "50%", transform: "translate(-50%, -50%)", width: "110px" }}
-              initial={{ opacity: 0, scale: 0.5 }} whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ margin: "-80px" }} transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <div className="arena-icon mb-1.5" style={{ background: "rgba(10,10,15,0.95)", color: "#14F195" }}>
-                <StepIcon type="chain" />
-              </div>
-              <div className="text-[11px] sm:text-xs" style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "#14F195" }}>Verified On-Chain</div>
-              <div className="text-[9px] sm:text-[10px]" style={{ color: "#888888" }}>Merkle roots &middot; $0.003</div>
-            </motion.div>
-
-            {/* Left node */}
-            <motion.div
-              className="absolute z-10 flex flex-col items-center text-center"
-              style={{ top: "50%", left: "15%", transform: "translate(-50%, -50%)", width: "110px" }}
-              initial={{ opacity: 0, scale: 0.5 }} whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ margin: "-80px" }} transition={{ duration: 0.5, delay: 0.45 }}
-            >
-              <div className="arena-icon mb-1.5" style={{ background: "rgba(10,10,15,0.95)", color: "#14F195" }}>
-                <StepIcon type="brain" />
-              </div>
-              <div className="text-[11px] sm:text-xs" style={{ fontFamily: "var(--font-ui)", fontWeight: 700, color: "#14F195" }}>Training API</div>
-              <div className="text-[9px] sm:text-[10px]" style={{ color: "#888888" }}>Revenue for creators</div>
-            </motion.div>
-
+                  {/* Content */}
+                  <div className="pt-1 sm:pt-2 flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1.5">
+                      <span
+                        className="text-[10px] sm:text-xs"
+                        style={{
+                          fontFamily: "var(--font-data)",
+                          color: "#55556a",
+                          letterSpacing: "0.1em",
+                        }}
+                      >
+                        0{i + 1}
+                      </span>
+                      <h3
+                        className="text-base sm:text-lg"
+                        style={{
+                          fontFamily: "var(--font-ui)",
+                          fontWeight: 700,
+                          color: accentColor,
+                        }}
+                      >
+                        {step.title}
+                      </h3>
+                    </div>
+                    <p
+                      className="text-sm sm:text-base leading-relaxed"
+                      style={{ color: "#888888" }}
+                    >
+                      {step.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-        </AnimatedSection>
+        </div>
 
-        {/* Stat cards */}
+        {/* ── Stat cards ── */}
         <AnimatedSection delay={0.2}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 md:mt-14">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-16 md:mt-20">
             {[
               { value: "\u221E", label: "Training datasets per arena", sub: "Every match = ML data" },
               { value: "2x", label: "Premium with Human vs AI", sub: "Comparative behavioral data" },
