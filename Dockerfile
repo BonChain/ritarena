@@ -3,14 +3,14 @@ FROM node:20-alpine AS base
 # ── Install dependencies ──
 FROM base AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY landing-v2/package.json landing-v2/package-lock.json ./
 RUN npm ci
 
 # ── Build ──
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY landing-v2/ .
 RUN npm run build
 
 # ── Production ──

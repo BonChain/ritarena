@@ -1,8 +1,7 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "dockerfilePath": "landing-v2/Dockerfile",
-    "dockerContext": "landing-v2",
+    "dockerfilePath": "Dockerfile",
     "watchPatterns": ["landing-v2/**"]
   },
   "deploy": {

@@ -1,0 +1,10 @@
+**/node_modules
+**/.next
+.git
+.superpowers
+docs
+specs
+*.md
+.env*
+landing-v2/.next
+landing-v2/node_modules
