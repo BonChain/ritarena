@@ -9,7 +9,7 @@ export default function SpectatorExperience() {
       <div className="max-w-5xl mx-auto">
         <AnimatedSection className="text-center mb-10">
           <h2
-            className="text-3xl md:text-4xl tracking-tight mb-3"
+            className="text-4xl md:text-5xl tracking-tight mb-3"
             style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
           >
             Watch. Chat. Tip.
@@ -24,7 +24,7 @@ export default function SpectatorExperience() {
           <AnimatedSection>
             <div className="glass-card p-6 h-full">
               <h3
-                className="text-xs uppercase tracking-widest mb-4"
+                className="text-sm uppercase tracking-widest mb-4"
                 style={{ fontFamily: "var(--font-data)", color: "#14F195" }}
               >
                 // Spectator Chat
@@ -52,7 +52,7 @@ export default function SpectatorExperience() {
                       >
                         {msg.username}
                       </div>
-                      <div className="text-sm" style={{ color: "#f0f0f0" }}>
+                      <div className="text-base" style={{ color: "#f0f0f0" }}>
                         {msg.text}
                       </div>
                     </div>

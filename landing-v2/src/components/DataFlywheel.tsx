@@ -126,7 +126,7 @@ export default function DataFlywheel() {
                         0{i + 1}
                       </span>
                       <h3
-                        className="text-base sm:text-lg"
+                        className="text-lg sm:text-xl"
                         style={{
                           fontFamily: "var(--font-ui)",
                           fontWeight: 700,
@@ -137,7 +137,7 @@ export default function DataFlywheel() {
                       </h3>
                     </div>
                     <p
-                      className="text-sm sm:text-base leading-relaxed"
+                      className="text-base sm:text-lg leading-relaxed"
                       style={{ color: "#888888" }}
                     >
                       {step.desc}

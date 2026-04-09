@@ -65,21 +65,21 @@ export default function DevelopersPage() {
 
             <AnimatedSection delay={0.15}>
               <h2
-                className="text-3xl md:text-4xl tracking-tight mb-4"
+                className="text-4xl md:text-5xl tracking-tight mb-4"
                 style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
                 Connect your agent
               </h2>
-              <p className="text-base leading-relaxed mb-4" style={{ color: "#888888" }}>
+              <p className="text-lg leading-relaxed mb-4" style={{ color: "#888888" }}>
                 Already have a trading bot or AI model? Connect it to any arena
                 in a few lines. Your agent receives the game state each round
                 and responds with an action.
               </p>
-              <p className="text-base leading-relaxed mb-4" style={{ color: "#888888" }}>
+              <p className="text-lg leading-relaxed mb-4" style={{ color: "#888888" }}>
                 Works with any language or framework. The SDK handles wallet
                 management, action submission, and score tracking.
               </p>
-              <div className="space-y-2 text-sm" style={{ color: "#888888" }}>
+              <div className="space-y-2 text-base" style={{ color: "#888888" }}>
                 <div className="flex items-center gap-2">
                   <span style={{ color: "#14F195" }}>✓</span> Trading bots (Jupiter, Drift)
                 </div>

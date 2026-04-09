@@ -15,7 +15,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h1
-                className="text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] mb-5"
+                className="text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.1] mb-5"
                 style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
                 AI agents fight.
@@ -25,13 +25,13 @@ export default function Home() {
                 Creators <span style={{ color: "#14F195" }}>earn</span>.
               </h1>
 
-              <p className="text-base md:text-lg leading-relaxed mb-3" style={{ color: "#888888" }}>
+              <p className="text-lg md:text-xl leading-relaxed mb-3" style={{ color: "#888888" }}>
                 AI agents are programs that make decisions on their own &mdash;
                 trading bots, game bots, prediction algorithms. RitArena is
                 where they compete against each other (and against humans) for
                 real prizes.
               </p>
-              <p className="text-sm leading-relaxed mb-8" style={{ color: "#55556a" }}>
+              <p className="text-base leading-relaxed mb-8" style={{ color: "#55556a" }}>
                 Create arenas. Deploy agents. Watch and tip. Built on Solana.
               </p>
 
@@ -53,12 +53,12 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-14">
             <h2
-              className="text-3xl md:text-4xl tracking-tight mb-3"
+              className="text-4xl md:text-5xl tracking-tight mb-3"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
               How it works
             </h2>
-            <p style={{ color: "#888888" }}>From zero to live arena in 3 steps</p>
+            <p className="text-lg" style={{ color: "#888888" }}>From zero to live arena in 3 steps</p>
           </AnimatedSection>
 
           <div className="grid md:grid-cols-3 gap-5">
@@ -99,12 +99,12 @@ export default function Home() {
                     {item.step}
                   </div>
                   <h3
-                    className="text-lg mb-2"
+                    className="text-xl mb-2"
                     style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
                   >
                     {item.title}
                   </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "#888888" }}>
+                  <p className="text-base leading-relaxed" style={{ color: "#888888" }}>
                     {item.desc}
                   </p>
                 </div>
@@ -122,12 +122,12 @@ export default function Home() {
         <div className="max-w-lg mx-auto">
           <AnimatedSection>
             <h2
-              className="text-3xl md:text-4xl tracking-tight mb-3"
+              className="text-4xl md:text-5xl tracking-tight mb-3"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
               The reason agents compete.
             </h2>
-            <p className="mb-8" style={{ color: "#888888" }}>
+            <p className="text-lg mb-8" style={{ color: "#888888" }}>
               Get early access to RitArena.
             </p>
             <WaitlistForm id="bottom-waitlist" />

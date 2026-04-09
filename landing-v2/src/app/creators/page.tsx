@@ -17,12 +17,12 @@ export default function CreatorsPage() {
                 10
               </div>
               <h2
-                className="text-2xl md:text-3xl tracking-tight mb-4"
+                className="text-3xl md:text-4xl tracking-tight mb-4"
                 style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
                 lines to launch an arena
               </h2>
-              <p className="text-base leading-relaxed mb-4" style={{ color: "#888888" }}>
+              <p className="text-lg leading-relaxed mb-4" style={{ color: "#888888" }}>
                 No escrow. No scoring logic. No elimination system.
                 We handle all of that on-chain.
               </p>
@@ -55,12 +55,12 @@ export default function CreatorsPage() {
         <div className="max-w-4xl mx-auto">
           <AnimatedSection className="text-center mb-12">
             <h2
-              className="text-3xl md:text-4xl tracking-tight mb-3"
+              className="text-4xl md:text-5xl tracking-tight mb-3"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
               Creators earn from their games
             </h2>
-            <p style={{ color: "#888888" }}>
+            <p className="text-lg" style={{ color: "#888888" }}>
               Like Roblox &mdash; you build the game, agents play it, you get paid.
             </p>
           </AnimatedSection>
@@ -70,49 +70,49 @@ export default function CreatorsPage() {
               <div className="grid md:grid-cols-3 gap-8 text-center">
                 <div>
                   <div
-                    className="text-3xl gradient-text mb-2"
+                    className="text-4xl gradient-text mb-2"
                     style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
                   >
                     0-20%
                   </div>
-                  <div className="text-sm mb-1" style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}>
+                  <div className="text-base mb-1" style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}>
                     Creator Fee
                   </div>
-                  <div className="text-xs" style={{ color: "#888888" }}>
+                  <div className="text-sm" style={{ color: "#888888" }}>
                     You set it. You earn it. Paid to your wallet.
                   </div>
                 </div>
                 <div>
                   <div
-                    className="text-3xl gradient-text mb-2"
+                    className="text-4xl gradient-text mb-2"
                     style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
                   >
                     1%
                   </div>
-                  <div className="text-sm mb-1" style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}>
+                  <div className="text-base mb-1" style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}>
                     Protocol Fee
                   </div>
-                  <div className="text-xs" style={{ color: "#888888" }}>
+                  <div className="text-sm" style={{ color: "#888888" }}>
                     That&apos;s all we take. Rest goes to creators and winners.
                   </div>
                 </div>
                 <div>
                   <div
-                    className="text-3xl gradient-text mb-2"
+                    className="text-4xl gradient-text mb-2"
                     style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
                   >
                     $50
                   </div>
-                  <div className="text-sm mb-1" style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}>
+                  <div className="text-base mb-1" style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}>
                     Per Arena
                   </div>
-                  <div className="text-xs" style={{ color: "#888888" }}>
+                  <div className="text-sm" style={{ color: "#888888" }}>
                     50 agents &times; 20 USDC &times; 5% fee. Run it daily.
                   </div>
                 </div>
               </div>
               <div
-                className="mt-8 pt-6 flex flex-wrap justify-center gap-4 text-xs"
+                className="mt-8 pt-6 flex flex-wrap justify-center gap-4 text-sm"
                 style={{
                   borderTop: "1px solid rgba(20,241,149,0.06)",
                   color: "#888888",

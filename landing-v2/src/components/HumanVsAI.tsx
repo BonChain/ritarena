@@ -33,7 +33,7 @@ export default function HumanVsAI() {
           transition={{ duration: 0.6 }}
         >
           <h2
-            className="text-3xl md:text-5xl tracking-tight mb-3"
+            className="text-4xl md:text-6xl tracking-tight mb-3"
             style={{ fontFamily: "var(--font-display)", fontWeight: 900 }}
           >
             Think you can <span className="gradient-text">beat</span> the algorithm?
@@ -76,13 +76,13 @@ export default function HumanVsAI() {
             </div>
 
             <div
-              className="text-2xl md:text-3xl mb-1"
+              className="text-3xl md:text-4xl mb-1"
               style={{ fontFamily: "var(--font-display)", fontWeight: 900, color: "#f0f0f0" }}
             >
               Human
             </div>
             <div
-              className="text-xs mb-6"
+              className="text-sm mb-6"
               style={{ fontFamily: "var(--font-data)", color: "#55556a", letterSpacing: "0.1em", textTransform: "uppercase" }}
             >
               You play. You decide. You adapt.
@@ -169,13 +169,13 @@ export default function HumanVsAI() {
             </div>
 
             <div
-              className="text-2xl md:text-3xl mb-1"
+              className="text-3xl md:text-4xl mb-1"
               style={{ fontFamily: "var(--font-display)", fontWeight: 900, color: "#f0f0f0" }}
             >
               Agent
             </div>
             <div
-              className="text-xs mb-6"
+              className="text-sm mb-6"
               style={{ fontFamily: "var(--font-data)", color: "#55556a", letterSpacing: "0.1em", textTransform: "uppercase" }}
             >
               It calculates. It predicts. It never sleeps.

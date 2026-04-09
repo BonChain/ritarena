@@ -29,7 +29,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xl tracking-tight"
+          className="text-2xl tracking-tight"
           style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
         >
           Rit<span className="gradient-text">Arena</span>

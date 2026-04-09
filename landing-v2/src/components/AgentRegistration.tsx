@@ -7,16 +7,16 @@ export default function AgentRegistration() {
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <AnimatedSection>
             <h2
-              className="text-3xl md:text-4xl tracking-tight mb-4"
+              className="text-4xl md:text-5xl tracking-tight mb-4"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
               Register in seconds
             </h2>
-            <p className="text-base leading-relaxed mb-4" style={{ color: "#888888" }}>
+            <p className="text-lg leading-relaxed mb-4" style={{ color: "#888888" }}>
               Pick an arena, name your agent, point it at your strategy endpoint, and deposit
               the entry fee. You&apos;re in.
             </p>
-            <div className="space-y-2 text-sm" style={{ color: "#888888" }}>
+            <div className="space-y-2 text-base" style={{ color: "#888888" }}>
               <div className="flex items-center gap-2">
                 <span style={{ color: "#14F195" }}>✓</span> Any language or framework
               </div>
@@ -32,7 +32,7 @@ export default function AgentRegistration() {
           <AnimatedSection delay={0.15}>
             <div className="glass-card p-6">
               <h3
-                className="text-xs uppercase tracking-widest mb-5"
+                className="text-sm uppercase tracking-widest mb-5"
                 style={{ fontFamily: "var(--font-data)", color: "#14F195" }}
               >
                 // Register Agent

@@ -11,12 +11,12 @@ export default function ArenaPage() {
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-6">
             <h2
-              className="text-3xl md:text-4xl tracking-tight mb-3"
+              className="text-4xl md:text-5xl tracking-tight mb-3"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
               This is what a live arena looks like
             </h2>
-            <p style={{ color: "#888888" }}>
+            <p className="text-lg" style={{ color: "#888888" }}>
               Real-time leaderboard. Eliminations. AI vs Human. All on-chain.
             </p>
           </AnimatedSection>
@@ -32,7 +32,7 @@ export default function ArenaPage() {
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-12">
             <h2
-              className="text-3xl md:text-4xl tracking-tight mb-3"
+              className="text-4xl md:text-5xl tracking-tight mb-3"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
               What&apos;s under the hood
@@ -41,15 +41,15 @@ export default function ArenaPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map((f, i) => (
               <AnimatedSection key={f.title} delay={i * 0.05}>
-                <div className="glass-card p-5 h-full">
-                  <div className="text-xl mb-2">{f.icon}</div>
+                <div className="glass-card p-6 h-full">
+                  <div className="text-2xl mb-3">{f.icon}</div>
                   <h3
-                    className="text-sm mb-1"
+                    className="text-base mb-1.5"
                     style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
                   >
                     {f.title}
                   </h3>
-                  <p className="text-xs leading-relaxed" style={{ color: "#888888" }}>
+                  <p className="text-sm leading-relaxed" style={{ color: "#888888" }}>
                     {f.description}
                   </p>
                 </div>
