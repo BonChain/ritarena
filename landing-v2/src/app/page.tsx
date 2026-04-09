@@ -46,10 +46,6 @@ export default function Home() {
           </div>
         </div>
 
-        <div
-          className="absolute bottom-0 left-0 right-0 h-32"
-          style={{ background: "linear-gradient(to top, #0a0a0f, transparent)" }}
-        />
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
