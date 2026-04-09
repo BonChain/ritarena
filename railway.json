@@ -1,0 +1,13 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "dockerfilePath": "landing-v2/Dockerfile",
+    "dockerContext": "landing-v2",
+    "watchPatterns": ["landing-v2/**"]
+  },
+  "deploy": {
+    "healthcheckPath": "/",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
+  }
+}
