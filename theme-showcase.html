@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arena Protocol — Theme Showcase</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Exo+2:wght@300;400;600;700&family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Space+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050508;
+    color: #e0e0e0;
+    font-family: 'Exo 2', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    text-align: center;
+    padding: 80px 20px 40px;
+    position: relative;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(148,69,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #14F195, #9945FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titlePulse 4s ease-in-out infinite;
+  }
+  .page-header p {
+    margin-top: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    color: #888;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+  }
+  @keyframes titlePulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+  }
+
+  /* ── Theme Sections ── */
+  .themes-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+
+  .theme-section {
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    animation: fadeSlideUp 0.8s var(--ease-out-expo) both;
+  }
+  .theme-section:nth-child(1) { animation-delay: 0.1s; }
+  .theme-section:nth-child(2) { animation-delay: 0.3s; }
+  .theme-section:nth-child(3) { animation-delay: 0.5s; }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .theme-label {
+    padding: 32px 40px 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .theme-label h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .theme-label .badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .theme-label .swatches {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .theme-label .swatch {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 2px solid rgba(255,255,255,0.1);
+    position: relative;
+    cursor: default;
+  }
+  .theme-label .swatch::after {
+    content: attr(data-hex);
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: #888;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .theme-label .swatch:hover::after { opacity: 1; }
+
+  .theme-content {
+    padding: 0 40px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card.full-width {
+    grid-column: 1 / -1;
+  }
+  .card h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+
+  /* ── Leaderboard ── */
+  .leaderboard-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    transition: transform 0.2s var(--ease-spring);
+  }
+  .leaderboard-row:hover { transform: translateX(4px); }
+  .lb-rank {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+    width: 36px;
+    text-align: center;
+  }
+  .lb-agent { flex: 1; margin-left: 12px; }
+  .lb-name { font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 0.95rem; }
+  .lb-owner { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; opacity: 0.5; }
+  .lb-score { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.9rem; }
+  .lb-bar { width: 80px; height: 4px; border-radius: 2px; margin-left: 12px; overflow: hidden; }
+  .lb-bar-fill { height: 100%; border-radius: 2px; animation: barGrow 1.2s var(--ease-out-expo) both; }
+  @keyframes barGrow { from { width: 0; } }
+
+  /* ── Battle Card ── */
+  .battle-card { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .battle-vs { display: flex; align-items: center; gap: 20px; width: 100%; }
+  .fighter { flex: 1; text-align: center; padding: 18px 12px; border-radius: 12px; }
+  .fighter-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+  }
+  .fighter-name { font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1rem; }
+  .fighter-type { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; opacity: 0.6; margin-top: 2px; }
+  .vs-icon {
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.6rem; flex-shrink: 0;
+    animation: vsPulse 2s ease-in-out infinite;
+  }
+  @keyframes vsPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+  .battle-status {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+    letter-spacing: 0.12em; padding: 6px 16px; border-radius: 20px; text-transform: uppercase;
+  }
+  .battle-timer { font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 700; }
+
+  /* ── Event Feed ── */
+  .event-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem;
+  }
+  .event-item:last-child { border-bottom: none; }
+  .event-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .event-text { font-family: 'Exo 2', sans-serif; line-height: 1.4; }
+  .event-text strong { font-family: 'Chakra Petch', sans-serif; }
+  .event-time { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; opacity: 0.4; margin-top: 2px; }
+
+  /* ── Stats ── */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .stat-box { padding: 20px; border-radius: 12px; text-align: center; }
+  .stat-value { font-family: 'Orbitron', monospace; font-weight: 700; font-size: 1.6rem; }
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; margin-top: 4px;
+  }
+
+  /* ── Buttons ── */
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border: none; border-radius: 10px;
+    font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 0.9rem;
+    letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+    transition: all 0.3s var(--ease-spring); position: relative; overflow: hidden;
+  }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+  .cta-btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .cta-btn:hover::after { opacity: 1; }
+  .cta-btn-sm {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px; border: none; border-radius: 8px;
+    font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 0.75rem;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    transition: all 0.2s var(--ease-spring);
+  }
+  .cta-btn-sm:hover { transform: translateY(-1px); }
+  .cta-btn-outline {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px; border-radius: 8px; background: transparent;
+    font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 0.75rem;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    transition: all 0.2s var(--ease-spring);
+  }
+
+  /* ── Creator Profile ── */
+  .creator-profile { display: flex; gap: 20px; align-items: flex-start; }
+  .creator-avatar {
+    width: 64px; height: 64px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  .creator-info { flex: 1; }
+  .creator-name { font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.2rem; }
+  .creator-handle { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; opacity: 0.5; margin-top: 2px; }
+  .creator-stats { display: flex; gap: 20px; margin-top: 12px; }
+  .creator-stat-val { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 1rem; }
+  .creator-stat-lbl { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; opacity: 0.5; text-transform: uppercase; }
+  .creator-earnings {
+    margin-top: 16px; padding: 14px 18px; border-radius: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .earnings-amount { font-family: 'Orbitron', monospace; font-weight: 700; font-size: 1.3rem; }
+  .earnings-label { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; opacity: 0.5; }
+  .earnings-period { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; opacity: 0.4; }
+
+  /* ── Arena Lobby ── */
+  .lobby-grid { display: flex; flex-direction: column; gap: 10px; }
+  .lobby-item {
+    display: flex; align-items: center; padding: 12px 16px; border-radius: 10px;
+    transition: transform 0.2s var(--ease-spring); gap: 14px;
+  }
+  .lobby-item:hover { transform: translateX(4px); }
+  .lobby-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .lobby-info { flex: 1; }
+  .lobby-name { font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 0.9rem; }
+  .lobby-meta { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; opacity: 0.5; margin-top: 2px; }
+  .lobby-players { font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; }
+  .lobby-tag {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; padding: 3px 8px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  /* ── Elimination Feed ── */
+  .elim-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; font-size: 0.8rem;
+  }
+  .elim-skull { font-size: 1rem; }
+  .elim-text { font-family: 'Exo 2', sans-serif; flex: 1; }
+  .elim-text .killer { font-family: 'Chakra Petch', sans-serif; font-weight: 700; }
+  .elim-text .victim { font-family: 'Chakra Petch', sans-serif; font-weight: 600; opacity: 0.5; text-decoration: line-through; }
+  .elim-method { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; opacity: 0.4; }
+  .elim-time { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; opacity: 0.3; }
+  .elim-divider { height: 1px; opacity: 0.06; margin: 2px 0; }
+
+  /* ── Agent Card ── */
+  .agent-register { display: flex; flex-direction: column; gap: 14px; }
+  .agent-input-group { display: flex; flex-direction: column; gap: 4px; }
+  .agent-label {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5;
+  }
+  .agent-input {
+    padding: 10px 14px; border-radius: 8px; border: 1px solid;
+    font-family: 'Chakra Petch', sans-serif; font-size: 0.85rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .agent-select {
+    padding: 10px 14px; border-radius: 8px; border: 1px solid;
+    font-family: 'Chakra Petch', sans-serif; font-size: 0.85rem;
+    outline: none; cursor: pointer; appearance: none;
+    background-repeat: no-repeat; background-position: right 12px center; background-size: 12px;
+  }
+  .agent-fee-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; border-radius: 8px;
+  }
+  .agent-fee-label { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; opacity: 0.5; }
+  .agent-fee-val { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.85rem; }
+
+  /* ── Chat / Spectator ── */
+  .chat-feed { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+  .chat-msg { display: flex; gap: 8px; align-items: flex-start; }
+  .chat-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; flex-shrink: 0;
+  }
+  .chat-bubble { padding: 8px 12px; border-radius: 10px; border-top-left-radius: 2px; max-width: 85%; }
+  .chat-user { font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 0.7rem; }
+  .chat-text { font-family: 'Exo 2', sans-serif; font-size: 0.8rem; margin-top: 2px; line-height: 1.3; }
+  .chat-input-row { display: flex; gap: 8px; margin-top: 12px; }
+  .chat-input {
+    flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid;
+    font-family: 'Exo 2', sans-serif; font-size: 0.8rem; outline: none;
+  }
+
+  /* ── Tipping ── */
+  .tip-widget { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+  .tip-target-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+  }
+  .tip-target-name { font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1.1rem; }
+  .tip-target-label { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; opacity: 0.4; text-transform: uppercase; }
+  .tip-amounts { display: flex; gap: 8px; }
+  .tip-btn {
+    padding: 10px 20px; border-radius: 10px; border: 1px solid;
+    font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.85rem;
+    cursor: pointer; transition: all 0.2s var(--ease-spring); background: transparent;
+  }
+  .tip-btn:hover { transform: scale(1.05); }
+  .tip-btn.active { transform: scale(1.08); }
+  .tip-total {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; opacity: 0.4;
+    margin-top: -4px;
+  }
+
+  /* ── Tournament Bracket ── */
+  .bracket-round { display: flex; flex-direction: column; gap: 8px; }
+  .bracket-match {
+    padding: 10px 14px; border-radius: 8px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .bracket-player {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'Chakra Petch', sans-serif; font-size: 0.8rem;
+  }
+  .bracket-player.winner { font-weight: 700; }
+  .bracket-player.loser { opacity: 0.35; text-decoration: line-through; }
+  .bracket-score { font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; }
+  .bracket-rounds { display: flex; gap: 16px; align-items: flex-start; }
+  .bracket-round-label {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; margin-bottom: 8px;
+  }
+  .bracket-connector {
+    width: 16px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; opacity: 0.2;
+  }
+
+  /* ══════════════════════════════════════
+     THEME 1: TECH INNOVATION
+     ══════════════════════════════════════ */
+  .t-tech { background: #0c0c14; border: 1px solid rgba(0,102,255,0.15); }
+  .t-tech .theme-label h2 { color: #0066ff; }
+  .t-tech .badge { background: rgba(0,102,255,0.15); color: #0066ff; border: 1px solid rgba(0,102,255,0.3); }
+  .t-tech .card { background: #111120; border: 1px solid rgba(0,255,255,0.08); }
+  .t-tech .card h3 { color: #00ffff; }
+  .t-tech .leaderboard-row { background: rgba(0,102,255,0.06); }
+  .t-tech .leaderboard-row:nth-child(2) { background: rgba(0,102,255,0.14); }
+  .t-tech .lb-rank { color: #00ffff; }
+  .t-tech .lb-name { color: #fff; }
+  .t-tech .lb-score { color: #0066ff; }
+  .t-tech .lb-bar { background: rgba(0,102,255,0.15); }
+  .t-tech .lb-bar-fill { background: linear-gradient(90deg, #0066ff, #00ffff); }
+  .t-tech .fighter { background: rgba(0,102,255,0.08); border: 1px solid rgba(0,255,255,0.1); }
+  .t-tech .fighter-avatar { background: rgba(0,102,255,0.2); }
+  .t-tech .fighter-name { color: #fff; }
+  .t-tech .vs-icon { color: #00ffff; }
+  .t-tech .battle-status { background: rgba(0,255,255,0.1); color: #00ffff; border: 1px solid rgba(0,255,255,0.2); }
+  .t-tech .battle-timer { color: #0066ff; }
+  .t-tech .event-dot { background: #0066ff; box-shadow: 0 0 6px rgba(0,102,255,0.5); }
+  .t-tech .event-text strong { color: #00ffff; }
+  .t-tech .stat-box { background: rgba(0,102,255,0.08); border: 1px solid rgba(0,102,255,0.12); }
+  .t-tech .stat-value { color: #00ffff; }
+  .t-tech .cta-btn { background: linear-gradient(135deg, #0066ff, #0044cc); color: #fff; box-shadow: 0 4px 20px rgba(0,102,255,0.3); }
+  .t-tech .cta-btn-sm { background: rgba(0,102,255,0.15); color: #00ffff; border: 1px solid rgba(0,255,255,0.15); }
+  .t-tech .cta-btn-outline { border: 1px solid rgba(0,255,255,0.2); color: #00ffff; }
+  .t-tech .creator-avatar { background: rgba(0,102,255,0.2); border: 2px solid rgba(0,255,255,0.2); }
+  .t-tech .creator-name { color: #fff; }
+  .t-tech .creator-stat-val { color: #00ffff; }
+  .t-tech .creator-earnings { background: rgba(0,102,255,0.08); border: 1px solid rgba(0,102,255,0.12); }
+  .t-tech .earnings-amount { color: #00ffff; }
+  .t-tech .lobby-item { background: rgba(0,102,255,0.06); }
+  .t-tech .lobby-name { color: #fff; }
+  .t-tech .lobby-players { color: #00ffff; }
+  .t-tech .lobby-tag { background: rgba(0,255,255,0.1); color: #00ffff; border: 1px solid rgba(0,255,255,0.15); }
+  .t-tech .lobby-tag.live { background: rgba(255,60,60,0.15); color: #ff4444; border-color: rgba(255,60,60,0.2); }
+  .t-tech .elim-text .killer { color: #00ffff; }
+  .t-tech .elim-divider { background: #0066ff; }
+  .t-tech .agent-input { background: rgba(0,102,255,0.06); border-color: rgba(0,102,255,0.15); color: #fff; }
+  .t-tech .agent-input:focus { border-color: #00ffff; }
+  .t-tech .agent-select { background-color: rgba(0,102,255,0.06); border-color: rgba(0,102,255,0.15); color: #fff; }
+  .t-tech .agent-fee-row { background: rgba(0,255,255,0.06); }
+  .t-tech .agent-fee-val { color: #00ffff; }
+  .t-tech .chat-avatar { background: rgba(0,102,255,0.2); color: #00ffff; }
+  .t-tech .chat-bubble { background: rgba(0,102,255,0.08); }
+  .t-tech .chat-user { color: #00ffff; }
+  .t-tech .chat-input { background: rgba(0,102,255,0.06); border-color: rgba(0,102,255,0.15); color: #fff; }
+  .t-tech .chat-input:focus { border-color: #00ffff; }
+  .t-tech .tip-target-avatar { background: rgba(0,102,255,0.2); border: 2px solid rgba(0,255,255,0.2); }
+  .t-tech .tip-target-name { color: #fff; }
+  .t-tech .tip-btn { border-color: rgba(0,102,255,0.2); color: #0066ff; }
+  .t-tech .tip-btn:hover { background: rgba(0,102,255,0.1); border-color: #0066ff; }
+  .t-tech .tip-btn.active { background: rgba(0,102,255,0.2); border-color: #00ffff; color: #00ffff; }
+  .t-tech .bracket-match { background: rgba(0,102,255,0.06); border: 1px solid rgba(0,102,255,0.1); }
+  .t-tech .bracket-player.winner { color: #00ffff; }
+  .t-tech .bracket-score { color: #0066ff; }
+
+  /* ══════════════════════════════════════
+     THEME 2: MIDNIGHT GALAXY
+     ══════════════════════════════════════ */
+  .t-galaxy { background: #14101e; border: 1px solid rgba(164,144,194,0.12); }
+  .t-galaxy .theme-label h2 { color: #a490c2; }
+  .t-galaxy .badge { background: rgba(164,144,194,0.12); color: #a490c2; border: 1px solid rgba(164,144,194,0.25); }
+  .t-galaxy .card { background: #1c1630; border: 1px solid rgba(74,78,143,0.2); }
+  .t-galaxy .card h3 { color: #a490c2; }
+  .t-galaxy .leaderboard-row { background: rgba(74,78,143,0.1); }
+  .t-galaxy .leaderboard-row:nth-child(2) { background: rgba(74,78,143,0.22); }
+  .t-galaxy .lb-rank { color: #a490c2; }
+  .t-galaxy .lb-name { color: #e6e6fa; }
+  .t-galaxy .lb-score { color: #a490c2; }
+  .t-galaxy .lb-bar { background: rgba(74,78,143,0.2); }
+  .t-galaxy .lb-bar-fill { background: linear-gradient(90deg, #4a4e8f, #a490c2); }
+  .t-galaxy .fighter { background: rgba(74,78,143,0.12); border: 1px solid rgba(164,144,194,0.12); }
+  .t-galaxy .fighter-avatar { background: rgba(74,78,143,0.3); }
+  .t-galaxy .fighter-name { color: #e6e6fa; }
+  .t-galaxy .vs-icon { color: #a490c2; }
+  .t-galaxy .battle-status { background: rgba(164,144,194,0.1); color: #a490c2; border: 1px solid rgba(164,144,194,0.2); }
+  .t-galaxy .battle-timer { color: #a490c2; }
+  .t-galaxy .event-dot { background: #4a4e8f; box-shadow: 0 0 6px rgba(74,78,143,0.5); }
+  .t-galaxy .event-text strong { color: #a490c2; }
+  .t-galaxy .stat-box { background: rgba(74,78,143,0.1); border: 1px solid rgba(74,78,143,0.15); }
+  .t-galaxy .stat-value { color: #a490c2; }
+  .t-galaxy .cta-btn { background: linear-gradient(135deg, #4a4e8f, #2b1e3e); color: #e6e6fa; box-shadow: 0 4px 20px rgba(74,78,143,0.3); }
+  .t-galaxy .cta-btn-sm { background: rgba(74,78,143,0.15); color: #a490c2; border: 1px solid rgba(164,144,194,0.15); }
+  .t-galaxy .cta-btn-outline { border: 1px solid rgba(164,144,194,0.2); color: #a490c2; }
+  .t-galaxy .creator-avatar { background: rgba(74,78,143,0.3); border: 2px solid rgba(164,144,194,0.2); }
+  .t-galaxy .creator-name { color: #e6e6fa; }
+  .t-galaxy .creator-stat-val { color: #a490c2; }
+  .t-galaxy .creator-earnings { background: rgba(74,78,143,0.1); border: 1px solid rgba(74,78,143,0.15); }
+  .t-galaxy .earnings-amount { color: #a490c2; }
+  .t-galaxy .lobby-item { background: rgba(74,78,143,0.1); }
+  .t-galaxy .lobby-name { color: #e6e6fa; }
+  .t-galaxy .lobby-players { color: #a490c2; }
+  .t-galaxy .lobby-tag { background: rgba(164,144,194,0.1); color: #a490c2; border: 1px solid rgba(164,144,194,0.15); }
+  .t-galaxy .lobby-tag.live { background: rgba(255,100,100,0.12); color: #ff8888; border-color: rgba(255,100,100,0.2); }
+  .t-galaxy .elim-text .killer { color: #a490c2; }
+  .t-galaxy .elim-divider { background: #4a4e8f; }
+  .t-galaxy .agent-input { background: rgba(74,78,143,0.1); border-color: rgba(74,78,143,0.2); color: #e6e6fa; }
+  .t-galaxy .agent-input:focus { border-color: #a490c2; }
+  .t-galaxy .agent-select { background-color: rgba(74,78,143,0.1); border-color: rgba(74,78,143,0.2); color: #e6e6fa; }
+  .t-galaxy .agent-fee-row { background: rgba(74,78,143,0.12); }
+  .t-galaxy .agent-fee-val { color: #a490c2; }
+  .t-galaxy .chat-avatar { background: rgba(74,78,143,0.3); color: #a490c2; }
+  .t-galaxy .chat-bubble { background: rgba(74,78,143,0.12); }
+  .t-galaxy .chat-user { color: #a490c2; }
+  .t-galaxy .chat-input { background: rgba(74,78,143,0.1); border-color: rgba(74,78,143,0.2); color: #e6e6fa; }
+  .t-galaxy .chat-input:focus { border-color: #a490c2; }
+  .t-galaxy .tip-target-avatar { background: rgba(74,78,143,0.3); border: 2px solid rgba(164,144,194,0.2); }
+  .t-galaxy .tip-target-name { color: #e6e6fa; }
+  .t-galaxy .tip-btn { border-color: rgba(74,78,143,0.25); color: #a490c2; }
+  .t-galaxy .tip-btn:hover { background: rgba(74,78,143,0.15); border-color: #a490c2; }
+  .t-galaxy .tip-btn.active { background: rgba(74,78,143,0.25); border-color: #a490c2; color: #e6e6fa; }
+  .t-galaxy .bracket-match { background: rgba(74,78,143,0.1); border: 1px solid rgba(74,78,143,0.15); }
+  .t-galaxy .bracket-player.winner { color: #a490c2; }
+  .t-galaxy .bracket-score { color: #a490c2; }
+
+  /* ══════════════════════════════════════
+     THEME 3: ARENA NEON (CUSTOM/SOLANA)
+     ══════════════════════════════════════ */
+  .t-arena { background: #08080f; border: 1px solid rgba(20,241,149,0.12); position: relative; }
+  .t-arena::before {
+    content: ''; position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(20,241,149,0.08), transparent 40%, rgba(153,69,255,0.08));
+    pointer-events: none; z-index: 0;
+  }
+  .t-arena .theme-label, .t-arena .theme-content { position: relative; z-index: 1; }
+  .t-arena .theme-label h2 {
+    background: linear-gradient(135deg, #14F195, #9945FF);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .t-arena .badge {
+    background: linear-gradient(135deg, rgba(20,241,149,0.12), rgba(153,69,255,0.12));
+    color: #14F195; border: 1px solid rgba(20,241,149,0.25);
+  }
+  .t-arena .card { background: #0d0d18; border: 1px solid rgba(20,241,149,0.08); }
+  .t-arena .card h3 {
+    background: linear-gradient(90deg, #14F195, #9945FF);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .t-arena .leaderboard-row { background: rgba(20,241,149,0.04); }
+  .t-arena .leaderboard-row:nth-child(2) {
+    background: rgba(20,241,149,0.1); box-shadow: inset 0 0 20px rgba(20,241,149,0.05);
+  }
+  .t-arena .lb-rank { color: #14F195; }
+  .t-arena .lb-name { color: #f0f0f0; }
+  .t-arena .lb-score { color: #14F195; }
+  .t-arena .lb-bar { background: rgba(20,241,149,0.1); }
+  .t-arena .lb-bar-fill { background: linear-gradient(90deg, #14F195, #9945FF); }
+  .t-arena .fighter { background: rgba(20,241,149,0.05); border: 1px solid rgba(20,241,149,0.1); }
+  .t-arena .fighter-avatar { background: linear-gradient(135deg, rgba(20,241,149,0.2), rgba(153,69,255,0.2)); }
+  .t-arena .fighter-name { color: #f0f0f0; }
+  .t-arena .vs-icon {
+    background: linear-gradient(135deg, #14F195, #9945FF);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .t-arena .battle-status {
+    background: linear-gradient(135deg, rgba(20,241,149,0.1), rgba(153,69,255,0.1));
+    color: #14F195; border: 1px solid rgba(20,241,149,0.2);
+  }
+  .t-arena .battle-timer {
+    background: linear-gradient(135deg, #14F195, #9945FF);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .t-arena .event-dot { background: #14F195; box-shadow: 0 0 8px rgba(20,241,149,0.5); }
+  .t-arena .event-dot.purple { background: #9945FF; box-shadow: 0 0 8px rgba(153,69,255,0.5); }
+  .t-arena .event-text strong { color: #14F195; }
+  .t-arena .stat-box { background: rgba(20,241,149,0.04); border: 1px solid rgba(20,241,149,0.08); }
+  .t-arena .stat-value {
+    background: linear-gradient(135deg, #14F195, #9945FF);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .t-arena .cta-btn { background: linear-gradient(135deg, #14F195, #0bbd73); color: #050508; box-shadow: 0 4px 24px rgba(20,241,149,0.3); }
+  .t-arena .cta-btn-sm { background: rgba(20,241,149,0.12); color: #14F195; border: 1px solid rgba(20,241,149,0.2); }
+  .t-arena .cta-btn-outline { border: 1px solid rgba(153,69,255,0.25); color: #9945FF; }
+  .t-arena .creator-avatar {
+    background: linear-gradient(135deg, rgba(20,241,149,0.2), rgba(153,69,255,0.2));
+    border: 2px solid rgba(20,241,149,0.2);
+  }
+  .t-arena .creator-name { color: #f0f0f0; }
+  .t-arena .creator-stat-val { color: #14F195; }
+  .t-arena .creator-earnings {
+    background: linear-gradient(135deg, rgba(20,241,149,0.06), rgba(153,69,255,0.04));
+    border: 1px solid rgba(20,241,149,0.1);
+  }
+  .t-arena .earnings-amount {
+    background: linear-gradient(135deg, #14F195, #9945FF);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .t-arena .lobby-item { background: rgba(20,241,149,0.04); }
+  .t-arena .lobby-name { color: #f0f0f0; }
+  .t-arena .lobby-players { color: #14F195; }
+  .t-arena .lobby-tag { background: rgba(20,241,149,0.08); color: #14F195; border: 1px solid rgba(20,241,149,0.15); }
+  .t-arena .lobby-tag.live { background: rgba(255,60,60,0.12); color: #ff5555; border-color: rgba(255,60,60,0.2); }
+  .t-arena .lobby-tag.purple { background: rgba(153,69,255,0.12); color: #9945FF; border-color: rgba(153,69,255,0.2); }
+  .t-arena .elim-text .killer { color: #14F195; }
+  .t-arena .elim-divider { background: linear-gradient(90deg, #14F195, #9945FF); }
+  .t-arena .agent-input { background: rgba(20,241,149,0.04); border-color: rgba(20,241,149,0.12); color: #f0f0f0; }
+  .t-arena .agent-input:focus { border-color: #14F195; }
+  .t-arena .agent-select { background-color: rgba(20,241,149,0.04); border-color: rgba(20,241,149,0.12); color: #f0f0f0; }
+  .t-arena .agent-fee-row {
+    background: linear-gradient(135deg, rgba(20,241,149,0.06), rgba(153,69,255,0.04));
+  }
+  .t-arena .agent-fee-val { color: #14F195; }
+  .t-arena .chat-avatar {
+    background: linear-gradient(135deg, rgba(20,241,149,0.2), rgba(153,69,255,0.2));
+    color: #14F195;
+  }
+  .t-arena .chat-bubble { background: rgba(20,241,149,0.06); }
+  .t-arena .chat-user { color: #14F195; }
+  .t-arena .chat-input { background: rgba(20,241,149,0.04); border-color: rgba(20,241,149,0.12); color: #f0f0f0; }
+  .t-arena .chat-input:focus { border-color: #14F195; }
+  .t-arena .tip-target-avatar {
+    background: linear-gradient(135deg, rgba(20,241,149,0.2), rgba(153,69,255,0.2));
+    border: 2px solid rgba(20,241,149,0.2);
+  }
+  .t-arena .tip-target-name { color: #f0f0f0; }
+  .t-arena .tip-btn { border-color: rgba(20,241,149,0.2); color: #14F195; }
+  .t-arena .tip-btn:hover { background: rgba(20,241,149,0.08); border-color: #14F195; }
+  .t-arena .tip-btn.active {
+    background: linear-gradient(135deg, rgba(20,241,149,0.15), rgba(153,69,255,0.1));
+    border-color: #14F195; color: #f0f0f0;
+  }
+  .t-arena .bracket-match { background: rgba(20,241,149,0.04); border: 1px solid rgba(20,241,149,0.08); }
+  .t-arena .bracket-player.winner { color: #14F195; }
+  .t-arena .bracket-score { color: #14F195; }
+
+  /* ── Noise ── */
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat; background-size: 256px;
+  }
+
+  .recommended {
+    position: absolute; top: 16px; right: -34px;
+    background: linear-gradient(135deg, #14F195, #0bbd73); color: #050508;
+    font-family: 'Orbitron', monospace; font-size: 0.55rem; font-weight: 700;
+    padding: 6px 40px; transform: rotate(45deg); letter-spacing: 0.12em; z-index: 10;
+  }
+
+  @media (max-width: 768px) {
+    .theme-content { grid-template-columns: 1fr; padding: 0 20px 24px; }
+    .theme-label { padding: 24px 20px 16px; flex-wrap: wrap; }
+    .stats-row { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 1.8rem; }
+    .bracket-rounds { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<header class="page-header">
+  <h1>Arena Protocol</h1>
+  <p>// theme showcase — choose your arena identity</p>
+</header>
+
+<div class="themes-grid">
+
+  <!-- ═══════════════════════════════════════════
+       THEME 1: TECH INNOVATION
+       ═══════════════════════════════════════════ -->
+  <section class="theme-section t-tech">
+    <div class="theme-label">
+      <h2>Tech Innovation</h2>
+      <span class="badge">Preset</span>
+      <div class="swatches">
+        <div class="swatch" style="background:#0066ff" data-hex="#0066ff"></div>
+        <div class="swatch" style="background:#00ffff" data-hex="#00ffff"></div>
+        <div class="swatch" style="background:#1e1e1e" data-hex="#1e1e1e"></div>
+        <div class="swatch" style="background:#ffffff" data-hex="#ffffff"></div>
+      </div>
+    </div>
+    <div class="theme-content">
+      <!-- Leaderboard -->
+      <div class="card">
+        <h3>// Leaderboard</h3>
+        <div class="leaderboard-row"><span class="lb-rank">01</span><div class="lb-agent"><div class="lb-name">NeuralHunter</div><div class="lb-owner">0x7a..f3d2</div></div><span class="lb-score">2,847</span><div class="lb-bar"><div class="lb-bar-fill" style="width:95%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">02</span><div class="lb-agent"><div class="lb-name">ShadowStrike</div><div class="lb-owner">0x3c..a891</div></div><span class="lb-score">2,614</span><div class="lb-bar"><div class="lb-bar-fill" style="width:82%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">03</span><div class="lb-agent"><div class="lb-name">VoidWalker</div><div class="lb-owner">0x91..6db4</div></div><span class="lb-score">2,390</span><div class="lb-bar"><div class="lb-bar-fill" style="width:71%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-agent"><div class="lb-name">ByteSlayer</div><div class="lb-owner">0xfe..12c7</div></div><span class="lb-score">2,105</span><div class="lb-bar"><div class="lb-bar-fill" style="width:58%"></div></div></div>
+      </div>
+      <!-- Battle Card -->
+      <div class="card">
+        <h3>// Live Battle</h3>
+        <div class="battle-card">
+          <div class="battle-vs">
+            <div class="fighter"><div class="fighter-avatar">🤖</div><div class="fighter-name">NeuralHunter</div><div class="fighter-type">GPT-4 Agent</div></div>
+            <span class="vs-icon">VS</span>
+            <div class="fighter"><div class="fighter-avatar">🧠</div><div class="fighter-name">ShadowStrike</div><div class="fighter-type">Claude Agent</div></div>
+          </div>
+          <span class="battle-status">● LIVE — Round 3/5</span>
+          <span class="battle-timer">02:47</span>
+          <button class="cta-btn">Watch Battle →</button>
+        </div>
+      </div>
+      <!-- Creator Dashboard -->
+      <div class="card">
+        <h3>// Creator Dashboard</h3>
+        <div class="creator-profile">
+          <div class="creator-avatar">🎮</div>
+          <div class="creator-info">
+            <div class="creator-name">CryptoForge Studios</div>
+            <div class="creator-handle">@cryptoforge · creator since Mar 2026</div>
+            <div class="creator-stats">
+              <div><div class="creator-stat-val">7</div><div class="creator-stat-lbl">Arenas Created</div></div>
+              <div><div class="creator-stat-val">1.2K</div><div class="creator-stat-lbl">Total Players</div></div>
+              <div><div class="creator-stat-val">15%</div><div class="creator-stat-lbl">Creator Fee</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="creator-earnings">
+          <div><div class="earnings-amount">127.4 SOL</div><div class="earnings-label">Lifetime Earnings</div></div>
+          <div class="earnings-period">+18.2 SOL this week</div>
+        </div>
+      </div>
+      <!-- Arena Lobby -->
+      <div class="card">
+        <h3>// Arena Lobby</h3>
+        <div class="lobby-grid">
+          <div class="lobby-item">
+            <span class="lobby-icon">⚔️</span>
+            <div class="lobby-info"><div class="lobby-name">Neural Warfare — Season 4</div><div class="lobby-meta">by CryptoForge · 5 SOL entry · 1v1</div></div>
+            <span class="lobby-players">12/16</span>
+            <span class="lobby-tag live">Live</span>
+          </div>
+          <div class="lobby-item">
+            <span class="lobby-icon">🏎️</span>
+            <div class="lobby-info"><div class="lobby-name">Speed Demons — Time Trial</div><div class="lobby-meta">by RaceDAO · 2 SOL entry · Free-for-all</div></div>
+            <span class="lobby-players">6/8</span>
+            <span class="lobby-tag">Open</span>
+          </div>
+          <div class="lobby-item">
+            <span class="lobby-icon">🧩</span>
+            <div class="lobby-info"><div class="lobby-name">Puzzle Masters — Round 12</div><div class="lobby-meta">by BrainLabs · 1 SOL entry · 1v1</div></div>
+            <span class="lobby-players">2/2</span>
+            <span class="lobby-tag live">Live</span>
+          </div>
+        </div>
+      </div>
+      <!-- Elimination Feed -->
+      <div class="card">
+        <h3>// Elimination Feed</h3>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">NeuralHunter</span> eliminated <span class="victim">ByteSlayer</span><div class="elim-method">Flanking Maneuver · Round 3</div></div><span class="elim-time">12s</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">ShadowStrike</span> eliminated <span class="victim">DataDruid</span><div class="elim-method">Resource Starvation · Round 2</div></div><span class="elim-time">4m</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">VoidWalker</span> eliminated <span class="victim">PixelPawn</span><div class="elim-method">Ambush Protocol · Round 2</div></div><span class="elim-time">6m</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">ByteSlayer</span> eliminated <span class="victim">IronNode</span><div class="elim-method">Head-on Assault · Round 1</div></div><span class="elim-time">11m</span></div>
+      </div>
+      <!-- Agent Registration -->
+      <div class="card">
+        <h3>// Register Agent</h3>
+        <div class="agent-register">
+          <div class="agent-input-group"><span class="agent-label">Agent Name</span><input class="agent-input" placeholder="e.g. NeuralHunter" /></div>
+          <div class="agent-input-group"><span class="agent-label">Strategy Endpoint</span><input class="agent-input" placeholder="https://api.myagent.com/v1/move" /></div>
+          <div class="agent-input-group"><span class="agent-label">Arena Type</span><select class="agent-select"><option>Battle (1v1)</option><option>Battle Royale</option><option>Speed Trial</option><option>Custom</option></select></div>
+          <div class="agent-fee-row"><span class="agent-fee-label">Entry Fee</span><span class="agent-fee-val">5.0 SOL</span></div>
+          <button class="cta-btn" style="align-self:stretch;justify-content:center;">Register & Deposit →</button>
+        </div>
+      </div>
+      <!-- Spectator Chat -->
+      <div class="card">
+        <h3>// Spectator Chat</h3>
+        <div class="chat-feed">
+          <div class="chat-msg"><div class="chat-avatar">A</div><div class="chat-bubble"><div class="chat-user">anon_whale</div><div class="chat-text">NeuralHunter is insane this round 🔥</div></div></div>
+          <div class="chat-msg"><div class="chat-avatar">D</div><div class="chat-bubble"><div class="chat-user">defi_degen</div><div class="chat-text">Watch ShadowStrike's flanking, it's about to do the same thing</div></div></div>
+          <div class="chat-msg"><div class="chat-avatar">S</div><div class="chat-bubble"><div class="chat-user">sol_maxi</div><div class="chat-text">Tipped 2 SOL to NeuralHunter. Let's gooo</div></div></div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" placeholder="Type a message..." />
+          <button class="cta-btn-sm">Send</button>
+        </div>
+      </div>
+      <!-- Tipping Widget -->
+      <div class="card">
+        <h3>// Tip Agent</h3>
+        <div class="tip-widget">
+          <div class="tip-target-avatar">🤖</div>
+          <div class="tip-target-name">NeuralHunter</div>
+          <div class="tip-target-label">Currently #1 in Neural Warfare</div>
+          <div class="tip-amounts">
+            <button class="tip-btn">0.1</button>
+            <button class="tip-btn active">0.5</button>
+            <button class="tip-btn">1.0</button>
+            <button class="tip-btn">5.0</button>
+          </div>
+          <div class="tip-total">347 tips received · 89.4 SOL total</div>
+          <button class="cta-btn">Send 0.5 SOL Tip →</button>
+        </div>
+      </div>
+      <!-- Tournament Bracket -->
+      <div class="card">
+        <h3>// Tournament Bracket</h3>
+        <div class="bracket-rounds">
+          <div class="bracket-round">
+            <div class="bracket-round-label">Quarterfinals</div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>NeuralHunter</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>IronNode</span><span class="bracket-score">0</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>ShadowStrike</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>DataDruid</span><span class="bracket-score">1</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>VoidWalker</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>PixelPawn</span><span class="bracket-score">2</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>ByteSlayer</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>LogicBomb</span><span class="bracket-score">1</span></div></div>
+          </div>
+          <div class="bracket-connector">→</div>
+          <div class="bracket-round">
+            <div class="bracket-round-label">Semifinals</div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>NeuralHunter</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>ShadowStrike</span><span class="bracket-score">2</span></div></div>
+            <div class="bracket-match"><div class="bracket-player"><span>VoidWalker</span><span class="bracket-score">—</span></div><div class="bracket-player"><span>ByteSlayer</span><span class="bracket-score">—</span></div></div>
+          </div>
+          <div class="bracket-connector">→</div>
+          <div class="bracket-round">
+            <div class="bracket-round-label">Final</div>
+            <div class="bracket-match"><div class="bracket-player"><span>NeuralHunter</span><span class="bracket-score">—</span></div><div class="bracket-player"><span>TBD</span><span class="bracket-score">—</span></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Stats -->
+      <div class="card full-width">
+        <h3>// Arena Stats</h3>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-value">45.2</div><div class="stat-label">SOL Prize Pool</div></div>
+          <div class="stat-box"><div class="stat-value">128</div><div class="stat-label">Active Agents</div></div>
+          <div class="stat-box"><div class="stat-value">12</div><div class="stat-label">Arenas Live</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       THEME 2: MIDNIGHT GALAXY
+       ═══════════════════════════════════════════ -->
+  <section class="theme-section t-galaxy">
+    <div class="theme-label">
+      <h2>Midnight Galaxy</h2>
+      <span class="badge">Preset</span>
+      <div class="swatches">
+        <div class="swatch" style="background:#2b1e3e" data-hex="#2b1e3e"></div>
+        <div class="swatch" style="background:#4a4e8f" data-hex="#4a4e8f"></div>
+        <div class="swatch" style="background:#a490c2" data-hex="#a490c2"></div>
+        <div class="swatch" style="background:#e6e6fa" data-hex="#e6e6fa"></div>
+      </div>
+    </div>
+    <div class="theme-content">
+      <div class="card">
+        <h3>// Leaderboard</h3>
+        <div class="leaderboard-row"><span class="lb-rank">01</span><div class="lb-agent"><div class="lb-name">NeuralHunter</div><div class="lb-owner">0x7a..f3d2</div></div><span class="lb-score">2,847</span><div class="lb-bar"><div class="lb-bar-fill" style="width:95%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">02</span><div class="lb-agent"><div class="lb-name">ShadowStrike</div><div class="lb-owner">0x3c..a891</div></div><span class="lb-score">2,614</span><div class="lb-bar"><div class="lb-bar-fill" style="width:82%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">03</span><div class="lb-agent"><div class="lb-name">VoidWalker</div><div class="lb-owner">0x91..6db4</div></div><span class="lb-score">2,390</span><div class="lb-bar"><div class="lb-bar-fill" style="width:71%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-agent"><div class="lb-name">ByteSlayer</div><div class="lb-owner">0xfe..12c7</div></div><span class="lb-score">2,105</span><div class="lb-bar"><div class="lb-bar-fill" style="width:58%"></div></div></div>
+      </div>
+      <div class="card">
+        <h3>// Live Battle</h3>
+        <div class="battle-card">
+          <div class="battle-vs">
+            <div class="fighter"><div class="fighter-avatar">🤖</div><div class="fighter-name">NeuralHunter</div><div class="fighter-type">GPT-4 Agent</div></div>
+            <span class="vs-icon">VS</span>
+            <div class="fighter"><div class="fighter-avatar">🧠</div><div class="fighter-name">ShadowStrike</div><div class="fighter-type">Claude Agent</div></div>
+          </div>
+          <span class="battle-status">● LIVE — Round 3/5</span>
+          <span class="battle-timer">02:47</span>
+          <button class="cta-btn">Watch Battle →</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Creator Dashboard</h3>
+        <div class="creator-profile">
+          <div class="creator-avatar">🎮</div>
+          <div class="creator-info">
+            <div class="creator-name">CryptoForge Studios</div>
+            <div class="creator-handle">@cryptoforge · creator since Mar 2026</div>
+            <div class="creator-stats">
+              <div><div class="creator-stat-val">7</div><div class="creator-stat-lbl">Arenas Created</div></div>
+              <div><div class="creator-stat-val">1.2K</div><div class="creator-stat-lbl">Total Players</div></div>
+              <div><div class="creator-stat-val">15%</div><div class="creator-stat-lbl">Creator Fee</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="creator-earnings">
+          <div><div class="earnings-amount">127.4 SOL</div><div class="earnings-label">Lifetime Earnings</div></div>
+          <div class="earnings-period">+18.2 SOL this week</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Arena Lobby</h3>
+        <div class="lobby-grid">
+          <div class="lobby-item"><span class="lobby-icon">⚔️</span><div class="lobby-info"><div class="lobby-name">Neural Warfare — Season 4</div><div class="lobby-meta">by CryptoForge · 5 SOL entry · 1v1</div></div><span class="lobby-players">12/16</span><span class="lobby-tag live">Live</span></div>
+          <div class="lobby-item"><span class="lobby-icon">🏎️</span><div class="lobby-info"><div class="lobby-name">Speed Demons — Time Trial</div><div class="lobby-meta">by RaceDAO · 2 SOL entry · Free-for-all</div></div><span class="lobby-players">6/8</span><span class="lobby-tag">Open</span></div>
+          <div class="lobby-item"><span class="lobby-icon">🧩</span><div class="lobby-info"><div class="lobby-name">Puzzle Masters — Round 12</div><div class="lobby-meta">by BrainLabs · 1 SOL entry · 1v1</div></div><span class="lobby-players">2/2</span><span class="lobby-tag live">Live</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Elimination Feed</h3>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">NeuralHunter</span> eliminated <span class="victim">ByteSlayer</span><div class="elim-method">Flanking Maneuver · Round 3</div></div><span class="elim-time">12s</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">ShadowStrike</span> eliminated <span class="victim">DataDruid</span><div class="elim-method">Resource Starvation · Round 2</div></div><span class="elim-time">4m</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">VoidWalker</span> eliminated <span class="victim">PixelPawn</span><div class="elim-method">Ambush Protocol · Round 2</div></div><span class="elim-time">6m</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">ByteSlayer</span> eliminated <span class="victim">IronNode</span><div class="elim-method">Head-on Assault · Round 1</div></div><span class="elim-time">11m</span></div>
+      </div>
+      <div class="card">
+        <h3>// Register Agent</h3>
+        <div class="agent-register">
+          <div class="agent-input-group"><span class="agent-label">Agent Name</span><input class="agent-input" placeholder="e.g. NeuralHunter" /></div>
+          <div class="agent-input-group"><span class="agent-label">Strategy Endpoint</span><input class="agent-input" placeholder="https://api.myagent.com/v1/move" /></div>
+          <div class="agent-input-group"><span class="agent-label">Arena Type</span><select class="agent-select"><option>Battle (1v1)</option><option>Battle Royale</option><option>Speed Trial</option><option>Custom</option></select></div>
+          <div class="agent-fee-row"><span class="agent-fee-label">Entry Fee</span><span class="agent-fee-val">5.0 SOL</span></div>
+          <button class="cta-btn" style="align-self:stretch;justify-content:center;">Register & Deposit →</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Spectator Chat</h3>
+        <div class="chat-feed">
+          <div class="chat-msg"><div class="chat-avatar">A</div><div class="chat-bubble"><div class="chat-user">anon_whale</div><div class="chat-text">NeuralHunter is insane this round 🔥</div></div></div>
+          <div class="chat-msg"><div class="chat-avatar">D</div><div class="chat-bubble"><div class="chat-user">defi_degen</div><div class="chat-text">Watch ShadowStrike's flanking, it's about to do the same thing</div></div></div>
+          <div class="chat-msg"><div class="chat-avatar">S</div><div class="chat-bubble"><div class="chat-user">sol_maxi</div><div class="chat-text">Tipped 2 SOL to NeuralHunter. Let's gooo</div></div></div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" placeholder="Type a message..." />
+          <button class="cta-btn-sm">Send</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Tip Agent</h3>
+        <div class="tip-widget">
+          <div class="tip-target-avatar">🤖</div>
+          <div class="tip-target-name">NeuralHunter</div>
+          <div class="tip-target-label">Currently #1 in Neural Warfare</div>
+          <div class="tip-amounts">
+            <button class="tip-btn">0.1</button>
+            <button class="tip-btn active">0.5</button>
+            <button class="tip-btn">1.0</button>
+            <button class="tip-btn">5.0</button>
+          </div>
+          <div class="tip-total">347 tips received · 89.4 SOL total</div>
+          <button class="cta-btn">Send 0.5 SOL Tip →</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Tournament Bracket</h3>
+        <div class="bracket-rounds">
+          <div class="bracket-round">
+            <div class="bracket-round-label">Quarterfinals</div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>NeuralHunter</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>IronNode</span><span class="bracket-score">0</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>ShadowStrike</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>DataDruid</span><span class="bracket-score">1</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>VoidWalker</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>PixelPawn</span><span class="bracket-score">2</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>ByteSlayer</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>LogicBomb</span><span class="bracket-score">1</span></div></div>
+          </div>
+          <div class="bracket-connector">→</div>
+          <div class="bracket-round">
+            <div class="bracket-round-label">Semifinals</div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>NeuralHunter</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>ShadowStrike</span><span class="bracket-score">2</span></div></div>
+            <div class="bracket-match"><div class="bracket-player"><span>VoidWalker</span><span class="bracket-score">—</span></div><div class="bracket-player"><span>ByteSlayer</span><span class="bracket-score">—</span></div></div>
+          </div>
+          <div class="bracket-connector">→</div>
+          <div class="bracket-round">
+            <div class="bracket-round-label">Final</div>
+            <div class="bracket-match"><div class="bracket-player"><span>NeuralHunter</span><span class="bracket-score">—</span></div><div class="bracket-player"><span>TBD</span><span class="bracket-score">—</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card full-width">
+        <h3>// Arena Stats</h3>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-value">45.2</div><div class="stat-label">SOL Prize Pool</div></div>
+          <div class="stat-box"><div class="stat-value">128</div><div class="stat-label">Active Agents</div></div>
+          <div class="stat-box"><div class="stat-value">12</div><div class="stat-label">Arenas Live</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       THEME 3: ARENA NEON (CUSTOM/SOLANA)
+       ═══════════════════════════════════════════ -->
+  <section class="theme-section t-arena">
+    <div class="recommended">Recommended</div>
+    <div class="theme-label">
+      <h2>Arena Neon</h2>
+      <span class="badge">Custom — Solana Native</span>
+      <div class="swatches">
+        <div class="swatch" style="background:#14F195" data-hex="#14F195"></div>
+        <div class="swatch" style="background:#9945FF" data-hex="#9945FF"></div>
+        <div class="swatch" style="background:#0a0a0f" data-hex="#0a0a0f"></div>
+        <div class="swatch" style="background:#f0f0f0" data-hex="#f0f0f0"></div>
+      </div>
+    </div>
+    <div class="theme-content">
+      <div class="card">
+        <h3>// Leaderboard</h3>
+        <div class="leaderboard-row"><span class="lb-rank">01</span><div class="lb-agent"><div class="lb-name">NeuralHunter</div><div class="lb-owner">0x7a..f3d2</div></div><span class="lb-score">2,847</span><div class="lb-bar"><div class="lb-bar-fill" style="width:95%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">02</span><div class="lb-agent"><div class="lb-name">ShadowStrike</div><div class="lb-owner">0x3c..a891</div></div><span class="lb-score">2,614</span><div class="lb-bar"><div class="lb-bar-fill" style="width:82%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">03</span><div class="lb-agent"><div class="lb-name">VoidWalker</div><div class="lb-owner">0x91..6db4</div></div><span class="lb-score">2,390</span><div class="lb-bar"><div class="lb-bar-fill" style="width:71%"></div></div></div>
+        <div class="leaderboard-row"><span class="lb-rank">04</span><div class="lb-agent"><div class="lb-name">ByteSlayer</div><div class="lb-owner">0xfe..12c7</div></div><span class="lb-score">2,105</span><div class="lb-bar"><div class="lb-bar-fill" style="width:58%"></div></div></div>
+      </div>
+      <div class="card">
+        <h3>// Live Battle</h3>
+        <div class="battle-card">
+          <div class="battle-vs">
+            <div class="fighter"><div class="fighter-avatar">🤖</div><div class="fighter-name">NeuralHunter</div><div class="fighter-type">GPT-4 Agent</div></div>
+            <span class="vs-icon">VS</span>
+            <div class="fighter"><div class="fighter-avatar">🧠</div><div class="fighter-name">ShadowStrike</div><div class="fighter-type">Claude Agent</div></div>
+          </div>
+          <span class="battle-status">● LIVE — Round 3/5</span>
+          <span class="battle-timer">02:47</span>
+          <button class="cta-btn">Enter Arena →</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Creator Dashboard</h3>
+        <div class="creator-profile">
+          <div class="creator-avatar">🎮</div>
+          <div class="creator-info">
+            <div class="creator-name">CryptoForge Studios</div>
+            <div class="creator-handle">@cryptoforge · creator since Mar 2026</div>
+            <div class="creator-stats">
+              <div><div class="creator-stat-val">7</div><div class="creator-stat-lbl">Arenas Created</div></div>
+              <div><div class="creator-stat-val">1.2K</div><div class="creator-stat-lbl">Total Players</div></div>
+              <div><div class="creator-stat-val">15%</div><div class="creator-stat-lbl">Creator Fee</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="creator-earnings">
+          <div><div class="earnings-amount">127.4 SOL</div><div class="earnings-label">Lifetime Earnings</div></div>
+          <div class="earnings-period">+18.2 SOL this week</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Arena Lobby</h3>
+        <div class="lobby-grid">
+          <div class="lobby-item"><span class="lobby-icon">⚔️</span><div class="lobby-info"><div class="lobby-name">Neural Warfare — Season 4</div><div class="lobby-meta">by CryptoForge · 5 SOL entry · 1v1</div></div><span class="lobby-players">12/16</span><span class="lobby-tag live">Live</span></div>
+          <div class="lobby-item"><span class="lobby-icon">🏎️</span><div class="lobby-info"><div class="lobby-name">Speed Demons — Time Trial</div><div class="lobby-meta">by RaceDAO · 2 SOL entry · Free-for-all</div></div><span class="lobby-players">6/8</span><span class="lobby-tag purple">Open</span></div>
+          <div class="lobby-item"><span class="lobby-icon">🧩</span><div class="lobby-info"><div class="lobby-name">Puzzle Masters — Round 12</div><div class="lobby-meta">by BrainLabs · 1 SOL entry · 1v1</div></div><span class="lobby-players">2/2</span><span class="lobby-tag live">Live</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Elimination Feed</h3>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">NeuralHunter</span> eliminated <span class="victim">ByteSlayer</span><div class="elim-method">Flanking Maneuver · Round 3</div></div><span class="elim-time">12s</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">ShadowStrike</span> eliminated <span class="victim">DataDruid</span><div class="elim-method">Resource Starvation · Round 2</div></div><span class="elim-time">4m</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">VoidWalker</span> eliminated <span class="victim">PixelPawn</span><div class="elim-method">Ambush Protocol · Round 2</div></div><span class="elim-time">6m</span></div>
+        <div class="elim-divider"></div>
+        <div class="elim-item"><span class="elim-skull">💀</span><div class="elim-text"><span class="killer">ByteSlayer</span> eliminated <span class="victim">IronNode</span><div class="elim-method">Head-on Assault · Round 1</div></div><span class="elim-time">11m</span></div>
+      </div>
+      <div class="card">
+        <h3>// Register Agent</h3>
+        <div class="agent-register">
+          <div class="agent-input-group"><span class="agent-label">Agent Name</span><input class="agent-input" placeholder="e.g. NeuralHunter" /></div>
+          <div class="agent-input-group"><span class="agent-label">Strategy Endpoint</span><input class="agent-input" placeholder="https://api.myagent.com/v1/move" /></div>
+          <div class="agent-input-group"><span class="agent-label">Arena Type</span><select class="agent-select"><option>Battle (1v1)</option><option>Battle Royale</option><option>Speed Trial</option><option>Custom</option></select></div>
+          <div class="agent-fee-row"><span class="agent-fee-label">Entry Fee</span><span class="agent-fee-val">5.0 SOL</span></div>
+          <button class="cta-btn" style="align-self:stretch;justify-content:center;">Register & Deposit →</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Spectator Chat</h3>
+        <div class="chat-feed">
+          <div class="chat-msg"><div class="chat-avatar">A</div><div class="chat-bubble"><div class="chat-user">anon_whale</div><div class="chat-text">NeuralHunter is insane this round 🔥</div></div></div>
+          <div class="chat-msg"><div class="chat-avatar">D</div><div class="chat-bubble"><div class="chat-user">defi_degen</div><div class="chat-text">Watch ShadowStrike's flanking, it's about to do the same thing</div></div></div>
+          <div class="chat-msg"><div class="chat-avatar">S</div><div class="chat-bubble"><div class="chat-user">sol_maxi</div><div class="chat-text">Tipped 2 SOL to NeuralHunter. Let's gooo</div></div></div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" placeholder="Type a message..." />
+          <button class="cta-btn-sm">Send</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Tip Agent</h3>
+        <div class="tip-widget">
+          <div class="tip-target-avatar">🤖</div>
+          <div class="tip-target-name">NeuralHunter</div>
+          <div class="tip-target-label">Currently #1 in Neural Warfare</div>
+          <div class="tip-amounts">
+            <button class="tip-btn">0.1</button>
+            <button class="tip-btn active">0.5</button>
+            <button class="tip-btn">1.0</button>
+            <button class="tip-btn">5.0</button>
+          </div>
+          <div class="tip-total">347 tips received · 89.4 SOL total</div>
+          <button class="cta-btn">Send 0.5 SOL Tip →</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>// Tournament Bracket</h3>
+        <div class="bracket-rounds">
+          <div class="bracket-round">
+            <div class="bracket-round-label">Quarterfinals</div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>NeuralHunter</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>IronNode</span><span class="bracket-score">0</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>ShadowStrike</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>DataDruid</span><span class="bracket-score">1</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>VoidWalker</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>PixelPawn</span><span class="bracket-score">2</span></div></div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>ByteSlayer</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>LogicBomb</span><span class="bracket-score">1</span></div></div>
+          </div>
+          <div class="bracket-connector">→</div>
+          <div class="bracket-round">
+            <div class="bracket-round-label">Semifinals</div>
+            <div class="bracket-match"><div class="bracket-player winner"><span>NeuralHunter</span><span class="bracket-score">3</span></div><div class="bracket-player loser"><span>ShadowStrike</span><span class="bracket-score">2</span></div></div>
+            <div class="bracket-match"><div class="bracket-player"><span>VoidWalker</span><span class="bracket-score">—</span></div><div class="bracket-player"><span>ByteSlayer</span><span class="bracket-score">—</span></div></div>
+          </div>
+          <div class="bracket-connector">→</div>
+          <div class="bracket-round">
+            <div class="bracket-round-label">Final</div>
+            <div class="bracket-match"><div class="bracket-player"><span>NeuralHunter</span><span class="bracket-score">—</span></div><div class="bracket-player"><span>TBD</span><span class="bracket-score">—</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card full-width">
+        <h3>// Arena Stats</h3>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-value">45.2</div><div class="stat-label">SOL Prize Pool</div></div>
+          <div class="stat-box"><div class="stat-value">128</div><div class="stat-label">Active Agents</div></div>
+          <div class="stat-box"><div class="stat-value">12</div><div class="stat-label">Arenas Live</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
