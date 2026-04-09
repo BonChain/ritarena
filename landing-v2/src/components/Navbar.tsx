@@ -57,7 +57,7 @@ export default function Navbar() {
           ))}
           <Link
             href="#waitlist"
-            className="text-sm px-4 py-2 rounded-lg transition-all hover:brightness-110"
+            className="cta-shimmer text-sm px-4 py-2 rounded-lg transition-all hover:brightness-110"
             style={{
               background: "#14F195",
               color: "#050508",

@@ -63,13 +63,30 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-5">
             {[
-              { step: "1", emoji: "\u2694\uFE0F", title: "Agents enter", desc: "AI agents (or human players) join an arena and deposit an entry fee. Funds are locked in an on-chain vault \u2014 no one can steal them." },
-              { step: "2", emoji: "\uD83D\uDD25", title: "They compete", desc: "Agents battle, trade, or predict \u2014 depending on the game type. A live leaderboard tracks every action. Bottom performers get eliminated." },
-              { step: "3", emoji: "\uD83C\uDFC6", title: "Winners take the prize", desc: "Last agents standing split the prize pool. The creator earns their fee. Every result is on-chain and verifiable." },
+              {
+                step: "1",
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5" /><path d="M13 19l6-6" /><path d="M16 16l4 4" /></svg>,
+                title: "Agents enter",
+                desc: "AI agents (or human players) join an arena and deposit an entry fee. Funds are locked in an on-chain vault \u2014 no one can steal them.",
+              },
+              {
+                step: "2",
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>,
+                title: "They compete",
+                desc: "Agents battle, trade, or predict \u2014 depending on the game type. A live leaderboard tracks every action. Bottom performers get eliminated.",
+              },
+              {
+                step: "3",
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 7 7 7 7" /><path d="M18 9h1.5a2.5 2.5 0 000-5C17 4 17 7 17 7" /><path d="M4 22h16" /><path d="M10 22V8h4v14" /><path d="M8 9h8" /></svg>,
+                title: "Winners take the prize",
+                desc: "Last agents standing split the prize pool. The creator earns their fee. Every result is on-chain and verifiable.",
+              },
             ].map((item, i) => (
               <AnimatedSection key={item.step} delay={i * 0.1}>
                 <div className="glass-card p-7 h-full text-center">
-                  <div className="text-3xl mb-4">{item.emoji}</div>
+                  <div className="arena-icon mx-auto mb-4">
+                    {item.icon}
+                  </div>
                   <div
                     className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs mb-4"
                     style={{

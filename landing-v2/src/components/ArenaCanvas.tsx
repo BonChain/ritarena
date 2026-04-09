@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { emitKill } from "@/lib/kill-events";
 
 interface Agent {
   x: number;
@@ -158,9 +159,10 @@ export default function ArenaCanvas({ className = "" }: { className?: string }) 
                   ctx.globalAlpha = 1;
                 }
 
+                const killMsg = `${agent.name} eliminated ${other.name}`;
+                emitKill(killMsg);
                 setKills((prev) => {
-                  const msg = `${agent.name} eliminated ${other.name}`;
-                  return [msg, ...prev].slice(0, 4);
+                  return [killMsg, ...prev].slice(0, 4);
                 });
               }
               break;

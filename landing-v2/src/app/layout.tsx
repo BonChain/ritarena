@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Orbitron, Exo_2 } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import NavTicker from "@/components/NavTicker";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
@@ -64,6 +65,7 @@ export default function RootLayout({
         <div className="arena-grid-dots" />
         <div className="arena-noise" />
         <Navbar />
+        <NavTicker />
         {children}
         <Footer />
       </body>

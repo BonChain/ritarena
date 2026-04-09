@@ -47,12 +47,12 @@ export default function WaitlistForm({ id = "hero" }: { id?: string }) {
           placeholder="your@email.com"
           required
           style={{ background: "rgba(20,241,149,0.04)", border: "1px solid rgba(20,241,149,0.12)", color: "#f0f0f0" }}
-          className="flex-1 px-4 py-3.5 rounded-xl text-sm outline-none transition-colors placeholder:text-[#55556a]"
+          className="flex-1 px-4 py-3.5 rounded-xl text-sm outline-none transition-all placeholder:text-[#55556a] arena-focus"
         />
         <button
           type="submit"
           style={{ background: "#14F195", color: "#050508" }}
-          className="px-6 py-3.5 rounded-xl text-sm font-semibold hover:brightness-110 transition-all whitespace-nowrap cursor-pointer"
+          className="cta-shimmer px-6 py-3.5 rounded-xl text-sm font-semibold hover:brightness-110 transition-all whitespace-nowrap cursor-pointer"
         >
           Get Early Access
         </button>

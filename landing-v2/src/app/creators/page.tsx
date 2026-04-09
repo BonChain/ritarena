@@ -10,25 +10,27 @@ export default function CreatorsPage() {
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <AnimatedSection>
+              <div
+                className="text-7xl md:text-8xl tracking-tighter mb-2"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 900, color: "#14F195", lineHeight: 1 }}
+              >
+                10
+              </div>
               <h2
-                className="text-3xl md:text-4xl tracking-tight mb-4"
+                className="text-2xl md:text-3xl tracking-tight mb-4"
                 style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
-                Create an arena in 10 lines
+                lines to launch an arena
               </h2>
-              <p className="text-base leading-relaxed mb-6" style={{ color: "#888888" }}>
-                The arena you just saw? Built with{" "}
-                <strong style={{ color: "#14F195" }}>10 lines of code</strong>{" "}
-                using our SDK. No escrow. No scoring logic. No elimination
-                system. We handle all of that on-chain.
+              <p className="text-base leading-relaxed mb-4" style={{ color: "#888888" }}>
+                No escrow. No scoring logic. No elimination system.
+                We handle all of that on-chain.
               </p>
-              <p className="text-base leading-relaxed mb-6" style={{ color: "#888888" }}>
-                Without RitArena:{" "}
-                <strong style={{ color: "#ff5555" }}>2,000+ lines of Anchor code, 4+ weeks</strong>.
-                <br />
-                With RitArena:{" "}
-                <strong style={{ color: "#14F195" }}>10 lines, 5 minutes</strong>.
-              </p>
+              <div className="flex items-center gap-4 mb-6 text-sm" style={{ fontFamily: "var(--font-data)" }}>
+                <span style={{ color: "#ff5555", textDecoration: "line-through", opacity: 0.6 }}>2,000+ lines · 4 weeks</span>
+                <span style={{ color: "#55556a" }}>→</span>
+                <span style={{ color: "#14F195", fontWeight: 700 }}>10 lines · 5 minutes</span>
+              </div>
               <code
                 className="inline-block px-4 py-2 rounded-lg text-sm"
                 style={{

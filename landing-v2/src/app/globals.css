@@ -29,10 +29,118 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(20, 241, 149, 0.08);
   border-radius: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(20, 241, 149, 0.15);
+  border-color: rgba(20, 241, 149, 0.18);
+  box-shadow: 0 0 30px rgba(20, 241, 149, 0.04), inset 0 0 30px rgba(20, 241, 149, 0.02);
+  transform: translateY(-2px);
+}
+
+/* ── CTA Shimmer Effect ── */
+.cta-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+  transition: none;
+}
+
+.cta-shimmer:hover::after {
+  animation: shimmerSweep 0.6s ease forwards;
+}
+
+@keyframes shimmerSweep {
+  0% { left: -100%; }
+  100% { left: 150%; }
+}
+
+/* ── Focus Ring ── */
+.arena-focus {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.arena-focus:focus {
+  border-color: #14F195 !important;
+  box-shadow: 0 0 0 3px rgba(20, 241, 149, 0.12);
+  outline: none;
+}
+
+/* ── SVG Icon Containers ── */
+.arena-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(20, 241, 149, 0.06);
+  border: 1px solid rgba(20, 241, 149, 0.1);
+  transition: all 0.3s ease;
+}
+
+.arena-icon:hover,
+.glass-card:hover .arena-icon {
+  background: rgba(20, 241, 149, 0.12);
+  border-color: rgba(20, 241, 149, 0.2);
+  box-shadow: 0 0 16px rgba(20, 241, 149, 0.08);
+}
+
+.arena-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: #14F195;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.arena-icon.purple {
+  background: rgba(153, 69, 255, 0.06);
+  border-color: rgba(153, 69, 255, 0.1);
+}
+
+.arena-icon.purple:hover,
+.glass-card:hover .arena-icon.purple {
+  background: rgba(153, 69, 255, 0.12);
+  border-color: rgba(153, 69, 255, 0.2);
+  box-shadow: 0 0 16px rgba(153, 69, 255, 0.08);
+}
+
+.arena-icon.purple svg {
+  stroke: #9945FF;
+}
+
+/* ── Navbar Ticker ── */
+.ticker-enter {
+  animation: tickerSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ticker-exit {
+  animation: tickerFadeOut 0.5s ease forwards;
+}
+
+@keyframes tickerSlideIn {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes tickerFadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .grid-bg {
