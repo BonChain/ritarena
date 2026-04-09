@@ -10,23 +10,23 @@ export default function HeroBackground() {
       </video>
       */}
 
-      <div className="absolute inset-0" style={{ background: "#08080C" }} />
+      <div className="absolute inset-0" style={{ background: "#0a0a0f" }} />
       <div className="absolute inset-0 grid-bg" />
 
       {/* Glow orbs */}
       <div
         className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full blur-[120px] animate-pulse"
-        style={{ background: "rgba(255, 107, 44, 0.06)" }}
+        style={{ background: "rgba(20, 241, 149, 0.05)" }}
       />
       <div
         className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] animate-pulse"
-        style={{ background: "rgba(139, 92, 246, 0.06)", animationDelay: "1s" }}
+        style={{ background: "rgba(153, 69, 255, 0.05)", animationDelay: "1s" }}
       />
 
       {/* Bottom fade */}
       <div
         className="absolute bottom-0 left-0 right-0 h-40"
-        style={{ background: "linear-gradient(to top, #08080C, transparent)" }}
+        style={{ background: "linear-gradient(to top, #0a0a0f, transparent)" }}
       />
     </div>
   );

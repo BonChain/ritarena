@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { MOCK_ARENA } from "@/lib/constants";
 
 const C = {
-  border: "rgba(255,255,255,0.06)",
-  bg: "#08080C",
-  dim: "#8888A0",
+  border: "rgba(20,241,149,0.08)",
+  bg: "#0a0a0f",
+  dim: "#888888",
   muted: "#55556a",
-  green: "#00FF88",
-  red: "#FF3355",
+  green: "#14F195",
+  red: "#ff5555",
   gold: "#FFC53D",
 };
 
@@ -43,7 +43,7 @@ function AgentRow({
         />
       </div>
       <span
-        className="font-[family-name:var(--font-mono)] text-xs font-medium w-14 text-right"
+        className="font-[family-name:var(--font-data)] text-xs font-medium w-14 text-right"
         style={{ color: positive ? C.green : C.red }}
       >
         {positive ? "+" : ""}{score}
@@ -58,7 +58,7 @@ export default function ArenaMockup() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6, duration: 0.6 }}
-      className="glass-card max-w-2xl mx-auto mt-16 overflow-hidden"
+      className="glass-card max-w-2xl mx-auto overflow-hidden"
     >
       {/* Header */}
       <div

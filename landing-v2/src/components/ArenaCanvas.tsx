@@ -25,9 +25,9 @@ const AGENT_NAMES = [
 ];
 
 const COLORS = [
-  "#FF6B2C", "#00D4FF", "#8B5CF6", "#00FF88", "#FF3355",
-  "#FFC53D", "#FF69B4", "#7FFF00", "#00CED1", "#FF4500",
-  "#DA70D6", "#40E0D0", "#FF8C00", "#6495ED", "#32CD32",
+  "#14F195", "#9945FF", "#00CED1", "#ff5555", "#FFC53D",
+  "#FF69B4", "#7FFF00", "#00CED1", "#40E0D0", "#FF4500",
+  "#DA70D6", "#14F195", "#9945FF", "#6495ED", "#32CD32",
 ];
 
 function createAgent(i: number, gridW: number, gridH: number): Agent {
@@ -225,7 +225,7 @@ export default function ArenaCanvas({ className = "" }: { className?: string }) 
       <canvas
         ref={canvasRef}
         className="w-full h-full rounded-2xl"
-        style={{ background: "rgba(8,8,12,0.8)" }}
+        style={{ background: "rgba(10,10,15,0.8)" }}
       />
       {/* Kill feed overlay */}
       <div className="absolute top-3 right-3 space-y-1">
@@ -235,7 +235,7 @@ export default function ArenaCanvas({ className = "" }: { className?: string }) 
             className="text-[10px] px-2 py-1 rounded font-[family-name:var(--font-mono)]"
             style={{
               background: "rgba(0,0,0,0.6)",
-              color: i === 0 ? "#FF3355" : "rgba(255,255,255,0.4)",
+              color: i === 0 ? "#ff5555" : "rgba(255,255,255,0.4)",
               opacity: 1 - i * 0.2,
             }}
           >
@@ -248,7 +248,7 @@ export default function ArenaCanvas({ className = "" }: { className?: string }) 
         className="absolute top-3 left-3 flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold"
         style={{ background: "rgba(0,0,0,0.6)", color: "#F5F5F7" }}
       >
-        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#FF3355" }} />
+        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#14F195" }} />
         LIVE ARENA
       </div>
     </div>
