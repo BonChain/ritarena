@@ -3,6 +3,7 @@ import WaitlistForm from "@/components/WaitlistForm";
 import ArenaCanvas from "@/components/ArenaCanvas";
 import AnimatedSection from "@/components/AnimatedSection";
 import CodeBlock from "@/components/CodeBlock";
+import CountdownTimer from "@/components/CountdownTimer";
 import Link from "next/link";
 
 export default function Home() {
@@ -19,16 +20,16 @@ export default function Home() {
                 className="text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.1] mb-5"
                 style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
-                AI bots and humans{" "}
-                <span style={{ color: "#14F195" }}>fight each other</span>{" "}
-                for prize money.
+                <span style={{ color: "#9945FF" }}>AI bots</span> and{" "}
+                <span style={{ color: "#14F195" }}>humans</span>{" "}
+                fight each other for prize money.
               </h1>
 
-              <p className="text-lg md:text-xl leading-relaxed mb-3" style={{ color: "#888888" }}>
+              <p className="text-xl md:text-2xl leading-relaxed mb-3" style={{ color: "#c0c0c0" }}>
                 Build an arena. Deploy a bot &mdash; or play yourself.
                 Winner takes the pool.
               </p>
-              <p className="text-base leading-relaxed mb-8" style={{ color: "#55556a" }}>
+              <p className="text-lg leading-relaxed mb-8" style={{ color: "#888888" }}>
                 Think Roblox, but for AI competitions. Built on Solana.
               </p>
 
@@ -62,7 +63,7 @@ export default function Home() {
               <br />
               <span style={{ color: "#55556a" }}>Zero had a platform to compete on.</span>
             </h2>
-            <p className="text-lg md:text-xl leading-relaxed mb-10" style={{ color: "#888888" }}>
+            <p className="text-xl md:text-2xl leading-relaxed mb-10" style={{ color: "#a0a0a0" }}>
               Every team rebuilt the same thing from scratch &mdash;
               escrow, scoring, elimination, prize distribution.
               That&apos;s 4 weeks of infrastructure before the first bot fights.
@@ -111,12 +112,12 @@ export default function Home() {
 
             <AnimatedSection delay={0.15}>
               <h3
-                className="text-2xl mb-6"
+                className="text-2xl md:text-3xl mb-6"
                 style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
               >
                 RitArena handles the hard parts.
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {[
                   {
                     label: "On-chain escrow",
@@ -141,17 +142,17 @@ export default function Home() {
                 ].map((item) => (
                   <div key={item.label} className="flex gap-3">
                     <div
-                      className="w-1.5 h-1.5 rounded-full mt-2.5 flex-shrink-0"
-                      style={{ background: item.color }}
+                      className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                      style={{ background: item.color, boxShadow: `0 0 8px ${item.color}40` }}
                     />
                     <div>
                       <div
-                        className="text-base mb-0.5"
+                        className="text-lg mb-0.5"
                         style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
                       >
                         {item.label}
                       </div>
-                      <div className="text-sm" style={{ color: "#888888" }}>
+                      <div className="text-base leading-relaxed" style={{ color: "#a0a0a0" }}>
                         {item.desc}
                       </div>
                     </div>
@@ -185,7 +186,8 @@ export default function Home() {
                     <path d="M12 8v8M8 12h8" />
                   </svg>
                 ),
-                desc: "Build arenas. Get instant players \u2014 our agents and viewers find your game. Earn 0\u201320% of every entry fee.",
+                highlight: "Instant players & revenue",
+                desc: "Build arenas. Our agents and viewers find your game. Earn 0\u201320% of every entry fee.",
                 cta: "Create Arena",
                 href: "/creators",
               },
@@ -196,7 +198,8 @@ export default function Home() {
                     <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
                   </svg>
                 ),
-                desc: "Deploy your agent. Win prize money. Get performance data to improve your AI.",
+                highlight: "Prize money & training data",
+                desc: "Deploy your agent. Compete for real prizes. Get performance data to improve your AI.",
                 cta: "Deploy Agent",
                 href: "/developers",
               },
@@ -208,7 +211,8 @@ export default function Home() {
                     <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9" />
                   </svg>
                 ),
-                desc: "Compete or watch. Beat the bots \u2014 or bet on them. Fun. Money. No code needed.",
+                highlight: "Fun & money",
+                desc: "Compete or watch. Beat the bots \u2014 or bet on them. No code needed.",
                 cta: "Enter Arena",
                 href: "/arena",
               },
@@ -220,12 +224,18 @@ export default function Home() {
                       {card.icon}
                     </div>
                     <h3
-                      className="text-2xl mb-3"
+                      className="text-2xl mb-2"
                       style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
                     >
                       {card.title}
                     </h3>
-                    <p className="text-base leading-relaxed mb-6 flex-1" style={{ color: "#888888" }}>
+                    <p
+                      className="text-sm mb-3"
+                      style={{ color: "#14F195", fontFamily: "var(--font-ui)", fontWeight: 700 }}
+                    >
+                      {card.highlight}
+                    </p>
+                    <p className="text-base leading-relaxed mb-6 flex-1" style={{ color: "#a0a0a0" }}>
                       {card.desc}
                     </p>
                     <span
@@ -242,23 +252,46 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== FIRST ARENA COUNTDOWN ===== */}
+      <section className="py-16 px-6">
+        <div className="max-w-5xl mx-auto">
+          <AnimatedSection>
+            <div className="glass-card py-10 px-8 text-center">
+              <p
+                className="text-sm uppercase tracking-widest mb-3"
+                style={{ color: "#9945FF", fontFamily: "var(--font-data)" }}
+              >
+                First arena goes live
+              </p>
+              <h3
+                className="text-3xl md:text-4xl tracking-tight mb-6"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+              >
+                April 20, 2026
+              </h3>
+              <CountdownTimer />
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
       {/* ===== TRACTION STRIP ===== */}
       <section className="py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <AnimatedSection>
             <div
-              className="glass-card py-6 px-8 flex flex-wrap justify-center gap-x-10 gap-y-4 text-center"
+              className="grid grid-cols-2 md:grid-cols-4 gap-4"
             >
               {[
                 { value: "3", label: "Arenas Planned" },
                 { value: "$500", label: "In Prizes" },
                 { value: "Apr 20", label: "First Arena" },
-                { value: "Open Source", label: "github.com/ritarena" },
+                { value: "Solana", label: "Built on-chain" },
               ].map((item) => (
-                <div key={item.label}>
+                <div key={item.label} className="glass-card py-5 px-4 text-center">
                   <div
-                    className="text-xl md:text-2xl mb-1"
-                    style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "#14F195" }}
+                    className="text-2xl md:text-3xl mb-1"
+                    style={{ fontFamily: "var(--font-score)", fontWeight: 700, color: "#14F195" }}
                   >
                     {item.value}
                   </div>

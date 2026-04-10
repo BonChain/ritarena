@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function WaitlistForm({ id = "hero" }: { id?: string }) {
+export default function WaitlistForm({ id = "hero", ctaText = "Get Early Access" }: { id?: string; ctaText?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -54,7 +54,7 @@ export default function WaitlistForm({ id = "hero" }: { id?: string }) {
           style={{ background: "#14F195", color: "#050508" }}
           className="cta-shimmer px-6 py-3.5 rounded-xl text-sm font-semibold hover:brightness-110 transition-all whitespace-nowrap cursor-pointer"
         >
-          Get Early Access
+          {ctaText}
         </button>
       </form>
       <p className="mt-3 text-xs" style={{ color: "#55556a" }}>

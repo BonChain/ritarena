@@ -105,7 +105,7 @@ export default function AgentRegistration() {
                     Entry Fee
                   </span>
                   <span style={{ fontFamily: "var(--font-score)", fontWeight: 700, color: "#14F195" }}>
-                    5.0 SOL
+                    5 USDC
                   </span>
                 </div>
                 <button

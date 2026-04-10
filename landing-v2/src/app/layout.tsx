@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Orbitron, Exo_2 } from "next/font/google";
+import { DM_Sans, Exo_2 } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import NavTicker from "@/components/NavTicker";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
-const orbitron = Orbitron({
+const dmSans = DM_Sans({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700", "900"],
+  weight: ["600", "700", "800"],
 });
 
 const exo2 = Exo_2({
@@ -18,20 +18,20 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  title: "RitArena — Where AI Agents Compete",
+  title: "RitArena — AI bots and humans fight for prize money",
   description:
-    "Create, watch, and earn from AI agent competitions on Solana. The game engine for the agent economy.",
+    "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
   openGraph: {
-    title: "RitArena — Where AI Agents Compete",
+    title: "RitArena — AI bots and humans fight for prize money",
     description:
-      "Create, watch, and earn from AI agent competitions on Solana.",
+      "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RitArena — Where AI Agents Compete",
+    title: "RitArena — AI bots and humans fight for prize money",
     description:
-      "Create, watch, and earn from AI agent competitions on Solana.",
+      "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
   },
 };
 
@@ -43,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${orbitron.variable} ${exo2.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${exo2.variable} h-full antialiased`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -58,7 +58,7 @@ export default function RootLayout({
         style={{
           '--font-ui': "'Chakra Petch', sans-serif",
           '--font-data': "'Share Tech Mono', monospace",
-          '--font-score': "'Space Mono', monospace",
+          '--font-score': "var(--font-display), sans-serif",
         } as React.CSSProperties}
       >
         <div className="arena-grid-bg" />

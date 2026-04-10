@@ -65,7 +65,7 @@ export default function Navbar() {
               fontWeight: 700,
             }}
           >
-            Get Early Access
+            Start Building
           </Link>
         </div>
       </div>

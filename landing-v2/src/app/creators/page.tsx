@@ -6,7 +6,7 @@ export default function CreatorsPage() {
   return (
     <>
       {/* ===== CREATE ARENA SDK ===== */}
-      <section className="pt-24 pb-20 px-6">
+      <section className="pt-32 pb-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <AnimatedSection>

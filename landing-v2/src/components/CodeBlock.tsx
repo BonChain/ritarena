@@ -19,7 +19,7 @@ export default function CodeBlock() {
       <pre className="p-5 text-sm leading-7 overflow-x-auto font-[family-name:var(--font-data)]">
         <code>
           <span style={{ color: "#9945FF" }}>import</span>
-          {" { ArenaProtocol, Templates } "}
+          {" { RitArena, Templates } "}
           <span style={{ color: "#9945FF" }}>from</span>
           {" "}
           <span style={{ color: "#14F195" }}>{'"@ritarena/sdk"'}</span>
@@ -29,12 +29,12 @@ export default function CodeBlock() {
           <span style={{ color: "#9945FF" }}>const</span>
           {" arena = "}
           <span style={{ color: "#9945FF" }}>await</span>
-          {" ArenaProtocol.createArena({\n"}
+          {" RitArena.createArena({\n"}
           {"  template: Templates.BattleRoyale,\n"}
           {"  entryFee: "}
-          <span style={{ color: "#14F195" }}>20_000_000</span>
-          {",  "}
-          <span style={{ color: "#55556a" }}>{"// 20 USDC"}</span>
+          <span style={{ color: "#14F195" }}>5_000_000</span>
+          {",   "}
+          <span style={{ color: "#55556a" }}>{"// 5 USDC"}</span>
           {"\n  maxAgents: "}
           <span style={{ color: "#14F195" }}>50</span>
           {",\n  eliminationPercent: "}

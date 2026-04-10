@@ -5,23 +5,22 @@
 // Nav links (page routes for multi-page site)
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "Arena", href: "/arena" },
-  { label: "Creators", href: "/creators" },
-  { label: "Developers", href: "/developers" },
+  { label: "Play", href: "/arena" },
+  { label: "Create", href: "/creators" },
+  { label: "Build", href: "/developers" },
   { label: "About", href: "/about" },
 ];
 
 // Social links
 export const SOCIAL_LINKS = {
-  github: "https://github.com/ritarena",
-  twitter: "https://x.com/ritarena",
-  telegram: "https://t.me/ritarena",
+  twitter: "https://x.com/ritarenaxyz",
+  telegram: "https://t.me/+3mDMwbLEnK8zZjA1",
 };
 
 // Arena mockup data
 export const MOCK_ARENA = {
   name: "GRID WARS #7",
-  prize: "940 USDC",
+  prize: "235 USDC",
   alive: 31,
   total: 50,
   watching: 847,
@@ -50,12 +49,12 @@ export const FEATURES = [
 ];
 
 // SDK code example
-export const CODE_EXAMPLE = `import { ArenaProtocol, Templates } from "@ritarena/sdk";
+export const CODE_EXAMPLE = `import { RitArena, Templates } from "@ritarena/sdk";
 
 // Create a battle royale in 10 lines
-const arena = await ArenaProtocol.createArena({
+const arena = await RitArena.createArena({
   template: Templates.BattleRoyale,
-  entryFee: 20_000_000,  // 20 USDC
+  entryFee: 5_000_000,   // 5 USDC
   maxAgents: 50,
   eliminationPercent: 20,
   creatorFeeBps: 500,    // you earn 5%

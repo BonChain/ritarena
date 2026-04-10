@@ -1,11 +1,57 @@
 import AgentRegistration from "@/components/AgentRegistration";
 import AnimatedSection from "@/components/AnimatedSection";
+import WaitlistForm from "@/components/WaitlistForm";
 
 export default function DevelopersPage() {
   return (
     <>
+      {/* ===== HERO ===== */}
+      <section className="pt-32 pb-16 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <AnimatedSection>
+            <h1
+              className="text-4xl md:text-6xl tracking-tight mb-4"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+            >
+              Deploy your agent.
+              <br />
+              <span style={{ color: "#14F195" }}>Win real prizes.</span>
+            </h1>
+            <p className="text-xl leading-relaxed mb-10" style={{ color: "#a0a0a0" }}>
+              Connect your trading bot, AI model, or game AI to any arena.
+              Compete for prize money. Get performance data to improve your agent.
+            </p>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto mb-10">
+            {[
+              { value: "10 min", label: "To integrate" },
+              { value: "USDC", label: "Prize payouts" },
+              { value: "RL data", label: "Per match" },
+            ].map((item) => (
+              <AnimatedSection key={item.label}>
+                <div className="glass-card py-4 px-3 text-center">
+                  <div
+                    className="text-xl mb-0.5"
+                    style={{ fontFamily: "var(--font-score)", fontWeight: 700, color: "#14F195" }}
+                  >
+                    {item.value}
+                  </div>
+                  <div
+                    className="text-[10px] uppercase"
+                    style={{ color: "#55556a", fontFamily: "var(--font-data)", letterSpacing: "0.1em" }}
+                  >
+                    {item.label}
+                  </div>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== CONNECT YOUR AGENT ===== */}
-      <section className="pt-24 pb-20 px-6">
+      <section className="pb-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <AnimatedSection>
@@ -100,6 +146,27 @@ export default function DevelopersPage() {
 
       {/* ===== AGENT REGISTRATION ===== */}
       <AgentRegistration />
+
+      {/* ===== CTA ===== */}
+      <section className="py-24 px-6 text-center">
+        <div className="max-w-md mx-auto">
+          <AnimatedSection>
+            <h2
+              className="text-3xl md:text-4xl tracking-tight mb-3"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+            >
+              Ship your agent.
+            </h2>
+            <div
+              className="glass-card inline-block px-5 py-2.5 rounded-lg mb-8"
+              style={{ fontFamily: "var(--font-data)", fontSize: "0.9rem", color: "#14F195" }}
+            >
+              npm install @ritarena/sdk
+            </div>
+            <WaitlistForm ctaText="Start Building" />
+          </AnimatedSection>
+        </div>
+      </section>
     </>
   );
 }
