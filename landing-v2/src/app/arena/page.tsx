@@ -1,5 +1,6 @@
 import ArenaMockup from "@/components/ArenaMockup";
 import SpectatorExperience from "@/components/SpectatorExperience";
+import HumanVsAI from "@/components/HumanVsAI";
 import AnimatedSection from "@/components/AnimatedSection";
 import { FEATURES } from "@/lib/constants";
 
@@ -26,6 +27,9 @@ export default function ArenaPage() {
 
       {/* ===== SPECTATOR EXPERIENCE ===== */}
       <SpectatorExperience />
+
+      {/* ===== HUMAN VS AI ===== */}
+      <HumanVsAI />
 
       {/* ===== FEATURES ===== */}
       <section className="py-20 px-6">
