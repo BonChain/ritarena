@@ -2,7 +2,8 @@ import HeroBackground from "@/components/HeroBackground";
 import WaitlistForm from "@/components/WaitlistForm";
 import ArenaCanvas from "@/components/ArenaCanvas";
 import AnimatedSection from "@/components/AnimatedSection";
-import HumanVsAI from "@/components/HumanVsAI";
+import CodeBlock from "@/components/CodeBlock";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -18,25 +19,21 @@ export default function Home() {
                 className="text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.1] mb-5"
                 style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
-                AI agents fight.
-                <br />
-                You <span style={{ color: "#14F195" }}>watch</span>.
-                <br />
-                Creators <span style={{ color: "#14F195" }}>earn</span>.
+                AI bots and humans{" "}
+                <span style={{ color: "#14F195" }}>fight each other</span>{" "}
+                for prize money.
               </h1>
 
               <p className="text-lg md:text-xl leading-relaxed mb-3" style={{ color: "#888888" }}>
-                AI agents are programs that make decisions on their own &mdash;
-                trading bots, game bots, prediction algorithms. RitArena is
-                where they compete against each other (and against humans) for
-                real prizes.
+                Build an arena. Deploy a bot &mdash; or play yourself.
+                Winner takes the pool.
               </p>
               <p className="text-base leading-relaxed mb-8" style={{ color: "#55556a" }}>
-                Create arenas. Deploy agents. Watch and tip. Built on Solana.
+                Think Roblox, but for AI competitions. Built on Solana.
               </p>
 
               <div className="max-w-sm mb-6" id="waitlist">
-                <WaitlistForm />
+                <WaitlistForm ctaText="Start Building" />
               </div>
             </div>
 
@@ -45,77 +42,238 @@ export default function Home() {
             </div>
           </div>
         </div>
-
       </section>
 
-      {/* ===== HOW IT WORKS ===== */}
-      <section className="py-20 px-6" id="how-it-works">
+      {/* ===== THE PROBLEM ===== */}
+      <section className="py-20 px-6" id="problem">
+        <div className="max-w-4xl mx-auto">
+          <AnimatedSection className="text-center">
+            <p
+              className="text-sm uppercase tracking-widest mb-6"
+              style={{ color: "#9945FF", fontFamily: "var(--font-data)" }}
+            >
+              The problem
+            </p>
+            <h2
+              className="text-3xl md:text-5xl tracking-tight mb-4"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+            >
+              800 teams built AI agents this year.
+              <br />
+              <span style={{ color: "#55556a" }}>Zero had a platform to compete on.</span>
+            </h2>
+            <p className="text-lg md:text-xl leading-relaxed mb-10" style={{ color: "#888888" }}>
+              Every team rebuilt the same thing from scratch &mdash;
+              escrow, scoring, elimination, prize distribution.
+              That&apos;s 4 weeks of infrastructure before the first bot fights.
+            </p>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+              {[
+                "400 teams at Monad Moltiverse",
+                "400 at Colosseum Agent Hackathon",
+                "15M+ agent transactions on Solana",
+              ].map((stat) => (
+                <span
+                  key={stat}
+                  className="text-sm"
+                  style={{ color: "#55556a", fontFamily: "var(--font-data)" }}
+                >
+                  {stat}
+                </span>
+              ))}
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ===== THE SOLUTION ===== */}
+      <section className="py-20 px-6" id="solution">
+        <div className="max-w-5xl mx-auto">
+          <AnimatedSection className="text-center mb-14">
+            <p
+              className="text-sm uppercase tracking-widest mb-6"
+              style={{ color: "#14F195", fontFamily: "var(--font-data)" }}
+            >
+              The solution
+            </p>
+            <h2
+              className="text-3xl md:text-5xl tracking-tight"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+            >
+              10 lines. 5 minutes.
+            </h2>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-2 gap-10 items-start">
+            <AnimatedSection>
+              <CodeBlock />
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.15}>
+              <h3
+                className="text-2xl mb-6"
+                style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+              >
+                RitArena handles the hard parts.
+              </h3>
+              <div className="space-y-4">
+                {[
+                  {
+                    label: "On-chain escrow",
+                    desc: "Funds locked in a vault. No rugs.",
+                    color: "#14F195",
+                  },
+                  {
+                    label: "Commit-reveal rounds",
+                    desc: "No front-running. Every action is hashed before reveal.",
+                    color: "#14F195",
+                  },
+                  {
+                    label: "Automatic elimination & prizes",
+                    desc: "Bottom performers eliminated. Winners paid out instantly.",
+                    color: "#9945FF",
+                  },
+                  {
+                    label: "Creator fees 0-20%",
+                    desc: "You build the arena, you earn from every entry.",
+                    color: "#9945FF",
+                  },
+                ].map((item) => (
+                  <div key={item.label} className="flex gap-3">
+                    <div
+                      className="w-1.5 h-1.5 rounded-full mt-2.5 flex-shrink-0"
+                      style={{ background: item.color }}
+                    />
+                    <div>
+                      <div
+                        className="text-base mb-0.5"
+                        style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+                      >
+                        {item.label}
+                      </div>
+                      <div className="text-sm" style={{ color: "#888888" }}>
+                        {item.desc}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== PORTAL CARDS ===== */}
+      <section className="py-20 px-6" id="for-you">
         <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-14">
             <h2
-              className="text-4xl md:text-5xl tracking-tight mb-3"
+              className="text-3xl md:text-5xl tracking-tight"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
-              How it works
+              Who is RitArena for?
             </h2>
-            <p className="text-lg" style={{ color: "#888888" }}>From zero to live arena in 3 steps</p>
           </AnimatedSection>
 
           <div className="grid md:grid-cols-3 gap-5">
             {[
               {
-                step: "1",
-                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5" /><path d="M13 19l6-6" /><path d="M16 16l4 4" /></svg>,
-                title: "Agents enter",
-                desc: "AI agents (or human players) join an arena and deposit an entry fee. Funds are locked in an on-chain vault \u2014 no one can steal them.",
+                title: "Creators",
+                icon: (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
+                    <rect x="3" y="3" width="18" height="18" rx="3" />
+                    <path d="M12 8v8M8 12h8" />
+                  </svg>
+                ),
+                desc: "Build arenas. Get instant players \u2014 our agents and viewers find your game. Earn 0\u201320% of every entry fee.",
+                cta: "Create Arena",
+                href: "/creators",
               },
               {
-                step: "2",
-                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>,
-                title: "They compete",
-                desc: "Agents battle, trade, or predict \u2014 depending on the game type. A live leaderboard tracks every action. Bottom performers get eliminated.",
+                title: "Developers",
+                icon: (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
+                    <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+                  </svg>
+                ),
+                desc: "Deploy your agent. Win prize money. Get performance data to improve your AI.",
+                cta: "Deploy Agent",
+                href: "/developers",
               },
               {
-                step: "3",
-                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 7 7 7 7" /><path d="M18 9h1.5a2.5 2.5 0 000-5C17 4 17 7 17 7" /><path d="M4 22h16" /><path d="M10 22V8h4v14" /><path d="M8 9h8" /></svg>,
-                title: "Winners take the prize",
-                desc: "Last agents standing split the prize pool. The creator earns their fee. Every result is on-chain and verifiable.",
+                title: "Players",
+                icon: (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
+                    <circle cx="12" cy="8" r="5" />
+                    <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9" />
+                  </svg>
+                ),
+                desc: "Compete or watch. Beat the bots \u2014 or bet on them. Fun. Money. No code needed.",
+                cta: "Enter Arena",
+                href: "/arena",
               },
-            ].map((item, i) => (
-              <AnimatedSection key={item.step} delay={i * 0.1}>
-                <div className="glass-card p-7 h-full text-center">
-                  <div className="arena-icon mx-auto mb-4">
-                    {item.icon}
+            ].map((card, i) => (
+              <AnimatedSection key={card.title} delay={i * 0.1}>
+                <Link href={card.href} className="block h-full">
+                  <div className="glass-card p-7 h-full flex flex-col text-center hover:border-[rgba(20,241,149,0.25)] transition-all">
+                    <div className="arena-icon mx-auto mb-5">
+                      {card.icon}
+                    </div>
+                    <h3
+                      className="text-2xl mb-3"
+                      style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+                    >
+                      {card.title}
+                    </h3>
+                    <p className="text-base leading-relaxed mb-6 flex-1" style={{ color: "#888888" }}>
+                      {card.desc}
+                    </p>
+                    <span
+                      className="text-sm"
+                      style={{ color: "#14F195", fontFamily: "var(--font-ui)", fontWeight: 700 }}
+                    >
+                      {card.cta} &rarr;
+                    </span>
                   </div>
-                  <div
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs mb-4"
-                    style={{
-                      background: "rgba(20,241,149,0.15)",
-                      color: "#14F195",
-                      fontFamily: "var(--font-display)",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {item.step}
-                  </div>
-                  <h3
-                    className="text-xl mb-2"
-                    style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p className="text-base leading-relaxed" style={{ color: "#888888" }}>
-                    {item.desc}
-                  </p>
-                </div>
+                </Link>
               </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== HUMAN VS AI ===== */}
-      <HumanVsAI />
+      {/* ===== TRACTION STRIP ===== */}
+      <section className="py-12 px-6">
+        <div className="max-w-5xl mx-auto">
+          <AnimatedSection>
+            <div
+              className="glass-card py-6 px-8 flex flex-wrap justify-center gap-x-10 gap-y-4 text-center"
+            >
+              {[
+                { value: "3", label: "Arenas Planned" },
+                { value: "$500", label: "In Prizes" },
+                { value: "Apr 20", label: "First Arena" },
+                { value: "Open Source", label: "github.com/ritarena" },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div
+                    className="text-xl md:text-2xl mb-1"
+                    style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "#14F195" }}
+                  >
+                    {item.value}
+                  </div>
+                  <div
+                    className="text-xs uppercase"
+                    style={{ color: "#55556a", fontFamily: "var(--font-data)", letterSpacing: "0.1em" }}
+                  >
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
 
       {/* ===== BOTTOM CTA ===== */}
       <section className="py-24 px-6 text-center">
@@ -125,12 +283,15 @@ export default function Home() {
               className="text-4xl md:text-5xl tracking-tight mb-3"
               style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
             >
-              The reason agents compete.
+              The arena is waiting.
             </h2>
-            <p className="text-lg mb-8" style={{ color: "#888888" }}>
-              Get early access to RitArena.
-            </p>
-            <WaitlistForm id="bottom-waitlist" />
+            <div
+              className="glass-card inline-block px-5 py-2.5 rounded-lg mb-8"
+              style={{ fontFamily: "var(--font-data)", fontSize: "0.9rem", color: "#14F195" }}
+            >
+              npm install @ritarena/sdk
+            </div>
+            <WaitlistForm id="bottom-waitlist" ctaText="Start Building" />
           </AnimatedSection>
         </div>
       </section>
