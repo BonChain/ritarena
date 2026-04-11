@@ -1,38 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function WaitlistForm({ id = "hero", ctaText = "Get Early Access" }: { id?: string; ctaText?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [count, setCount] = useState<number | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch("/api/waitlist")
+      .then((r) => r.json())
+      .then((d) => setCount(d.count))
+      .catch(() => {});
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || loading) return;
+
+    setLoading(true);
+    setError("");
 
     try {
-      const emails = JSON.parse(localStorage.getItem("ritarena_waitlist") || "[]");
-      if (!emails.includes(email)) {
-        emails.push(email);
-        localStorage.setItem("ritarena_waitlist", JSON.stringify(emails));
-      }
-    } catch {
-      // ignore
-    }
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: id }),
+      });
 
-    setSubmitted(true);
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Something went wrong");
+        return;
+      }
+
+      setCount(data.count);
+      setSubmitted(true);
+    } catch {
+      setError("Network error. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
     return (
-      <div
-        className="flex items-center gap-3 px-5 py-4 rounded-xl"
-        style={{ background: "rgba(20, 241, 149, 0.08)", border: "1px solid rgba(20, 241, 149, 0.2)" }}
-      >
-        <span style={{ color: "#14F195" }} className="text-lg">&#10003;</span>
-        <span style={{ color: "#14F195" }} className="font-medium text-sm">
-          You&apos;re in! We&apos;ll notify you when RitArena launches.
-        </span>
+      <div>
+        <div
+          className="flex items-center gap-3 px-5 py-4 rounded-xl"
+          style={{ background: "rgba(20, 241, 149, 0.08)", border: "1px solid rgba(20, 241, 149, 0.2)" }}
+        >
+          <span style={{ color: "#14F195" }} className="text-lg">&#10003;</span>
+          <span style={{ color: "#14F195" }} className="font-medium text-sm">
+            You&apos;re in! We&apos;ll notify you when RitArena launches.
+          </span>
+        </div>
+        {count !== null && count > 0 && (
+          <p className="mt-3 text-xs" style={{ color: "#55556a" }}>
+            <span style={{ color: "#14F195", fontWeight: 600 }}>{count}</span> builders on the waitlist
+          </p>
+        )}
       </div>
     );
   }
@@ -51,14 +81,21 @@ export default function WaitlistForm({ id = "hero", ctaText = "Get Early Access"
         />
         <button
           type="submit"
+          disabled={loading}
           style={{ background: "#14F195", color: "#050508" }}
-          className="cta-shimmer px-6 py-3.5 rounded-xl text-sm font-semibold hover:brightness-110 transition-all whitespace-nowrap cursor-pointer"
+          className="cta-shimmer px-6 py-3.5 rounded-xl text-sm font-semibold hover:brightness-110 transition-all whitespace-nowrap cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {ctaText}
+          {loading ? "..." : ctaText}
         </button>
       </form>
+      {error && (
+        <p className="mt-2 text-xs" style={{ color: "#ff5555" }}>{error}</p>
+      )}
       <p className="mt-3 text-xs" style={{ color: "#55556a" }}>
         Free. No spam. Just launch updates.
+        {count !== null && count > 0 && (
+          <span> &middot; <span style={{ color: "#14F195", fontWeight: 600 }}>{count}</span> already joined</span>
+        )}
       </p>
     </div>
   );

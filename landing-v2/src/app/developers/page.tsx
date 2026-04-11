@@ -163,7 +163,7 @@ export default function DevelopersPage() {
             >
               npm install @ritarena/sdk
             </div>
-            <WaitlistForm ctaText="Start Building" />
+            <WaitlistForm ctaText="Join the Arena" />
           </AnimatedSection>
         </div>
       </section>

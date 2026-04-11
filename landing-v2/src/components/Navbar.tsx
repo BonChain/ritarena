@@ -65,7 +65,7 @@ export default function Navbar() {
               fontWeight: 700,
             }}
           >
-            Start Building
+            Join the Arena
           </Link>
         </div>
       </div>

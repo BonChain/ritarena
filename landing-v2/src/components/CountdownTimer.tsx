@@ -5,12 +5,36 @@ import { useState, useEffect } from "react";
 const TARGET_DATE = new Date("2026-04-20T12:00:00Z");
 
 export default function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState(getTimeLeft());
+  const [timeLeft, setTimeLeft] = useState<ReturnType<typeof getTimeLeft> | null>(null);
 
   useEffect(() => {
+    setTimeLeft(getTimeLeft());
     const interval = setInterval(() => setTimeLeft(getTimeLeft()), 1000);
     return () => clearInterval(interval);
   }, []);
+
+  if (!timeLeft) {
+    return (
+      <div className="flex gap-4 justify-center">
+        {["Days", "Hrs", "Min", "Sec"].map((label) => (
+          <div key={label} className="text-center">
+            <div
+              className="text-3xl md:text-4xl tabular-nums"
+              style={{ fontFamily: "var(--font-score)", fontWeight: 700, color: "#14F195" }}
+            >
+              --
+            </div>
+            <div
+              className="text-[10px] uppercase mt-1"
+              style={{ color: "#55556a", fontFamily: "var(--font-data)", letterSpacing: "0.1em" }}
+            >
+              {label}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (timeLeft.total <= 0) {
     return (

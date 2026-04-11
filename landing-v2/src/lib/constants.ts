@@ -20,7 +20,7 @@ export const SOCIAL_LINKS = {
 // Arena mockup data
 export const MOCK_ARENA = {
   name: "GRID WARS #7",
-  prize: "235 USDC",
+  prize: "100 USDC",
   alive: 31,
   total: 50,
   watching: 847,

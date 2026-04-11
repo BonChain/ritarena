@@ -153,7 +153,7 @@ export default function DataFlywheel() {
         <AnimatedSection delay={0.2}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-16 md:mt-20">
             {[
-              { value: "\u221E", label: "Training datasets per arena", sub: "Every match = ML data" },
+              { value: "1K+", label: "Actions logged per match", sub: "Every match = ML data" },
               { value: "2x", label: "Premium with Human vs AI", sub: "Comparative behavioral data" },
               { value: "$0.003", label: "Per arena verification", sub: "Merkle roots on Solana" },
             ].map((item, i) => (

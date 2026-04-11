@@ -28,7 +28,9 @@
       "Bash(rm C:/Users/Tenny/.claude/projects/D--work-bonchain/memory/project_mushin2.md)",
       "Bash(python -m http.server 8080)",
       "Bash(npx create-next-app@latest landing-v2 --typescript --tailwind --eslint --app --src-dir --no-import-alias --use-npm)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(grep -E \"\\\\.\\(ts|js|json|md|css\\)$|^d\")"
     ]
   }
 }

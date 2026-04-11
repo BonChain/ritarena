@@ -16,6 +16,7 @@
 **Problem with this**: Too abstract. "Roblox-style" is a comparison, not a value prop. A judge hearing this doesn't immediately feel the pain or the opportunity.
 
 **Questions to answer**:
+
 - [ ] Can you say this to a non-crypto person and they get it in 5 seconds?
 - [ ] Does it communicate WHO this is for and WHY they need it?
 - [ ] Does it feel inevitable, or does it feel like a "nice to have"?
@@ -112,7 +113,7 @@
     - > "Bonus points go to teams with distribution plans that are specific, not vague." — Anh Tran
     - Saying "agent developers will use our SDK" is vague
     - Saying "we'll post on Twitter" is vague
-    - **What you need**: "Week 1: We run 3 demo arenas ourselves. Week 2: We reach out to the 400+ teams from Colosseum's Agent Hackathon to enter our arenas. Week 3: We partner with Olas to run a Polystrat-style competition on RitArena. Week 4: We run a sponsored $500 arena on CT with @solana and @colosseum tagged."
+    - **What you need**: "Week 1: We run 3 demo arenas ourselves. Week 2: We reach out to the 400+ teams from Colosseum's Agent Hackathon to enter our arenas. Week 3: We partner with Olas to run a Polystrat-style competition on RitArena. Week 4: We run a sponsored $100 arena on CT with @solana and @colosseum tagged."
 
 ---
 
@@ -199,25 +200,25 @@
 
 ### STRONG (Keep These)
 
-| Strength | Why |
-|----------|-----|
-| **The pitch narrative** ("roads built, nowhere to drive") | Clear, memorable, teaches something |
-| **4-layer architecture** | Judges love composability. Protocol + SDK + UI Kit + Demo = infrastructure play |
-| **Roblox creator economy model** | Novel in crypto agent space. Clear revenue story |
-| **Moltiverse validation** | 400 submissions proves demand exists. Cross-chain validation |
-| **Game-type agnostic** | Not just trading — prediction, custom. Shows platform thinking |
-| **Your skill fit** | Anchor dev + past lifecycle tooling wins |
+| Strength                                                  | Why                                                                             |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **The pitch narrative** ("roads built, nowhere to drive") | Clear, memorable, teaches something                                             |
+| **4-layer architecture**                                  | Judges love composability. Protocol + SDK + UI Kit + Demo = infrastructure play |
+| **Roblox creator economy model**                          | Novel in crypto agent space. Clear revenue story                                |
+| **Moltiverse validation**                                 | 400 submissions proves demand exists. Cross-chain validation                    |
+| **Game-type agnostic**                                    | Not just trading — prediction, custom. Shows platform thinking                  |
+| **Your skill fit**                                        | Anchor dev + past lifecycle tooling wins                                        |
 
 ### WEAK (Fix Before Building)
 
-| Weakness | Fix |
-|----------|-----|
-| **No user validation yet** | Talk to 5 agent developers THIS WEEK. Post in forums. |
-| **"Secret" is unclear** | Sharpen to: "Agent reputation is built through competition" |
-| **Chicken-and-egg GTM** | Write a specific Week 1-4 user acquisition plan |
-| **OPOS argument is thin** | Add specific Solana advantages (cost, speed, Jupiter liquidity) |
-| **"Platform" risk** | Ship the demo game as primary. Platform is the upside story. |
-| **No evidence of users** | Even 5 DMs saying "I'd enter my agent" counts as validation |
+| Weakness                        | Fix                                                                             |
+| ------------------------------- | ------------------------------------------------------------------------------- |
+| **No user validation yet**      | Talk to 5 agent developers THIS WEEK. Post in forums.                           |
+| **"Secret" is unclear**         | Sharpen to: "Agent reputation is built through competition"                     |
+| **Chicken-and-egg GTM**         | Write a specific Week 1-4 user acquisition plan                                 |
+| **OPOS argument is thin**       | Add specific Solana advantages (cost, speed, Jupiter liquidity)                 |
+| **"Platform" risk**             | Ship the demo game as primary. Platform is the upside story.                    |
+| **No evidence of users**        | Even 5 DMs saying "I'd enter my agent" counts as validation                     |
 | **The pain isn't sharp enough** | Sharpen from "agents need competition" to a specific persona's specific problem |
 
 ### CRITICAL QUESTION TO ANSWER
@@ -234,13 +235,13 @@
 
 ## Action Items Before Building
 
-| Priority | Action | Timeline |
-|----------|--------|----------|
-| **P0** | Talk to 5 agent developers: "Would you enter a PvP competition?" | This week |
-| **P0** | Post in Colosseum forum: "Building agent competition infra — who wants to test?" | Today |
-| **P0** | Sharpen the "secret" — what do you know that judges don't? | Before pitch video |
-| **P1** | Write specific GTM plan (Week 1-4 user acquisition) | Before Week 3 |
-| **P1** | Prepare OPOS slide with exact cost/speed comparison vs EVM | Before pitch video |
-| **P1** | Plan the PUBLIC arena for Week 5 (this is your traction proof) | Start planning now |
-| **P2** | Open Twitter/X account for RitArena | Today |
-| **P2** | Post weekly 1-min progress videos | Every Sunday |
+| Priority | Action                                                                           | Timeline           |
+| -------- | -------------------------------------------------------------------------------- | ------------------ |
+| **P0**   | Talk to 5 agent developers: "Would you enter a PvP competition?"                 | This week          |
+| **P0**   | Post in Colosseum forum: "Building agent competition infra — who wants to test?" | Today              |
+| **P0**   | Sharpen the "secret" — what do you know that judges don't?                       | Before pitch video |
+| **P1**   | Write specific GTM plan (Week 1-4 user acquisition)                              | Before Week 3      |
+| **P1**   | Prepare OPOS slide with exact cost/speed comparison vs EVM                       | Before pitch video |
+| **P1**   | Plan the PUBLIC arena for Week 5 (this is your traction proof)                   | Start planning now |
+| **P2**   | Open Twitter/X account for RitArena                                              | Today              |
+| **P2**   | Post weekly 1-min progress videos                                                | Every Sunday       |

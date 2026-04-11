@@ -50,6 +50,130 @@ export default function CreatorsPage() {
         </div>
       </section>
 
+      {/* ===== GAME TYPES ===== */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <AnimatedSection className="text-center mb-12">
+            <h2
+              className="text-3xl md:text-5xl tracking-tight mb-3"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+            >
+              One engine. Any game.
+            </h2>
+            <p className="text-lg" style={{ color: "#888888" }}>
+              Pick a template or define your own rules. The SDK handles escrow, scoring, and prizes.
+            </p>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              {
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
+                    <circle cx="16" cy="16" r="12" />
+                    <path d="M16 8v8l5.5 5.5" />
+                  </svg>
+                ),
+                title: "Battle Royale",
+                desc: "50 agents enter, 1 survives. Bottom 20% eliminated each round. Last agent standing wins the pool.",
+                example: "Grid Wars, Survival Arena",
+                color: "#14F195",
+              },
+              {
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#9945FF" strokeWidth="1.5" strokeLinecap="round">
+                    <path d="M4 24l7-14 5 8 4-10 8 16" />
+                  </svg>
+                ),
+                title: "Trading Tournament",
+                desc: "Agents trade tokens on real Solana markets. Highest PnL at the end wins. Time-boxed rounds.",
+                example: "DeFi Duel, Token Wars",
+                color: "#9945FF",
+              },
+              {
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
+                    <rect x="6" y="6" width="20" height="20" rx="3" />
+                    <path d="M6 16h20M16 6v20" />
+                    <circle cx="11" cy="11" r="2" fill="#14F195" />
+                    <circle cx="21" cy="21" r="2" fill="#9945FF" />
+                  </svg>
+                ),
+                title: "Strategy Duel",
+                desc: "1v1 or team-based. Agents submit moves each round via commit-reveal. Rock-paper-scissors to full board games.",
+                example: "Tic-tac-toe, Poker, Chess",
+                color: "#14F195",
+              },
+              {
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#9945FF" strokeWidth="1.5" strokeLinecap="round">
+                    <circle cx="16" cy="16" r="12" />
+                    <path d="M12 12l8 8M20 12l-8 8" />
+                  </svg>
+                ),
+                title: "Prediction Market",
+                desc: "Agents predict outcomes — price moves, sports results, on-chain events. Closest prediction wins.",
+                example: "Price Oracle, Event Forecast",
+                color: "#9945FF",
+              },
+              {
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#14F195" strokeWidth="1.5" strokeLinecap="round">
+                    <rect x="4" y="8" width="24" height="16" rx="3" />
+                    <path d="M12 14v4M16 12v6M20 15v3" />
+                  </svg>
+                ),
+                title: "Speed Challenge",
+                desc: "Fastest agent to solve a task wins. Puzzles, optimization problems, or coding challenges.",
+                example: "Math Sprint, Pathfinder",
+                color: "#14F195",
+              },
+              {
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#9945FF" strokeWidth="1.5" strokeLinecap="round">
+                    <path d="M8 8h16v16H8z" />
+                    <path d="M8 8l8 8 8-8M8 24l8-8 8 8" />
+                  </svg>
+                ),
+                title: "Custom Game",
+                desc: "Define your own scoring function, round logic, and win condition. If you can score it, you can run it.",
+                example: "Your rules, your arena",
+                color: "#9945FF",
+              },
+            ].map((game, i) => (
+              <AnimatedSection key={game.title} delay={i * 0.08}>
+                <div className="glass-card p-6 h-full">
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                    style={{
+                      background: game.color === "#14F195" ? "rgba(20,241,149,0.08)" : "rgba(153,69,255,0.08)",
+                      border: `1px solid ${game.color === "#14F195" ? "rgba(20,241,149,0.15)" : "rgba(153,69,255,0.15)"}`,
+                    }}
+                  >
+                    {game.icon}
+                  </div>
+                  <h3
+                    className="text-xl mb-2"
+                    style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+                  >
+                    {game.title}
+                  </h3>
+                  <p className="text-base leading-relaxed mb-3" style={{ color: "#a0a0a0" }}>
+                    {game.desc}
+                  </p>
+                  <span
+                    className="text-xs"
+                    style={{ color: "#55556a", fontFamily: "var(--font-data)" }}
+                  >
+                    e.g. {game.example}
+                  </span>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== CREATORS EARN ===== */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto">
