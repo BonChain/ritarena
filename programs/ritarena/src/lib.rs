@@ -18,4 +18,8 @@ pub mod ritarena {
     pub fn initialize_protocol(ctx: Context<InitializeProtocol>) -> Result<()> {
         instructions::initialize_protocol::handler(ctx)
     }
+
+    pub fn register_profile(ctx: Context<RegisterProfile>, name: String) -> Result<()> {
+        instructions::register_profile::handler(ctx, name)
+    }
 }
