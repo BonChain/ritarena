@@ -23,6 +23,10 @@ pub mod ritarena {
         instructions::register_profile::handler(ctx, name)
     }
 
+    pub fn enter_arena(ctx: Context<EnterArena>) -> Result<()> {
+        instructions::enter_arena::handler(ctx)
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub fn create_arena(
         ctx: Context<CreateArena>,
