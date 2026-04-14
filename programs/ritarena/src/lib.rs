@@ -7,6 +7,7 @@ use anchor_lang::prelude::*;
 
 pub use constants::*;
 pub use instructions::*;
+pub use instructions::submit_elimination::ScoreUpdate;
 pub use state::*;
 
 declare_id!("5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH");
@@ -25,6 +26,20 @@ pub mod ritarena {
 
     pub fn enter_arena(ctx: Context<EnterArena>) -> Result<()> {
         instructions::enter_arena::handler(ctx)
+    }
+
+    pub fn start_arena(ctx: Context<StartArena>) -> Result<()> {
+        instructions::start_arena::handler(ctx)
+    }
+
+    pub fn submit_elimination(
+        ctx: Context<SubmitElimination>,
+        merkle_root: [u8; 32],
+        round_number: u32,
+        eliminated: Vec<Pubkey>,
+        scores: Vec<ScoreUpdate>,
+    ) -> Result<()> {
+        instructions::submit_elimination::handler(ctx, merkle_root, round_number, eliminated, scores)
     }
 
     #[allow(clippy::too_many_arguments)]
