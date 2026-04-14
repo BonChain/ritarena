@@ -1,0 +1,21 @@
+[toolchain]
+package_manager = "yarn"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.devnet]
+ritarena = "5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH"
+
+[programs.localnet]
+ritarena = "5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "cargo test"
+
+[hooks]
