@@ -1,0 +1,37 @@
+[package]
+name = "ritarena"
+version = "0.1.0"
+description = "RitArena — AI Agent Battle Arena on Solana"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "ritarena"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+anchor-lang = "1.0.0"
+anchor-spl = "1.0.0"
+
+[dev-dependencies]
+litesvm = "0.11.0"
+solana-message = "4.1.0"
+solana-transaction = "4.1.0"
+solana-signer = "3.0.0"
+solana-keypair = "3.1.2"
+solana-pubkey = "4.2.0"
+spl-token = "9.0.0"
+spl-associated-token-account = "8.0.0"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
