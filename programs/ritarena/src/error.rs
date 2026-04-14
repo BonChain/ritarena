@@ -58,4 +58,6 @@ pub enum RitArenaError {
     NoStakeBond,
     #[msg("Min agents not reached before start")]
     MinAgentsNotReached,
+    #[msg("Invalid USDC mint (must have 6 decimals)")]
+    InvalidUsdcMint,
 }

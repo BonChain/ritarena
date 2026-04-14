@@ -1,5 +1,3 @@
-use anchor_lang::prelude::*;
-
 // PDA seeds
 pub const PROTOCOL_SEED: &[u8] = b"protocol";
 pub const AGENT_PROFILE_SEED: &[u8] = b"agent_profile";
@@ -16,6 +14,9 @@ pub const REGISTRATION_FEE: u64 = 5_000_000; // 5 USDC (6 decimals)
 
 // Limits
 pub const MAX_AGENTS_PER_ARENA: u16 = 100;
-pub const MAX_NAME_LEN: usize = 32;
-pub const MAX_PRIZE_SLOTS: usize = 10;
-pub const MAX_ACTION_SCHEMA_LEN: usize = 256;
+pub const MAX_NAME_LEN: usize = 32; // sync with #[max_len(32)] in AgentProfile
+pub const MAX_PRIZE_SLOTS: usize = 10; // sync with #[max_len(10)] in Arena.prize_split
+pub const MAX_ACTION_SCHEMA_LEN: usize = 256; // sync with #[max_len(256)] in Arena.action_schema
+
+// USDC mint decimals (validated at protocol init)
+pub const USDC_DECIMALS: u8 = 6;

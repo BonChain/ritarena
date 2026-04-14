@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::Mint;
 use crate::constants::*;
+use crate::error::RitArenaError;
 use crate::state::ProtocolConfig;
 
 #[derive(Accounts)]
@@ -8,6 +9,9 @@ pub struct InitializeProtocol<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
 
+    #[account(
+        constraint = usdc_mint.decimals == USDC_DECIMALS @ RitArenaError::InvalidUsdcMint,
+    )]
     pub usdc_mint: Account<'info, Mint>,
 
     #[account(
@@ -19,7 +23,8 @@ pub struct InitializeProtocol<'info> {
     )]
     pub protocol: Account<'info, ProtocolConfig>,
 
-    /// CHECK: PDA used as treasury token account authority
+    /// CHECK: PDA used as treasury authority for token accounts.
+    /// The treasury USDC ATA is created lazily in register_profile (init_if_needed).
     #[account(
         seeds = [TREASURY_SEED],
         bump,

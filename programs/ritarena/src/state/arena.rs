@@ -26,9 +26,9 @@ pub struct Arena {
     pub elimination_interval: i64,
     pub elimination_percent: u8,
     pub creator_fee_bps: u16,
-    #[max_len(10)]
+    #[max_len(10)] // sync with constants::MAX_PRIZE_SLOTS
     pub prize_split: Vec<u16>,
-    #[max_len(256)]
+    #[max_len(256)] // sync with constants::MAX_ACTION_SCHEMA_LEN
     pub action_schema: String,
     pub rules_hash: [u8; 32],
 
@@ -42,8 +42,8 @@ pub struct Arena {
     pub current_agents: u16,
     pub alive_agents: u16,
     pub current_round: u32,
-    pub started_at: i64,
-    pub last_submission_at: i64,
+    pub started_at: i64,       // 0 = not started yet; set by start_arena
+    pub last_submission_at: i64, // 0 = no submissions yet; used for timeout detection
 
     // Merkle roots
     pub latest_merkle_root: [u8; 32],
