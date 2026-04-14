@@ -152,6 +152,7 @@ pub fn handler(
     arena.stake_bond_amount = stake_bond_amount;
     arena.creator_fee_claimed = false;
     arena.bond_returned = false;
+    arena.protocol_fee_collected = false;
 
     arena.bump = ctx.bumps.arena;
     arena.vault_bump = ctx.bumps.arena_vault;

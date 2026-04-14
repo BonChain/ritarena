@@ -54,6 +54,7 @@ pub struct Arena {
     pub stake_bond_amount: u64,
     pub creator_fee_claimed: bool,
     pub bond_returned: bool,
+    pub protocol_fee_collected: bool,
 
     // Bumps
     pub bump: u8,

@@ -7,6 +7,7 @@ use anchor_lang::prelude::*;
 
 pub use constants::*;
 pub use instructions::*;
+pub use instructions::finalize_arena::PrizeAssignment;
 pub use instructions::submit_elimination::ScoreUpdate;
 pub use state::*;
 
@@ -40,6 +41,42 @@ pub mod ritarena {
         scores: Vec<ScoreUpdate>,
     ) -> Result<()> {
         instructions::submit_elimination::handler(ctx, merkle_root, round_number, eliminated, scores)
+    }
+
+    pub fn finalize_arena(
+        ctx: Context<FinalizeArena>,
+        final_merkle_root: [u8; 32],
+        winners: Vec<PrizeAssignment>,
+    ) -> Result<()> {
+        instructions::finalize_arena::handler(ctx, final_merkle_root, winners)
+    }
+
+    pub fn claim_prize(ctx: Context<ClaimPrize>) -> Result<()> {
+        instructions::claim_prize::handler(ctx)
+    }
+
+    pub fn claim_creator_fee(ctx: Context<ClaimCreatorFee>) -> Result<()> {
+        instructions::claim_creator_fee::handler(ctx)
+    }
+
+    pub fn return_stake_bond(ctx: Context<ReturnStakeBond>) -> Result<()> {
+        instructions::return_stake_bond::handler(ctx)
+    }
+
+    pub fn refund_entry(ctx: Context<RefundEntry>) -> Result<()> {
+        instructions::refund_entry::handler(ctx)
+    }
+
+    pub fn abandon_arena(ctx: Context<AbandonArena>) -> Result<()> {
+        instructions::abandon_arena::handler(ctx)
+    }
+
+    pub fn cancel_arena(ctx: Context<CancelArena>) -> Result<()> {
+        instructions::cancel_arena::handler(ctx)
+    }
+
+    pub fn collect_protocol_fee(ctx: Context<CollectProtocolFee>) -> Result<()> {
+        instructions::collect_protocol_fee::handler(ctx)
     }
 
     #[allow(clippy::too_many_arguments)]
