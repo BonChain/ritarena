@@ -1,5 +1,6 @@
 mod helpers;
 
+use anchor_lang::AccountDeserialize;
 use helpers::*;
 use solana_instruction::{AccountMeta, Instruction};
 use solana_keypair::Keypair;
@@ -73,10 +74,24 @@ fn test_register_profile_success() {
     let ix = build_register_profile_ix(&owner.pubkey(), &usdc_mint, &owner_usdc, "TestAgent");
     send_tx(&mut svm, &[ix], &owner, &[&owner]).unwrap();
 
-    // Verify profile PDA exists
+    // Verify profile PDA exists and fields are correct
     let (profile_pda, _) = agent_profile_pda(&owner.pubkey());
     let profile_account = svm.get_account(&profile_pda).expect("profile account should exist");
     assert!(!profile_account.data.is_empty());
+
+    // Deserialize and verify profile fields (skip 8-byte discriminator)
+    let profile: ritarena::AgentProfile =
+        anchor_lang::AccountDeserialize::try_deserialize(&mut &profile_account.data[..]).unwrap();
+    assert_eq!(profile.owner, owner.pubkey());
+    assert_eq!(profile.name, "TestAgent");
+    assert_eq!(profile.arenas_entered, 0);
+    assert_eq!(profile.arenas_completed, 0);
+    assert_eq!(profile.wins, 0);
+    assert_eq!(profile.top3, 0);
+    assert_eq!(profile.eliminations, 0);
+    assert_eq!(profile.total_earnings, 0);
+    // LiteSVM clock defaults to 0, so just verify it was set (not left uninitialized)
+    assert!(profile.registered_at >= 0);
 
     // Verify 5 USDC transferred to treasury
     let treasury_account = svm

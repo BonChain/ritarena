@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 #[error_code]
 pub enum RitArenaError {
-    #[msg("Name too long (max 32 chars)")]
+    #[msg("Name too long (max 32 bytes)")]
     NameTooLong,
     #[msg("Creator fee too high (max 20%)")]
     CreatorFeeTooHigh,

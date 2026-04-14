@@ -50,6 +50,7 @@ pub struct RegisterProfile<'info> {
     #[account(
         seeds = [TREASURY_SEED],
         bump,
+        constraint = treasury.key() == protocol.treasury @ RitArenaError::UnauthorizedOracle,
     )]
     pub treasury: UncheckedAccount<'info>,
 
