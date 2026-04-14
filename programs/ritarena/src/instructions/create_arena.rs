@@ -33,7 +33,7 @@ pub struct CreateArena<'info> {
         init,
         payer = creator,
         token::mint = usdc_mint,
-        token::authority = arena_vault,
+        token::authority = arena,
         seeds = [ARENA_VAULT_SEED, arena.key().as_ref()],
         bump,
     )]
@@ -43,7 +43,7 @@ pub struct CreateArena<'info> {
         init,
         payer = creator,
         token::mint = usdc_mint,
-        token::authority = bond_vault,
+        token::authority = arena,
         seeds = [BOND_VAULT_SEED, arena.key().as_ref()],
         bump,
     )]
@@ -94,8 +94,11 @@ pub fn handler(
         RitArenaError::ActionSchemaTooLong
     );
 
-    // Validate prize_split sums to 100
-    let sum: u16 = prize_split.iter().sum();
+    // min_agents must be <= max_agents
+    require!(min_agents <= max_agents, RitArenaError::TooFewMaxAgents);
+
+    // Validate prize_split sums to 100 (use u32 to avoid u16 overflow)
+    let sum: u32 = prize_split.iter().map(|&v| v as u32).sum();
     require!(sum == 100, RitArenaError::InvalidPrizeSplit);
 
     // Transfer stake bond if > 0
