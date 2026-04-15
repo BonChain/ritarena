@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RitArena Snake Game</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: #111;
+      border-bottom: 1px solid #333;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #14F195;
+      letter-spacing: 0.05em;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid currentColor;
+    }
+
+    #mode-badge {
+      color: #a78bfa;
+      border-color: #a78bfa;
+    }
+
+    #status-badge {
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    /* Main layout */
+    main {
+      display: flex;
+      flex: 1;
+      padding: 24px;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    /* Canvas */
+    canvas#game {
+      display: block;
+      background: #111;
+      border: 1px solid #333;
+      flex-shrink: 0;
+    }
+
+    /* Sidebar */
+    aside {
+      border-left: 1px solid #333;
+      padding-left: 24px;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #round-info {
+      font-size: 0.85rem;
+      color: #a0a0a0;
+    }
+
+    #round-info strong {
+      color: #e0e0e0;
+    }
+
+    aside h2 {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #14F195;
+      margin-bottom: 8px;
+    }
+
+    #scoreboard {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    #scoreboard li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      padding: 4px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    #scoreboard li.dead {
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
+
+    #scoreboard .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    #scoreboard .snake-name {
+      flex: 1;
+      color: #c0c0c0;
+    }
+
+    #scoreboard .snake-score {
+      color: #14F195;
+      font-weight: 700;
+    }
+
+    /* Log panel */
+    #log-section {
+      padding: 0 24px 24px;
+    }
+
+    #log-section h2 {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #14F195;
+      margin-bottom: 8px;
+    }
+
+    #log-panel {
+      background: #0d0d0d;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 10px 12px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .log-entry {
+      color: #888;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-entry + .log-entry {
+      margin-top: 2px;
+    }
+
+    /* Winner overlay */
+    #winner-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #winner-overlay.show {
+      display: flex;
+    }
+
+    #winner-box {
+      background: #111;
+      border: 2px solid #14F195;
+      border-radius: 8px;
+      padding: 40px 60px;
+      text-align: center;
+    }
+
+    #winner-box p {
+      font-size: 0.8rem;
+      color: #888;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    #winner-name {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #14F195;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>RitArena Snake Game</h1>
+    <span class="badge" id="mode-badge">MOCK</span>
+    <span class="badge" id="status-badge">CONNECTING...</span>
+  </header>
+
+  <main>
+    <canvas id="game" width="800" height="800"></canvas>
+
+    <aside>
+      <div id="round-info">
+        Round <strong><span id="round-num">—</span></strong>
+        &nbsp;—&nbsp;
+        <span id="round-timer">—</span>s left
+      </div>
+
+      <div>
+        <h2>Scoreboard</h2>
+        <ul id="scoreboard"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <section id="log-section">
+    <h2>RitArena SDK Log</h2>
+    <div id="log-panel"></div>
+  </section>
+
+  <div id="winner-overlay">
+    <div id="winner-box">
+      <p>Winner</p>
+      <h2 id="winner-name"></h2>
+    </div>
+  </div>
+
+  <script src="/renderer.js"></script>
+</body>
+</html>
