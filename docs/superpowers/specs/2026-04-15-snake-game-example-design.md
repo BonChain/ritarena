@@ -24,7 +24,9 @@ examples/snake-game/
 │   ├── engine.ts            # Snake game logic: movement, collision, food, map shrink
 │   ├── bot.ts               # Hardcoded bot strategies
 │   ├── arena-adapter.ts     # ArenaAdapter interface + DevnetAdapter (RitArena SDK)
-│   └── mock-adapter.ts      # In-memory MockAdapter
+│   ├── mock-adapter.ts      # In-memory MockAdapter
+│   ├── merkle.ts            # Merkle tree helpers (hash leaves, compute root)
+│   └── setup-devnet.ts      # Script: airdrop SOL + mint USDC for bot keypairs
 ├── public/
 │   ├── index.html           # Single page: canvas + scoreboard
 │   └── game.js              # Client-side renderer
@@ -32,6 +34,8 @@ examples/snake-game/
 ├── tsconfig.json
 └── README.md
 ```
+
+This is a standalone project (not inside `packages/sdk/examples/`) because it is a full application with its own dependencies, static files, and build config — unlike the existing single-file script examples.
 
 ## Game Flow
 
@@ -43,15 +47,34 @@ npm start --devnet → devnet mode (requires wallet + SOL + USDC)
 ### Lifecycle
 
 1. Server boots, creates arena via `ArenaAdapter.createArena()`
-   - Config: `eliminationPercent: 1`, `eliminationInterval` > `duration` (disable auto-elimination)
+   - Uses `BATTLE_ROYALE_TEMPLATE` as base with overrides:
+   - `entryFee: 5_000_000` (5 USDC), `maxAgents: 8`, `minAgents: 2`
+   - `duration: 600` (10 min), `eliminationInterval: 700` (> duration, disables auto-elimination)
+   - `eliminationPercent: 1` (minimum, unused — elimination is game-driven)
+   - `creatorFeeBps: 0` (no creator fee for demo)
    - `actionSchema: "up,down,left,right"`
    - `prizeSplit: [100]` (winner takes all)
-2. Spawn 6-8 bots, each calls `enterArena()`
-3. `startArena()` — game loop begins
+   - `rulesHash`: SHA-256 of the game rules string
+2. Spawn 6-8 bots, each calls `registerProfile(botName)` then `enterArena(arenaId)`
+   - Each bot needs a registered `AgentProfile` on-chain before entering
+   - In devnet mode: each derived keypair needs SOL (for tx fees) + USDC (for entry fee + profile registration)
+3. `startArena()` — game loop begins (requires `currentAgents >= minAgents`)
 4. **During a round** (30 seconds): snakes move in real-time, eat food, can die from collisions
-5. **End of round**: map shrinks, collect all deaths from that round → `submitElimination()` with scores and merkle root
-6. Repeat until one snake remains → `finalizeArena()` with prize ranking
+5. **End of round**: map shrinks, collect all deaths from that round → `submitElimination()` with:
+   - Merkle root built from game actions that round (SHA-256 hash tree)
+   - Incrementing `roundNumber`
+   - `eliminated`: entry PDA PublicKeys of dead snakes
+   - `scores`: ScoreUpdate for each entry PDA (alive or dead)
+   - `entryAccounts`: ALL entry PDAs as remaining accounts
+6. Repeat until one snake remains → `finalizeArena()` with:
+   - Final Merkle root
+   - `winners`: `[{ entry: winnerEntryPda, rank: 1 }]`
+   - `entryAccounts`: ALL entry PDAs
 7. Client shows winner + Solana Explorer link (devnet mode)
+
+### Edge Case: All Snakes Die in Same Round
+
+If all remaining snakes die simultaneously (e.g., head-on collision of last two), the snake with the higher score wins. If scores are tied, the snake that was alive longer (earlier `entryId`) wins. This ensures `finalizeArena` always has exactly one winner for `prizeSplit: [100]`.
 
 ### Why This Maps Cleanly to RitArena
 
@@ -77,6 +100,7 @@ npm start --devnet → devnet mode (requires wallet + SOL + USDC)
 ### Food
 - Random spawn within safe zone
 - Constant count maintained (e.g., 10 food items on map at all times)
+- After zone shrink: food outside the new safe zone is removed and respawned inside
 
 ### Tick
 - Server ticks every 100ms
@@ -105,30 +129,58 @@ Where `GameState` contains: own snake position/body, all other snakes, food posi
 
 ## Arena Adapter
 
+The adapter wraps the RitArena SDK and handles the complexity of PDA derivation, Merkle tree construction, and on-chain account management. Game code calls simple methods; the adapter translates to SDK calls.
+
 ```ts
 interface ArenaAdapter {
-  createArena(config: CreateArenaConfig): Promise<{ arenaId: number }>;
-  enterArena(arenaId: number, botName: string): Promise<{ entryId: string }>;
+  createArena(config: CreateArenaConfig): Promise<{ arenaId: number; tx: string }>;
+  registerProfile(botName: string): Promise<void>;
+  enterArena(arenaId: number): Promise<string>;  // returns tx signature
   startArena(arenaId: number): Promise<void>;
-  submitElimination(arenaId: number, params: SubmitEliminationParams): Promise<void>;
-  finalizeArena(arenaId: number, params: FinalizeArenaParams): Promise<void>;
+  submitElimination(arenaId: number, round: RoundResult): Promise<void>;
+  finalizeArena(arenaId: number, winner: BotIdentity): Promise<void>;
+}
+
+// Game-level types — adapter translates these to SDK types internally
+interface RoundResult {
+  roundNumber: number;
+  deaths: BotIdentity[];          // bots that died this round
+  scores: Map<string, number>;    // botId → score
+  actions: GameAction[];          // raw actions for Merkle tree
+}
+
+interface BotIdentity {
+  botId: string;                  // e.g., "greedy-1"
+  keypair: Keypair;               // derived keypair for this bot
 }
 ```
 
+The adapter internally:
+- Derives entry PDAs via `pdas.arenaEntry(arenaPda, profilePda)`
+- Maintains a mapping of `botId → { keypair, profilePda, entryPda }`
+- Builds Merkle trees from `GameAction[]` for each `submitElimination` call
+- Passes ALL entry PDAs as `entryAccounts` remaining accounts
+
 ### MockAdapter (`mock-adapter.ts`)
-- In-memory state tracking
+- In-memory state tracking, same interface
 - Logs every call to console with readable output:
   ```
   [RitArena] createArena → arenaId: 0, maxAgents: 8, prizeSplit: [100]
-  [RitArena] enterArena → bot "greedy-1" entered arena 0
+  [RitArena] registerProfile → "greedy-1" registered
+  [RitArena] enterArena → "greedy-1" entered arena 0 (tx: mock-tx-001)
   [RitArena] submitElimination → round 2, eliminated: [greedy-1, random-1], scores: [...]
   [RitArena] finalizeArena → winner: cautious-1 (rank 1)
   ```
 
 ### DevnetAdapter (`arena-adapter.ts`)
 - Uses `RitArena.fromKeypair()` from `@ritarena/sdk`
-- Each bot gets a derived keypair (from a single master keypair + index)
-- Logs transaction signatures + explorer links
+- Each bot gets a derived keypair (from a single master keypair + bot index)
+- Calls `registerProfile(botName)` for each bot before entering
+- Devnet setup requires a `setup-devnet.ts` script that:
+  1. Airdrops SOL to master keypair
+  2. Derives bot keypairs and transfers SOL to each
+  3. Mints/transfers USDC to each bot (entry fee + profile registration)
+- Logs transaction signatures + Solana Explorer links
 
 ## Client UI (`public/`)
 
@@ -153,6 +205,11 @@ interface ArenaAdapter {
 1. Quick start (`npm install && npm start`)
 2. What this demonstrates (RitArena game integration)
 3. Architecture diagram (server ↔ bots ↔ SDK ↔ Solana)
-4. Devnet setup instructions
+4. Devnet setup instructions (wallet setup, airdrop SOL, mint USDC, `setup-devnet.ts`)
 5. How to add your own bot strategy
 6. How to adapt this for your own game
+
+## Known Limitations (acceptable for demo)
+
+- No graceful shutdown: if the server crashes mid-game, the devnet arena stays in `Active` state. Users can call `abandonArena` after `eliminationInterval * 2` has passed to recover funds.
+- Full game state sent every tick over WebSocket — fine for 6-8 snakes, not optimized for scale.
