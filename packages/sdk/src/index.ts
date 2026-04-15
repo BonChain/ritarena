@@ -35,3 +35,7 @@ export { BATTLE_ROYALE_TEMPLATE } from "./types";
 
 // IDL
 export { IDL } from "./idl";
+
+// Errors
+export { RitArenaError, arenaStateLabel } from "./errors";
+export type { ErrorCode } from "./errors";
