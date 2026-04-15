@@ -196,8 +196,15 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
   setPhase("active");
 
   let roundActions: GameAction[] = [];
+  let tickInProgress = false;
 
   gameLoop = setInterval(async () => {
+    // Prevent overlapping async ticks (devnet calls are slow)
+    if (tickInProgress) return;
+    tickInProgress = true;
+
+    try {
+
     if (!engine || engine.gameOver) {
       if (gameLoop) clearInterval(gameLoop);
       gameLoop = null;
@@ -263,6 +270,10 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
     }
 
     broadcast({ type: "state", state: engine.getState() });
+
+    } finally {
+      tickInProgress = false;
+    }
   }, TICK_MS);
 }
 
