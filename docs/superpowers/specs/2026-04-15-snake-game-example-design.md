@@ -20,35 +20,35 @@ The primary audience is developers evaluating RitArena. The focus is on **how Ri
 ```
 examples/snake-game/
 ├── src/
-│   ├── game/                    # --- Game engine (pure logic, no SDK) ---
-│   │   ├── engine.ts            #   Game loop: movement, collision, food, map shrink
-│   │   ├── types.ts             #   GameState, Snake, Food, Direction, SafeZone
-│   │   └── constants.ts         #   Grid size, tick rate, round duration, shrink %
+│   ├── ritarena_sdk/                # ✅ REUSABLE — copy to any game project
+│   │   ├── adapter.ts               #   ArenaAdapter interface
+│   │   ├── devnet-adapter.ts        #   DevnetAdapter (real SDK calls)
+│   │   ├── mock-adapter.ts          #   MockAdapter (in-memory, console logs)
+│   │   ├── merkle.ts                #   Merkle tree helpers (hash leaves, compute root)
+│   │   └── setup-devnet.ts          #   Script: airdrop SOL + mint USDC for bot keypairs
 │   │
-│   ├── agent/                   # --- AI bot strategies ---
-│   │   ├── bot.ts               #   Bot runner: picks strategy, calls decideMove()
-│   │   ├── strategies.ts        #   Greedy, Cautious, Aggressive, Random
-│   │   └── types.ts             #   BotIdentity, Strategy interface
+│   ├── game/                        # 🎮 GAME-SPECIFIC — replace for your own game
+│   │   ├── engine.ts                #   Snake game logic: movement, collision, food, map shrink
+│   │   ├── types.ts                 #   GameState, Snake, Food, Direction, SafeZone
+│   │   ├── constants.ts             #   Grid size, tick rate, round duration, shrink %
+│   │   └── renderer.js              #   Canvas rendering (client-side)
 │   │
-│   ├── arena/                   # --- RitArena SDK integration ---
-│   │   ├── adapter.ts           #   ArenaAdapter interface
-│   │   ├── devnet-adapter.ts    #   DevnetAdapter (real SDK calls)
-│   │   ├── mock-adapter.ts      #   MockAdapter (in-memory, console logs)
-│   │   ├── merkle.ts            #   Merkle tree helpers (hash leaves, compute root)
-│   │   └── setup-devnet.ts      #   Script: airdrop SOL + mint USDC for bot keypairs
+│   ├── agent/                       # 🤖 AGENT-SPECIFIC — agent devs read this folder only
+│   │   ├── strategies.ts            #   Greedy, Cautious, Aggressive, Random
+│   │   ├── bot-runner.ts            #   Connects bot to game via WS
+│   │   └── README.md                #   "How to write your own bot"
 │   │
-│   └── server.ts                # Entry point: WS server + static files + orchestration
+│   └── server.ts                    # Entry point: WS server + static files + orchestration
 │
-├── public/                      # --- UI (vanilla HTML/JS) ---
-│   ├── index.html               #   Single page: canvas + scoreboard + log panel
-│   └── game.js                  #   Client-side renderer
+├── public/                          # --- UI shell ---
+│   └── index.html                   #   Single page (loads game/renderer.js)
 │
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
 
-Three clear folders: `game/` = pure game logic, `agent/` = bot AI, `arena/` = RitArena on-chain integration. A developer can read each folder independently to understand that layer.
+Three folders by audience: `ritarena_sdk/` = reusable RitArena integration (copy to any game), `game/` = snake-specific logic + renderer (replace for your game), `agent/` = bot strategies (agent devs start here). Each folder can be read independently.
 
 This is a standalone project (not inside `packages/sdk/examples/`) because it is a full application with its own dependencies, static files, and build config — unlike the existing single-file script examples.
 
