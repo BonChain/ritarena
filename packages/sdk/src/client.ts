@@ -4,6 +4,7 @@ import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { pdas } from "./pda";
 import { IDL } from "./idl";
 import { RitArenaReader } from "./reader";
+import { RitArenaError, arenaStateLabel } from "./errors";
 import type {
   CreateArenaConfig,
   SubmitEliminationParams,
@@ -42,7 +43,11 @@ export class RitArena extends RitArenaReader {
     const treasuryPda = pdas.treasury();
 
     const protocol = await this.getProtocol();
-    if (!protocol) throw new Error("Protocol not initialized");
+    if (!protocol) {
+      throw new RitArenaError("PROTOCOL_NOT_INITIALIZED",
+        "RitArena protocol not initialized on this network",
+        "Run the protocol initialization script first. See packages/sdk README.");
+    }
 
     const usdcMint = protocol.usdcMint;
     const ownerUsdc = await getAssociatedTokenAddress(usdcMint, owner);
@@ -74,7 +79,11 @@ export class RitArena extends RitArenaReader {
     const creator = this.wallet.publicKey;
     const protocolPda = pdas.protocol();
     const protocol = await this.getProtocol();
-    if (!protocol) throw new Error("Protocol not initialized");
+    if (!protocol) {
+      throw new RitArenaError("PROTOCOL_NOT_INITIALIZED",
+        "RitArena protocol not initialized on this network",
+        "Run the protocol initialization script first. See packages/sdk README.");
+    }
 
     const arenaId = Number(protocol.totalArenas);
     const arenaPda = pdas.arena(arenaId);
@@ -124,7 +133,16 @@ export class RitArena extends RitArenaReader {
     const arenaVault = pdas.arenaVault(arenaPda);
 
     const arena = await this.getArena(arenaId);
-    if (!arena) throw new Error("Arena not found");
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Arena may not have propagated yet. Use GameServer.createAndWait() for automatic polling.");
+    }
+    if (!("registration" in arena.state)) {
+      throw new RitArenaError("ARENA_NOT_REGISTRATION",
+        `Arena ${arenaId} is in ${arenaStateLabel(arena.state)} state`,
+        "Agents can only enter during Registration phase.");
+    }
 
     const agentUsdc = await getAssociatedTokenAddress(
       arena.usdcMint,
@@ -151,12 +169,26 @@ export class RitArena extends RitArenaReader {
     const oracle = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
 
+    const arena = await this.getArena(arenaId);
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Create the arena first with createArena().");
+    }
+    if (!("registration" in arena.state)) {
+      throw new RitArenaError("ARENA_NOT_REGISTRATION",
+        `Arena ${arenaId} is in ${arenaStateLabel(arena.state)} state`,
+        "Arena can only be started from Registration state.");
+    }
+    if (arena.currentAgents < arena.minAgents) {
+      throw new RitArenaError("NOT_ENOUGH_AGENTS",
+        `Arena ${arenaId} has ${arena.currentAgents} agents, needs ${arena.minAgents}`,
+        "Wait for more agents to enter before starting.");
+    }
+
     return await (this.program.methods as any)
       .startArena()
-      .accounts({
-        oracle,
-        arena: arenaPda,
-      })
+      .accounts({ oracle, arena: arenaPda })
       .rpc();
   }
 
@@ -166,6 +198,23 @@ export class RitArena extends RitArenaReader {
   ): Promise<string> {
     const oracle = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
+
+    const arena = await this.getArena(arenaId);
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Create and start the arena first.");
+    }
+    if ("finished" in arena.state || "cancelled" in arena.state || "abandoned" in arena.state) {
+      throw new RitArenaError("ARENA_ALREADY_FINISHED",
+        `Arena ${arenaId} is ${arenaStateLabel(arena.state)}`,
+        "Cannot submit elimination after arena has ended.");
+    }
+    if (params.roundNumber !== arena.currentRound + 1) {
+      throw new RitArenaError("INVALID_ROUND",
+        `Expected round ${arena.currentRound + 1}, got ${params.roundNumber}`,
+        "Use GameServer which tracks round numbers automatically.");
+    }
 
     return await (this.program.methods as any)
       .submitElimination(
@@ -197,6 +246,18 @@ export class RitArena extends RitArenaReader {
   ): Promise<string> {
     const oracle = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
+
+    const arena = await this.getArena(arenaId);
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Create and start the arena first.");
+    }
+    if ("finished" in arena.state) {
+      throw new RitArenaError("ARENA_ALREADY_FINISHED",
+        `Arena ${arenaId} is already Finished`,
+        "Arena has already been finalized.");
+    }
 
     return await (this.program.methods as any)
       .finalizeArena(
@@ -230,7 +291,16 @@ export class RitArena extends RitArenaReader {
     const arenaVault = pdas.arenaVault(arenaPda);
 
     const arena = await this.getArena(arenaId);
-    if (!arena) throw new Error("Arena not found");
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Check the arena ID.");
+    }
+    if (!("finished" in arena.state)) {
+      throw new RitArenaError("ARENA_NOT_ACTIVE",
+        `Arena ${arenaId} is ${arenaStateLabel(arena.state)}, not Finished`,
+        "Wait for the arena to be finalized before claiming prizes.");
+    }
 
     const winnerUsdc = await getAssociatedTokenAddress(
       arena.usdcMint,
@@ -268,7 +338,11 @@ export class RitArena extends RitArenaReader {
     const treasuryPda = pdas.treasury();
 
     const arena = await this.getArena(arenaId);
-    if (!arena) throw new Error("Arena not found");
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Check the arena ID.");
+    }
 
     const treasuryUsdc = await getAssociatedTokenAddress(
       arena.usdcMint,
@@ -294,7 +368,11 @@ export class RitArena extends RitArenaReader {
     const arenaVault = pdas.arenaVault(arenaPda);
 
     const arena = await this.getArena(arenaId);
-    if (!arena) throw new Error("Arena not found");
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Check the arena ID.");
+    }
 
     const creatorUsdc = await getAssociatedTokenAddress(
       arena.usdcMint,
@@ -319,7 +397,11 @@ export class RitArena extends RitArenaReader {
     const bondVault = pdas.bondVault(arenaPda);
 
     const arena = await this.getArena(arenaId);
-    if (!arena) throw new Error("Arena not found");
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Check the arena ID.");
+    }
 
     const creatorUsdc = await getAssociatedTokenAddress(
       arena.usdcMint,
