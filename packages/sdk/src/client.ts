@@ -237,7 +237,7 @@ export class RitArena extends RitArenaReader {
       winner
     );
 
-    return await (this.program.methods as any)
+    const tx = await (this.program.methods as any)
       .claimPrize()
       .accounts({
         winner,
@@ -245,6 +245,44 @@ export class RitArena extends RitArenaReader {
         arenaEntry: entryPda,
         arenaVault,
         winnerUsdc,
+        usdcMint: arena.usdcMint,
+      })
+      .rpc();
+
+    // Auto-collect protocol fee if not already collected
+    if (!arena.protocolFeeCollected) {
+      try {
+        await this.collectProtocolFee(arenaId);
+      } catch {
+        // May fail if already collected by another caller — that's OK
+      }
+    }
+
+    return tx;
+  }
+
+  async collectProtocolFee(arenaId: number): Promise<string> {
+    const caller = this.wallet.publicKey;
+    const arenaPda = pdas.arena(arenaId);
+    const arenaVault = pdas.arenaVault(arenaPda);
+    const treasuryPda = pdas.treasury();
+
+    const arena = await this.getArena(arenaId);
+    if (!arena) throw new Error("Arena not found");
+
+    const treasuryUsdc = await getAssociatedTokenAddress(
+      arena.usdcMint,
+      treasuryPda,
+      true
+    );
+
+    return await (this.program.methods as any)
+      .collectProtocolFee()
+      .accounts({
+        caller,
+        arena: arenaPda,
+        arenaVault,
+        treasuryUsdc,
         usdcMint: arena.usdcMint,
       })
       .rpc();
