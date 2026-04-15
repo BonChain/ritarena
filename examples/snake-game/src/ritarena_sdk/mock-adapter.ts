@@ -72,4 +72,8 @@ export class MockAdapter implements ArenaAdapter {
   async finalizeArena(arenaId: number, winner: BotIdentity, _allBots: BotIdentity[]): Promise<void> {
     this.log(`finalizeArena -> arena ${arenaId}, winner: ${winner.botId} (rank 1)`, "finalize");
   }
+
+  async claimPrize(arenaId: number, winner: BotIdentity): Promise<void> {
+    this.log(`claimPrize -> ${winner.botId} claimed prize from arena ${arenaId}`, "finalize");
+  }
 }

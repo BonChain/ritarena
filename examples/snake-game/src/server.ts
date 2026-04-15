@@ -212,6 +212,7 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
         const winnerId = engine.winner!;
         const winnerBot = botIdentities.get(winnerId)!;
         await adapter.finalizeArena(arenaId, winnerBot, Array.from(botIdentities.values()));
+        await adapter.claimPrize(arenaId, winnerBot);
         broadcast({ type: "state", state: engine.getState() });
         setPhase("finished");
         console.log(`Game over! Winner: ${winnerId}`);

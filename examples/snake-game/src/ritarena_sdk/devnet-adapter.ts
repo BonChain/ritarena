@@ -211,4 +211,10 @@ export class DevnetAdapter implements ArenaAdapter {
     const tx = await this.sdk.finalizeArena(arenaId, params);
     this.log(`finalizeArena -> winner: ${winner.botId}`, "finalize", tx);
   }
+
+  async claimPrize(arenaId: number, winner: BotIdentity): Promise<void> {
+    const winnerSdk = RitArena.fromKeypair(this.connection, winner.keypair);
+    const tx = await winnerSdk.claimPrize(arenaId);
+    this.log(`claimPrize -> ${winner.botId} claimed prize`, "finalize", tx);
+  }
 }

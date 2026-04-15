@@ -51,4 +51,5 @@ export interface ArenaAdapter {
   startArena(arenaId: number): Promise<void>;
   submitElimination(arenaId: number, round: RoundResult): Promise<void>;
   finalizeArena(arenaId: number, winner: BotIdentity, allBots: BotIdentity[]): Promise<void>;
+  claimPrize(arenaId: number, winner: BotIdentity): Promise<void>;
 }
