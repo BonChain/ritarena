@@ -204,6 +204,203 @@
       font-weight: 700;
       color: #14F195;
     }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .controls select, .controls button {
+      font-family: inherit;
+      font-size: 0.75rem;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+
+    .controls button:hover:not(:disabled) {
+      border-color: #14F195;
+      color: #14F195;
+    }
+
+    .controls button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .speed-controls {
+      display: flex;
+      gap: 2px;
+    }
+
+    .speed-btn {
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .speed-btn.active {
+      background: #14F195;
+      color: #0a0a0a;
+      border-color: #14F195;
+      font-weight: 700;
+    }
+
+    /* Phase chip */
+    #phase-chip {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Preflight panel */
+    #preflight-panel {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10, 10, 10, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    #preflight-panel h2 {
+      color: #14F195;
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    #preflight-list {
+      list-style: none;
+      min-width: 300px;
+    }
+
+    #preflight-list li {
+      padding: 4px 0;
+      font-size: 0.8rem;
+      display: flex;
+      gap: 8px;
+    }
+
+    #preflight-list .check-icon { width: 20px; text-align: center; }
+    #preflight-list .check-ok { color: #14F195; }
+    #preflight-list .check-fail { color: #ef4444; }
+    #preflight-list .check-pending { color: #888; }
+
+    #preflight-msg {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    #btn-retry {
+      margin-top: 8px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      background: #1a1a2e;
+      color: #14F195;
+      border: 1px solid #14F195;
+      border-radius: 4px;
+      padding: 6px 16px;
+      cursor: pointer;
+    }
+
+    /* Arena info */
+    #arena-info-section h2 {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #14F195;
+      margin-bottom: 8px;
+    }
+
+    #arena-info {
+      font-size: 0.75rem;
+      color: #a0a0a0;
+      line-height: 1.8;
+    }
+
+    #arena-info span {
+      color: #e0e0e0;
+    }
+
+    #arena-info a {
+      color: #14F195;
+      text-decoration: none;
+    }
+
+    #arena-info a:hover {
+      text-decoration: underline;
+    }
+
+    /* Log tag colors */
+    .log-tag {
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .log-tag-create { color: #a78bfa; }
+    .log-tag-register { color: #60a5fa; }
+    .log-tag-enter { color: #34d399; }
+    .log-tag-start { color: #14F195; }
+    .log-tag-eliminate { color: #f87171; }
+    .log-tag-finalize { color: #fbbf24; }
+    .log-tag-info { color: #888; }
+
+    /* Log flash animation */
+    @keyframes log-flash {
+      0% { background: rgba(20, 241, 149, 0.15); }
+      100% { background: transparent; }
+    }
+
+    .log-entry.flash {
+      animation: log-flash 0.5s ease-out;
+    }
+
+    /* Log explorer link */
+    .log-explorer {
+      color: #14F195;
+      text-decoration: none;
+      margin-left: 6px;
+      font-size: 0.65rem;
+    }
+
+    .log-explorer:hover {
+      text-decoration: underline;
+    }
+
+    /* Play again button */
+    #btn-play-again {
+      margin-top: 20px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: transparent;
+      color: #14F195;
+      border: 1px solid #14F195;
+      border-radius: 4px;
+      padding: 8px 24px;
+      cursor: pointer;
+    }
+
+    #btn-play-again:hover {
+      background: #14F195;
+      color: #0a0a0a;
+    }
+
+    /* Canvas wrapper needs relative positioning for preflight overlay */
+    .canvas-wrap {
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -212,10 +409,32 @@
     <h1>RitArena Snake Game</h1>
     <span class="badge" id="mode-badge">MOCK</span>
     <span class="badge" id="status-badge">CONNECTING...</span>
+    <div class="controls">
+      <select id="mode-select">
+        <option value="mock">Mock</option>
+        <option value="devnet">Devnet</option>
+      </select>
+      <button id="btn-start">Start Game</button>
+      <button id="btn-restart" disabled>Restart</button>
+      <span class="speed-controls">
+        <button class="speed-btn active" id="speed-1x">1x</button>
+        <button class="speed-btn" id="speed-2x">2x</button>
+        <button class="speed-btn" id="speed-5x">5x</button>
+      </span>
+      <span class="badge" id="phase-chip">LOBBY</span>
+    </div>
   </header>
 
   <main>
-    <canvas id="game" width="800" height="800"></canvas>
+    <div class="canvas-wrap">
+      <canvas id="game" width="800" height="800"></canvas>
+      <div id="preflight-panel" style="display:none">
+        <h2>Devnet Preflight Checks</h2>
+        <ul id="preflight-list"></ul>
+        <p id="preflight-msg"></p>
+        <button id="btn-retry" style="display:none">Retry</button>
+      </div>
+    </div>
 
     <aside>
       <div id="round-info">
@@ -227,6 +446,19 @@
       <div>
         <h2>Scoreboard</h2>
         <ul id="scoreboard"></ul>
+      </div>
+
+      <div id="arena-info-section" style="display:none">
+        <h2>Arena Info</h2>
+        <div id="arena-info">
+          <div>Arena ID: <span id="arena-id">—</span></div>
+          <div>State: <span id="arena-state">—</span></div>
+          <div>Entry Fee: <span id="arena-fee">—</span></div>
+          <div>Prize Pool: <span id="arena-pool">—</span></div>
+          <div>Prize Split: <span id="arena-split">—</span></div>
+          <div>Mode: <span id="arena-mode">—</span></div>
+          <div id="arena-address-row" style="display:none">Address: <span id="arena-address">—</span></div>
+        </div>
       </div>
     </aside>
   </main>
@@ -240,6 +472,7 @@
     <div id="winner-box">
       <p>Winner</p>
       <h2 id="winner-name"></h2>
+      <button id="btn-play-again">Play Again</button>
     </div>
   </div>
 
