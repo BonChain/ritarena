@@ -29,6 +29,7 @@
 
   var currentState = null;
   var ws = null;
+  var reconnectDelay = 1000;
 
   // --- Log kind config ---
   var LOG_TAGS = {
@@ -55,15 +56,20 @@
     ws = new WebSocket('ws://' + location.host);
 
     ws.onopen = function () {
+      reconnectDelay = 1000;
       statusBadge.textContent = 'LIVE';
       statusBadge.style.color = '#14F195';
       statusBadge.style.borderColor = '#14F195';
     };
 
     ws.onclose = function () {
-      statusBadge.textContent = 'DISCONNECTED';
-      statusBadge.style.color = '#ef4444';
-      statusBadge.style.borderColor = '#ef4444';
+      statusBadge.textContent = 'RECONNECTING...';
+      statusBadge.style.color = '#fbbf24';
+      statusBadge.style.borderColor = '#fbbf24';
+      setTimeout(function () {
+        reconnectDelay = Math.min(reconnectDelay * 2, 10000);
+        connect();
+      }, reconnectDelay);
     };
 
     ws.onmessage = function (event) {
