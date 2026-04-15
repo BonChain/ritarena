@@ -38,6 +38,12 @@ export type {
 
 export { BATTLE_ROYALE_TEMPLATE } from "./types";
 
+// GameServer
+export { GameServer } from "./game-server";
+
+// Merkle helpers
+export { hashLeaf, computeMerkleRoot } from "./merkle";
+
 // IDL
 export { IDL } from "./idl";
 
