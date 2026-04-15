@@ -211,11 +211,25 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
       if (engine) {
         const winnerId = engine.winner!;
         const winnerBot = botIdentities.get(winnerId)!;
-        await adapter.finalizeArena(arenaId, winnerBot, Array.from(botIdentities.values()));
-        await adapter.claimPrize(arenaId, winnerBot);
+        let finalized = false;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            await adapter.finalizeArena(arenaId, winnerBot, Array.from(botIdentities.values()));
+            await adapter.claimPrize(arenaId, winnerBot);
+            finalized = true;
+            break;
+          } catch (err: any) {
+            if (attempt < 3) {
+              addLog({ message: "[RitArena] finalizeArena failed, retrying... (" + attempt + "/3)", kind: "info" });
+              await new Promise((r) => setTimeout(r, 2000));
+            } else {
+              addLog({ message: "[RitArena] Failed to finalize arena. Winner: " + winnerId + ". Arena may need manual finalization.", kind: "info" });
+            }
+          }
+        }
         broadcast({ type: "state", state: engine.getState() });
         setPhase("finished");
-        console.log(`Game over! Winner: ${winnerId}`);
+        console.log(`Game over! Winner: ${winnerId}${finalized ? "" : " (on-chain finalization failed)"}`);
       }
       return;
     }
@@ -259,14 +273,21 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
             .map((id) => botIdentities.get(id))
             .filter((b): b is BotIdentity => b !== undefined);
 
-          await adapter.submitElimination(arenaId, {
-            roundNumber: roundEnd.roundNumber,
-            deaths: deathBots,
-            scores: roundEnd.scores,
-            actions: roundActions,
-          });
+          try {
+            await adapter.submitElimination(arenaId, {
+              roundNumber: roundEnd.roundNumber,
+              deaths: deathBots,
+              scores: roundEnd.scores,
+              actions: roundActions,
+            });
+            roundActions = [];
+          } catch (err: any) {
+            addLog({ message: "[RitArena] submitElimination failed: " + err.message + " (will retry next round)", kind: "info" });
+            // Keep roundActions so they are included in the next attempt
+          }
+        } else {
+          roundActions = [];
         }
-        roundActions = [];
       }
     }
 
