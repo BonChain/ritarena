@@ -46,6 +46,26 @@ export class DevnetAdapter implements ArenaAdapter {
     this.events.onLog({ message: formatted, kind, tx, explorerUrl });
   }
 
+  private async retryRpc<T>(fn: () => Promise<T>, label: string, maxRetries = 3): Promise<T> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await fn();
+      } catch (err: any) {
+        const isRetryable = err.message?.includes("timeout") ||
+          err.message?.includes("429") ||
+          err.message?.includes("blockhash") ||
+          err.message?.includes("Blockhash not found");
+
+        if (!isRetryable || attempt === maxRetries) throw err;
+
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+        this.log(`${label} failed (attempt ${attempt}/${maxRetries}), retrying in ${delay}ms...`, "info");
+        await new Promise(r => setTimeout(r, delay));
+      }
+    }
+    throw new Error("unreachable");
+  }
+
   getArenaAddress(arenaId: number): string {
     return pdas.arena(arenaId).toBase58();
   }
@@ -130,7 +150,7 @@ export class DevnetAdapter implements ArenaAdapter {
 
   async createArena(config: CreateArenaConfig): Promise<{ arenaId: number; tx: string }> {
     this.entryFee = config.entryFee;
-    const result = await this.sdk.createArena(config);
+    const result = await this.retryRpc(() => this.sdk.createArena(config), "createArena");
     this.log(`createArena -> arenaId: ${result.arenaId}`, "create", result.tx);
     return result;
   }
@@ -142,13 +162,13 @@ export class DevnetAdapter implements ArenaAdapter {
       this.log(`registerProfile -> "${botName}" already registered`, "register");
       return;
     }
-    const tx = await botSdk.registerProfile(botName);
+    const tx = await this.retryRpc(() => botSdk.registerProfile(botName), "registerProfile");
     this.log(`registerProfile -> "${botName}" registered`, "register", tx);
   }
 
   async enterArena(arenaId: number, keypair: Keypair): Promise<string> {
     const botSdk = RitArena.fromKeypair(this.connection, keypair);
-    const tx = await botSdk.enterArena(arenaId);
+    const tx = await this.retryRpc(() => botSdk.enterArena(arenaId), "enterArena");
 
     const profilePda = pdas.agentProfile(keypair.publicKey);
     const arenaPda = pdas.arena(arenaId);
@@ -162,7 +182,7 @@ export class DevnetAdapter implements ArenaAdapter {
   }
 
   async startArena(arenaId: number): Promise<void> {
-    const tx = await this.sdk.startArena(arenaId);
+    const tx = await this.retryRpc(() => this.sdk.startArena(arenaId), "startArena");
     this.log(`startArena -> arena ${arenaId}`, "start", tx);
   }
 
@@ -190,7 +210,7 @@ export class DevnetAdapter implements ArenaAdapter {
       entryAccounts: this.allEntryPdas,
     };
 
-    const tx = await this.sdk.submitElimination(arenaId, params);
+    const tx = await this.retryRpc(() => this.sdk.submitElimination(arenaId, params), "submitElimination");
     this.log(`submitElimination -> round ${round.roundNumber}`, "eliminate", tx);
   }
 
@@ -208,13 +228,13 @@ export class DevnetAdapter implements ArenaAdapter {
       entryAccounts: this.allEntryPdas,
     };
 
-    const tx = await this.sdk.finalizeArena(arenaId, params);
+    const tx = await this.retryRpc(() => this.sdk.finalizeArena(arenaId, params), "finalizeArena");
     this.log(`finalizeArena -> winner: ${winner.botId}`, "finalize", tx);
   }
 
   async claimPrize(arenaId: number, winner: BotIdentity): Promise<void> {
     const winnerSdk = RitArena.fromKeypair(this.connection, winner.keypair);
-    const tx = await winnerSdk.claimPrize(arenaId);
+    const tx = await this.retryRpc(() => winnerSdk.claimPrize(arenaId), "claimPrize");
     this.log(`claimPrize -> ${winner.botId} claimed prize`, "finalize", tx);
   }
 }
