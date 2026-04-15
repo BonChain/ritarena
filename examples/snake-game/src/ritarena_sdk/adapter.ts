@@ -24,11 +24,27 @@ export interface RoundResult {
   actions: GameAction[];
 }
 
+export type LogKind = "create" | "register" | "enter" | "start" | "eliminate" | "finalize" | "info";
+
+export interface LogEntry {
+  message: string;
+  kind: LogKind;
+  tx?: string;
+  explorerUrl?: string;
+}
+
+export interface PreflightCheck {
+  name: string;
+  status: "pending" | "ok" | "fail";
+  detail: string;
+}
+
 export interface ArenaAdapterEvents {
-  onLog: (message: string) => void;
+  onLog: (entry: LogEntry) => void;
 }
 
 export interface ArenaAdapter {
+  preflight(): Promise<PreflightCheck[]>;
   createArena(config: CreateArenaConfig): Promise<{ arenaId: number; tx: string }>;
   registerProfile(botName: string, keypair: Keypair): Promise<void>;
   enterArena(arenaId: number, keypair: Keypair): Promise<string>;
