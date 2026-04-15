@@ -72,7 +72,7 @@ export class DevnetAdapter implements ArenaAdapter {
       checks.push({
         name: "Protocol initialized",
         status: protocol ? "ok" : "fail",
-        detail: protocol ? "Found" : "Not initialized — run test-devnet.ts first",
+        detail: protocol ? "Found" : "Not initialized. See packages/sdk README",
       });
     } catch {
       checks.push({ name: "Protocol initialized", status: "fail", detail: "Cannot read protocol" });

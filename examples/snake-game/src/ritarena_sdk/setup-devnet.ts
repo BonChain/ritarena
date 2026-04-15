@@ -1,6 +1,9 @@
 // examples/snake-game/src/ritarena_sdk/setup-devnet.ts
 
-import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {
+  Connection, Keypair, LAMPORTS_PER_SOL,
+  SystemProgram, Transaction, sendAndConfirmTransaction,
+} from "@solana/web3.js";
 import { createHash } from "crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -31,31 +34,45 @@ async function main() {
   const master = loadKeypair();
 
   console.log("Master wallet:", master.publicKey.toBase58());
-  console.log(`Setting up ${BOT_COUNT} bot keypairs...\n`);
 
+  // Check master balance
   const balance = await connection.getBalance(master.publicKey);
-  const needed = BOT_COUNT * SOL_PER_BOT * LAMPORTS_PER_SOL;
+  const needed = BOT_COUNT * SOL_PER_BOT * LAMPORTS_PER_SOL + 0.01 * LAMPORTS_PER_SOL; // extra for tx fees
+  console.log(`Master balance: ${balance / LAMPORTS_PER_SOL} SOL`);
+
   if (balance < needed) {
-    console.log(`Need ${needed / LAMPORTS_PER_SOL} SOL, have ${balance / LAMPORTS_PER_SOL} SOL`);
-    console.log("Run: solana airdrop 2");
+    console.log(`\nNeed ${needed / LAMPORTS_PER_SOL} SOL total.`);
+    console.log("Fund your master wallet first:");
+    console.log("  Option 1: solana airdrop 2  (may be rate-limited)");
+    console.log("  Option 2: https://faucet.solana.com  (paste your address)");
+    console.log(`\nMaster address: ${master.publicKey.toBase58()}`);
     process.exit(1);
   }
 
+  console.log(`\nTransferring SOL to ${BOT_COUNT} bot keypairs...\n`);
+
+  // Transfer SOL from master to each bot (avoids faucet rate limits)
   for (let i = 0; i < BOT_COUNT; i++) {
     const botKp = deriveBotKeypair(master, i);
-    console.log(`Bot ${i}: ${botKp.publicKey.toBase58().slice(0, 12)}...`);
+    console.log(`Bot ${i}: ${botKp.publicKey.toBase58().slice(0, 16)}...`);
 
     const botBalance = await connection.getBalance(botKp.publicKey);
-    if (botBalance < SOL_PER_BOT * LAMPORTS_PER_SOL) {
-      const sig = await connection.requestAirdrop(
-        botKp.publicKey,
-        SOL_PER_BOT * LAMPORTS_PER_SOL
-      );
-      await connection.confirmTransaction(sig);
-      console.log(`  Airdropped ${SOL_PER_BOT} SOL`);
-    } else {
-      console.log(`  Already has ${botBalance / LAMPORTS_PER_SOL} SOL`);
+    if (botBalance >= SOL_PER_BOT * LAMPORTS_PER_SOL) {
+      console.log(`  Already has ${(botBalance / LAMPORTS_PER_SOL).toFixed(4)} SOL`);
+      continue;
     }
+
+    const lamports = SOL_PER_BOT * LAMPORTS_PER_SOL - botBalance;
+    const tx = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: master.publicKey,
+        toPubkey: botKp.publicKey,
+        lamports,
+      })
+    );
+
+    const sig = await sendAndConfirmTransaction(connection, tx, [master]);
+    console.log(`  Transferred ${(lamports / LAMPORTS_PER_SOL).toFixed(4)} SOL (tx: ${sig.slice(0, 12)}...)`);
   }
 
   console.log("\nSetup complete! Bot keypairs are derived deterministically.");

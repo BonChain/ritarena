@@ -211,7 +211,7 @@
       }
 
       if (msg.status === 'failed') {
-        preflightMsg.textContent = 'Some checks failed. Run: npm run setup:devnet';
+        preflightMsg.textContent = 'Some checks failed. Fund master wallet at faucet.solana.com, then run: npm run setup:devnet';
         btnRetry.style.display = 'inline-block';
       } else {
         preflightMsg.textContent = 'Checking...';
