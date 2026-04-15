@@ -7,6 +7,8 @@ import { Keypair } from "@solana/web3.js";
 import { BATTLE_ROYALE_TEMPLATE } from "@ritarena/sdk";
 import { createHash } from "crypto";
 import { WebSocketServer, WebSocket } from "ws";
+import * as fs from "fs";
+import * as path from "path";
 
 import { GameEngine } from "./game/engine.js";
 import { TICK_MS } from "./game/constants.js";
@@ -33,6 +35,20 @@ const BOT_ROSTER: BotConfig[] = [
   { id: "random-1", strategy: "random" },
   { id: "random-2", strategy: "random" },
 ];
+
+function loadMasterKeypair(): Keypair {
+  const keypairPath = path.join(process.env.HOME || "~", ".config/solana/id.json");
+  const secret = JSON.parse(fs.readFileSync(keypairPath, "utf-8"));
+  return Keypair.fromSecretKey(Uint8Array.from(secret));
+}
+
+function deriveBotKeypair(master: Keypair, index: number): Keypair {
+  const seed = createHash("sha256")
+    .update(Buffer.from(master.secretKey))
+    .update(Buffer.from([index]))
+    .digest();
+  return Keypair.fromSeed(seed.slice(0, 32));
+}
 
 // --- State ---
 const clients: Set<WebSocket> = new Set();
@@ -62,11 +78,7 @@ function addLog(entry: LogEntry): void {
 
 async function createDevnetAdapter(): Promise<ArenaAdapter> {
   const { DevnetAdapter } = await import("./ritarena_sdk/devnet-adapter.js");
-  const fs = await import("fs");
-  const path = await import("path");
-  const keypairPath = path.join(process.env.HOME || "~", ".config/solana/id.json");
-  const secret = JSON.parse(fs.readFileSync(keypairPath, "utf-8"));
-  const oracleKeypair = Keypair.fromSecretKey(Uint8Array.from(secret));
+  const oracleKeypair = loadMasterKeypair();
   return new DevnetAdapter(oracleKeypair, { onLog: addLog });
 }
 
@@ -140,9 +152,17 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
 
   broadcast(arenaInfo);
 
+  // For devnet: use deterministic keypairs (same as setup-devnet.ts)
+  // For mock: use random keypairs (no real SOL needed)
+  let masterKeypair: Keypair | null = null;
+  if (mode === "devnet") {
+    masterKeypair = loadMasterKeypair();
+  }
+
   const botIdentities: Map<string, BotIdentity> = new Map();
-  for (const bot of BOT_ROSTER) {
-    const keypair = Keypair.generate();
+  for (let i = 0; i < BOT_ROSTER.length; i++) {
+    const bot = BOT_ROSTER[i];
+    const keypair = masterKeypair ? deriveBotKeypair(masterKeypair, i) : Keypair.generate();
     await adapter.registerProfile(bot.id, keypair);
     await adapter.enterArena(arenaId, keypair);
     botIdentities.set(bot.id, { botId: bot.id, keypair });
