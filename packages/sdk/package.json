@@ -7,9 +7,29 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "example:create-arena": "npx tsx examples/01-create-arena.ts",
+    "example:spectator": "npx tsx examples/02-spectator-read.ts",
+    "example:game-server": "npx tsx examples/03-game-server-oracle.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BonChain/ritarena.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://github.com/BonChain/ritarena/tree/main/packages/sdk",
+  "keywords": [
+    "solana",
+    "anchor",
+    "ritarena",
+    "ai-agents",
+    "battle-arena",
+    "gaming",
+    "sdk",
+    "web3"
+  ],
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
     "@solana/web3.js": "^1.98.0",
