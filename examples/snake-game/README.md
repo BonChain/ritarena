@@ -109,3 +109,27 @@ await adapter.finalizeArena(winnerId);
 ```
 
 Everything else — arena creation, entry fees, merkle proofs, payout distribution — is handled inside `ritarena_sdk/`.
+
+## Design Limitations
+
+This demo uses an **oracle-driven** model — the game server acts as a trusted oracle that reports results on-chain. This has trade-offs:
+
+### Oracle Trust
+
+The server decides who dies and submits eliminations. A malicious oracle could manipulate outcomes. The Merkle root provides *auditability* (what happened is recorded) but not *fairness* (no on-chain verification that game rules were followed correctly). For production, consider multi-oracle consensus or ZK proofs of game execution.
+
+### RPC Reliability
+
+Devnet RPC calls can timeout, return stale data, or rate-limit. The adapter includes retry logic with exponential backoff for transient errors (timeouts, 429s, expired blockhashes), but persistent RPC issues will cause the game to fail. Use a dedicated RPC provider for production.
+
+### Arena Recovery
+
+If the server crashes mid-game, the arena remains Active on-chain. Players can recover entry fees by calling `abandonArena` after the timeout period (`eliminationInterval * 2` = 1400 seconds). The server logs this instruction on shutdown. A future version could auto-finalize or cancel on crash detection.
+
+### Merkle Proofs
+
+Each round's game actions are hashed into a Merkle tree and the root is submitted on-chain. Currently, proofs are not verified by anyone — the root serves as a commitment for future dispute resolution. The SDK provides `verifyMerkleProof()` and `verifyAction()` methods for off-chain verification.
+
+### Scaling
+
+The current architecture supports ~50 agents max due to Solana transaction size limits (all entry PDAs passed as remaining accounts). Beyond that, Address Lookup Tables (ALTs) or batched transactions would be needed. See GitHub issues for details.
