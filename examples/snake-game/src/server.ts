@@ -196,6 +196,7 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
   setPhase("active");
 
   let roundActions: GameAction[] = [];
+  let onChainRound = 0; // tracks arena.currentRound on-chain
   let tickInProgress = false;
 
   gameLoop = setInterval(async () => {
@@ -273,13 +274,19 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
             .map((id) => botIdentities.get(id))
             .filter((b): b is BotIdentity => b !== undefined);
 
+          // Cap roundActions to prevent memory growth on repeated failures
+          if (roundActions.length > 10000) {
+            roundActions = roundActions.slice(-5000);
+          }
+
           try {
             await adapter.submitElimination(arenaId, {
-              roundNumber: roundEnd.roundNumber,
+              roundNumber: onChainRound + 1,
               deaths: deathBots,
               scores: roundEnd.scores,
               actions: roundActions,
             });
+            onChainRound++;
             roundActions = [];
           } catch (err: any) {
             addLog({ message: "[RitArena] submitElimination failed: " + err.message + " (will retry next round)", kind: "info" });
