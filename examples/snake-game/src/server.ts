@@ -12,10 +12,9 @@ import { GameEngine } from "./game/engine.js";
 import { TICK_MS } from "./game/constants.js";
 import { BotRunner, type BotConfig } from "./agent/bot-runner.js";
 import { MockAdapter } from "./ritarena_sdk/mock-adapter.js";
-import type { ArenaAdapter, BotIdentity, GameAction } from "./ritarena_sdk/adapter.js";
+import type { ArenaAdapter, BotIdentity, GameAction, LogEntry } from "./ritarena_sdk/adapter.js";
 
 const PORT = 3000;
-const useDevnet = process.argv.includes("--devnet");
 
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html",
@@ -35,49 +34,83 @@ const BOT_ROSTER: BotConfig[] = [
   { id: "random-2", strategy: "random" },
 ];
 
-async function main() {
-  const logs: string[] = [];
-  const clients: Set<WebSocket> = new Set();
+// --- State ---
+const clients: Set<WebSocket> = new Set();
+const logs: LogEntry[] = [];
+let phase: string = "lobby";
+let currentMode: "mock" | "devnet" = "mock";
+let gameLoop: ReturnType<typeof setInterval> | null = null;
+let engine: GameEngine | null = null;
+let speedMultiplier = 1;
 
-  function broadcast(data: object): void {
-    const msg = JSON.stringify(data);
-    for (const ws of clients) {
-      if (ws.readyState === WebSocket.OPEN) ws.send(msg);
-    }
+function broadcast(data: object): void {
+  const msg = JSON.stringify(data);
+  for (const ws of clients) {
+    if (ws.readyState === WebSocket.OPEN) ws.send(msg);
   }
+}
+
+function setPhase(p: string): void {
+  phase = p;
+  broadcast({ type: "phase", phase: p });
+}
+
+function addLog(entry: LogEntry): void {
+  logs.push(entry);
+  broadcast({ type: "log", ...entry });
+}
+
+async function createDevnetAdapter(): Promise<ArenaAdapter> {
+  const { DevnetAdapter } = await import("./ritarena_sdk/devnet-adapter.js");
+  const fs = await import("fs");
+  const path = await import("path");
+  const keypairPath = path.join(process.env.HOME || "~", ".config/solana/id.json");
+  const secret = JSON.parse(fs.readFileSync(keypairPath, "utf-8"));
+  const oracleKeypair = Keypair.fromSecretKey(Uint8Array.from(secret));
+  return new DevnetAdapter(oracleKeypair, { onLog: addLog });
+}
+
+async function startGame(mode: "mock" | "devnet"): Promise<void> {
+  if (gameLoop) {
+    clearInterval(gameLoop);
+    gameLoop = null;
+  }
+
+  currentMode = mode;
+  logs.length = 0;
+  speedMultiplier = 1;
 
   let adapter: ArenaAdapter;
 
-  if (useDevnet) {
-    const { DevnetAdapter } = await import("./ritarena_sdk/devnet-adapter.js");
-    const fs = await import("fs");
-    const path = await import("path");
-    const keypairPath = path.join(process.env.HOME || "~", ".config/solana/id.json");
-    const secret = JSON.parse(fs.readFileSync(keypairPath, "utf-8"));
-    const oracleKeypair = Keypair.fromSecretKey(Uint8Array.from(secret));
-    adapter = new DevnetAdapter(oracleKeypair, {
-      onLog: (msg) => {
-        logs.push(msg);
-        broadcast({ type: "log", message: msg });
-      },
-    });
+  if (mode === "devnet") {
+    setPhase("preflight");
+    adapter = await createDevnetAdapter();
+
+    const checks = await adapter.preflight();
+    broadcast({ type: "preflight", status: "checking", checks });
+
+    const failed = checks.some((c) => c.status === "fail");
+    if (failed) {
+      broadcast({ type: "preflight", status: "failed", checks });
+      setPhase("lobby");
+      return;
+    }
+    broadcast({ type: "preflight", status: "ready", checks });
   } else {
-    adapter = new MockAdapter({
-      onLog: (msg) => {
-        logs.push(msg);
-        broadcast({ type: "log", message: msg });
-      },
-    });
+    adapter = new MockAdapter({ onLog: addLog });
   }
 
-  console.log(`Mode: ${useDevnet ? "devnet" : "mock"}`);
+  setPhase("setup");
+  console.log(`\nStarting game in ${mode} mode...`);
 
   const rulesHash = createHash("sha256")
     .update("snake-game:slither-io-style:shrinking-map")
     .digest();
 
+  const entryFee = 5_000_000;
   const { arenaId } = await adapter.createArena({
     ...BATTLE_ROYALE_TEMPLATE,
+    entryFee,
     maxAgents: BOT_ROSTER.length,
     minAgents: 2,
     duration: 600,
@@ -89,6 +122,24 @@ async function main() {
     rulesHash: new Uint8Array(rulesHash),
   });
 
+  const arenaInfo: Record<string, unknown> = {
+    type: "arena-info",
+    arenaId,
+    entryFee: entryFee / 1_000_000,
+    prizePool: (entryFee * BOT_ROSTER.length) / 1_000_000,
+    prizeSplit: [100],
+    mode,
+    botCount: BOT_ROSTER.length,
+  };
+
+  if (mode === "devnet" && "getArenaExplorerUrl" in adapter) {
+    const devAdapter = adapter as any;
+    arenaInfo.address = devAdapter.getArenaAddress(arenaId);
+    arenaInfo.explorerUrl = devAdapter.getArenaExplorerUrl(arenaId);
+  }
+
+  broadcast(arenaInfo);
+
   const botIdentities: Map<string, BotIdentity> = new Map();
   for (const bot of BOT_ROSTER) {
     const keypair = Keypair.generate();
@@ -99,7 +150,7 @@ async function main() {
 
   await adapter.startArena(arenaId);
 
-  const engine = new GameEngine();
+  engine = new GameEngine();
   const botRunner = new BotRunner();
 
   for (const bot of BOT_ROSTER) {
@@ -108,52 +159,22 @@ async function main() {
   }
   engine.spawnFood();
 
-  const publicDir = join(__dirname, "..", "public");
-  const rendererPath = join(__dirname, "game", "renderer.js");
-
-  const server = createServer((req, res) => {
-    let filePath: string;
-    if (req.url === "/" || req.url === "/index.html") {
-      filePath = join(publicDir, "index.html");
-    } else if (req.url === "/renderer.js") {
-      filePath = rendererPath;
-    } else {
-      res.writeHead(404);
-      res.end("Not found");
-      return;
-    }
-
-    try {
-      const content = readFileSync(filePath);
-      const ext = extname(filePath);
-      res.writeHead(200, { "Content-Type": MIME_TYPES[ext] || "text/plain" });
-      res.end(content);
-    } catch {
-      res.writeHead(404);
-      res.end("Not found");
-    }
-  });
-
-  const wss = new WebSocketServer({ server });
-  wss.on("connection", (ws) => {
-    clients.add(ws);
-    ws.send(JSON.stringify({ type: "state", state: engine.getState() }));
-    for (const log of logs) {
-      ws.send(JSON.stringify({ type: "log", message: log }));
-    }
-    ws.on("close", () => clients.delete(ws));
-  });
+  setPhase("active");
 
   let roundActions: GameAction[] = [];
 
-  const gameLoop = setInterval(async () => {
-    if (engine.gameOver) {
-      clearInterval(gameLoop);
-      const winnerId = engine.winner!;
-      const winnerBot = botIdentities.get(winnerId)!;
-      await adapter.finalizeArena(arenaId, winnerBot, Array.from(botIdentities.values()));
-      broadcast({ type: "state", state: engine.getState() });
-      console.log(`\nGame over! Winner: ${winnerId}`);
+  gameLoop = setInterval(async () => {
+    if (!engine || engine.gameOver) {
+      if (gameLoop) clearInterval(gameLoop);
+      gameLoop = null;
+      if (engine) {
+        const winnerId = engine.winner!;
+        const winnerBot = botIdentities.get(winnerId)!;
+        await adapter.finalizeArena(arenaId, winnerBot, Array.from(botIdentities.values()));
+        broadcast({ type: "state", state: engine.getState() });
+        setPhase("finished");
+        console.log(`Game over! Winner: ${winnerId}`);
+      }
       return;
     }
 
@@ -170,7 +191,8 @@ async function main() {
       });
     }
 
-    const tickResult = engine.tick(TICK_MS);
+    const effectiveDelta = TICK_MS * speedMultiplier;
+    const tickResult = engine.tick(effectiveDelta);
 
     for (const deathId of tickResult.deaths) {
       const snake = engine.snakes.find((s) => s.id === deathId)!;
@@ -185,30 +207,103 @@ async function main() {
     }
 
     const roundEnd = engine.endRound();
-    if (roundEnd && roundEnd.deaths.length > 0) {
-      const deathBots = roundEnd.deaths
-        .map((id) => botIdentities.get(id))
-        .filter((b): b is BotIdentity => b !== undefined);
+    if (roundEnd) {
+      setPhase(`round ${engine.round}`);
+      if (roundEnd.deaths.length > 0) {
+        const deathBots = roundEnd.deaths
+          .map((id) => botIdentities.get(id))
+          .filter((b): b is BotIdentity => b !== undefined);
 
-      await adapter.submitElimination(arenaId, {
-        roundNumber: roundEnd.roundNumber,
-        deaths: deathBots,
-        scores: roundEnd.scores,
-        actions: roundActions,
-      });
-      roundActions = [];
-    } else if (roundEnd) {
+        await adapter.submitElimination(arenaId, {
+          roundNumber: roundEnd.roundNumber,
+          deaths: deathBots,
+          scores: roundEnd.scores,
+          actions: roundActions,
+        });
+      }
       roundActions = [];
     }
 
     broadcast({ type: "state", state: engine.getState() });
   }, TICK_MS);
-
-  server.listen(PORT, () => {
-    console.log(`\nSnake Game running at http://localhost:${PORT}`);
-    console.log(`${BOT_ROSTER.length} bots competing, ${useDevnet ? "devnet" : "mock"} mode`);
-    console.log("Open the URL in your browser to watch!\n");
-  });
 }
 
-main().catch(console.error);
+// --- HTTP + WebSocket ---
+
+const publicDir = join(__dirname, "..", "public");
+const rendererPath = join(__dirname, "game", "renderer.js");
+
+const server = createServer((req, res) => {
+  let filePath: string;
+  if (req.url === "/" || req.url === "/index.html") {
+    filePath = join(publicDir, "index.html");
+  } else if (req.url === "/renderer.js") {
+    filePath = rendererPath;
+  } else {
+    res.writeHead(404);
+    res.end("Not found");
+    return;
+  }
+
+  try {
+    const content = readFileSync(filePath);
+    const ext = extname(filePath);
+    res.writeHead(200, { "Content-Type": MIME_TYPES[ext] || "text/plain" });
+    res.end(content);
+  } catch {
+    res.writeHead(404);
+    res.end("Not found");
+  }
+});
+
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws) => {
+  clients.add(ws);
+
+  ws.send(JSON.stringify({ type: "phase", phase }));
+  if (engine) {
+    ws.send(JSON.stringify({ type: "state", state: engine.getState() }));
+  }
+  for (const log of logs) {
+    ws.send(JSON.stringify({ type: "log", ...log }));
+  }
+
+  ws.on("message", (raw) => {
+    let msg: any;
+    try {
+      msg = JSON.parse(raw.toString());
+    } catch {
+      return;
+    }
+
+    if (msg.type === "start" && (phase === "lobby" || phase === "finished")) {
+      const mode = msg.mode === "devnet" ? "devnet" : "mock";
+      broadcast({ type: "reset" });
+      startGame(mode).catch((err) => {
+        console.error("Failed to start game:", err);
+        addLog({ message: `[RitArena] Error: ${err.message}`, kind: "info" });
+        setPhase("lobby");
+      });
+    } else if (msg.type === "restart" && phase === "finished") {
+      broadcast({ type: "reset" });
+      startGame(currentMode).catch((err) => {
+        console.error("Failed to restart game:", err);
+        addLog({ message: `[RitArena] Error: ${err.message}`, kind: "info" });
+        setPhase("lobby");
+      });
+    } else if (msg.type === "speed" && typeof msg.multiplier === "number") {
+      if ([1, 2, 5].includes(msg.multiplier)) {
+        speedMultiplier = msg.multiplier;
+        broadcast({ type: "speed", multiplier: speedMultiplier });
+      }
+    }
+  });
+
+  ws.on("close", () => clients.delete(ws));
+});
+
+server.listen(PORT, () => {
+  console.log(`\nSnake Game server running at http://localhost:${PORT}`);
+  console.log("Open the URL in your browser. Select mode and press Start.\n");
+});
