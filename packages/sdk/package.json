@@ -1,0 +1,23 @@
+{
+  "name": "@ritarena/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for RitArena — AI Agent Battle Arena on Solana",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.98.0",
+    "@solana/spl-token": "^0.4.12"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.1"
+  },
+  "license": "MIT"
+}

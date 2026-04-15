@@ -2,6 +2,9 @@
 target/
 .anchor/
 
+# TypeScript build output
+dist/
+
 # Solana keypairs (never commit private keys)
 *-keypair.json
 test-ledger/
