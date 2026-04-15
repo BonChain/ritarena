@@ -152,6 +152,20 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
 
   broadcast(arenaInfo);
 
+  // Wait for arena account to be visible on devnet (RPC propagation delay)
+  if (mode === "devnet") {
+    addLog({ message: "[RitArena] Waiting for arena account to propagate...", kind: "info" });
+    const { Connection } = await import("@solana/web3.js");
+    const { RitArena: RitArenaReader } = await import("@ritarena/sdk");
+    const conn = new Connection("https://api.devnet.solana.com", "confirmed");
+    const reader = RitArenaReader.readOnly(conn);
+    for (let attempt = 0; attempt < 15; attempt++) {
+      const found = await reader.getArena(arenaId);
+      if (found) break;
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+  }
+
   // For devnet: use deterministic keypairs (same as setup-devnet.ts)
   // For mock: use random keypairs (no real SOL needed)
   let masterKeypair: Keypair | null = null;
