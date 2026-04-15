@@ -1,6 +1,8 @@
 // examples/snake-game/src/ritarena_sdk/devnet-adapter.ts
 
 import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+// @ts-expect-error — spl-token is ESM-only but tsx handles CJS/ESM interop at runtime
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { createHash } from "crypto";
 import {
   RitArena,
@@ -78,6 +80,13 @@ export class DevnetAdapter implements ArenaAdapter {
       checks.push({ name: "Protocol initialized", status: "fail", detail: "Cannot read protocol" });
     }
 
+    // Get USDC mint for token balance checks
+    let usdcMint: PublicKey | null = null;
+    try {
+      const protocol = await this.sdk.getProtocol();
+      if (protocol) usdcMint = protocol.usdcMint;
+    } catch { /* already checked above */ }
+
     for (let i = 0; i < 8; i++) {
       const seed = createHash("sha256")
         .update(Buffer.from(this.oracleKeypair.secretKey))
@@ -86,6 +95,7 @@ export class DevnetAdapter implements ArenaAdapter {
       const botKp = Keypair.fromSeed(seed.slice(0, 32));
       this.botKeypairs.push(botKp);
 
+      // Check SOL
       try {
         const balance = await this.connection.getBalance(botKp.publicKey);
         const solBalance = balance / LAMPORTS_PER_SOL;
@@ -96,6 +106,22 @@ export class DevnetAdapter implements ArenaAdapter {
         });
       } catch {
         checks.push({ name: `Bot ${i} SOL`, status: "fail", detail: "Cannot check" });
+      }
+
+      // Check USDC
+      if (usdcMint) {
+        try {
+          const ata = await getAssociatedTokenAddress(usdcMint, botKp.publicKey);
+          const info = await this.connection.getTokenAccountBalance(ata);
+          const usdcBalance = Number(info.value.amount);
+          checks.push({
+            name: `Bot ${i} USDC`,
+            status: usdcBalance >= 10_000_000 ? "ok" : "fail",
+            detail: `${(usdcBalance / 1_000_000).toFixed(0)} USDC`,
+          });
+        } catch {
+          checks.push({ name: `Bot ${i} USDC`, status: "fail", detail: "No USDC account" });
+        }
       }
     }
 

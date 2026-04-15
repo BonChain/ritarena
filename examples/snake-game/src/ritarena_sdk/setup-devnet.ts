@@ -4,6 +4,9 @@ import {
   Connection, Keypair, LAMPORTS_PER_SOL,
   SystemProgram, Transaction, sendAndConfirmTransaction,
 } from "@solana/web3.js";
+// @ts-expect-error — spl-token is ESM-only but tsx handles CJS/ESM interop at runtime
+import { getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
+import { RitArena } from "@ritarena/sdk";
 import { createHash } from "crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -11,6 +14,7 @@ import * as path from "path";
 const RPC_URL = "https://api.devnet.solana.com";
 const BOT_COUNT = 8;
 const SOL_PER_BOT = 0.05;
+const USDC_PER_BOT = 15_000_000; // 15 USDC (5 registration + 5 entry + 5 buffer)
 
 function loadKeypair(): Keypair {
   const keypairPath = path.join(
@@ -35,13 +39,13 @@ async function main() {
 
   console.log("Master wallet:", master.publicKey.toBase58());
 
-  // Check master balance
+  // Check master SOL balance
   const balance = await connection.getBalance(master.publicKey);
-  const needed = BOT_COUNT * SOL_PER_BOT * LAMPORTS_PER_SOL + 0.01 * LAMPORTS_PER_SOL; // extra for tx fees
-  console.log(`Master balance: ${balance / LAMPORTS_PER_SOL} SOL`);
+  const needed = BOT_COUNT * SOL_PER_BOT * LAMPORTS_PER_SOL + 0.1 * LAMPORTS_PER_SOL;
+  console.log(`Master SOL balance: ${(balance / LAMPORTS_PER_SOL).toFixed(4)} SOL`);
 
   if (balance < needed) {
-    console.log(`\nNeed ${needed / LAMPORTS_PER_SOL} SOL total.`);
+    console.log(`\nNeed ~${(needed / LAMPORTS_PER_SOL).toFixed(2)} SOL total.`);
     console.log("Fund your master wallet first:");
     console.log("  Option 1: solana airdrop 2  (may be rate-limited)");
     console.log("  Option 2: https://faucet.solana.com  (paste your address)");
@@ -49,33 +53,78 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\nTransferring SOL to ${BOT_COUNT} bot keypairs...\n`);
+  // Get USDC mint from protocol config
+  const sdk = RitArena.readOnly(connection);
+  const protocol = await sdk.getProtocol();
+  if (!protocol) {
+    console.log("\nProtocol not initialized. Run the SDK test-devnet.ts first:");
+    console.log("  cd packages/sdk && npx tsx scripts/test-devnet.ts");
+    process.exit(1);
+  }
 
-  // Transfer SOL from master to each bot (avoids faucet rate limits)
+  const usdcMint = protocol.usdcMint;
+  console.log(`USDC mint: ${usdcMint.toBase58()}`);
+
+  // Ensure master has enough USDC (master is mint authority for test USDC)
+  const masterAta = await getOrCreateAssociatedTokenAccount(
+    connection, master, usdcMint, master.publicKey
+  );
+  const masterUsdcBalance = Number(masterAta.amount);
+  const totalUsdcNeeded = BOT_COUNT * USDC_PER_BOT;
+
+  if (masterUsdcBalance < totalUsdcNeeded) {
+    console.log(`\nMinting test USDC to master wallet...`);
+    const mintAmount = totalUsdcNeeded - masterUsdcBalance + 50_000_000; // extra buffer
+    await mintTo(
+      connection, master, usdcMint, masterAta.address,
+      master.publicKey, // mint authority
+      mintAmount
+    );
+    console.log(`  Minted ${(mintAmount / 1_000_000).toFixed(0)} USDC`);
+  }
+
+  console.log(`\nSetting up ${BOT_COUNT} bot keypairs...\n`);
+
   for (let i = 0; i < BOT_COUNT; i++) {
     const botKp = deriveBotKeypair(master, i);
     console.log(`Bot ${i}: ${botKp.publicKey.toBase58().slice(0, 16)}...`);
 
-    const botBalance = await connection.getBalance(botKp.publicKey);
-    if (botBalance >= SOL_PER_BOT * LAMPORTS_PER_SOL) {
-      console.log(`  Already has ${(botBalance / LAMPORTS_PER_SOL).toFixed(4)} SOL`);
-      continue;
+    // 1. Transfer SOL
+    const botSolBalance = await connection.getBalance(botKp.publicKey);
+    if (botSolBalance < SOL_PER_BOT * LAMPORTS_PER_SOL) {
+      const lamports = SOL_PER_BOT * LAMPORTS_PER_SOL - botSolBalance;
+      const tx = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: master.publicKey,
+          toPubkey: botKp.publicKey,
+          lamports,
+        })
+      );
+      await sendAndConfirmTransaction(connection, tx, [master]);
+      console.log(`  SOL: transferred ${(lamports / LAMPORTS_PER_SOL).toFixed(4)}`);
+    } else {
+      console.log(`  SOL: ${(botSolBalance / LAMPORTS_PER_SOL).toFixed(4)} (ok)`);
     }
 
-    const lamports = SOL_PER_BOT * LAMPORTS_PER_SOL - botBalance;
-    const tx = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: master.publicKey,
-        toPubkey: botKp.publicKey,
-        lamports,
-      })
+    // 2. Create USDC ATA + transfer USDC
+    const botAta = await getOrCreateAssociatedTokenAccount(
+      connection, master, usdcMint, botKp.publicKey
     );
-
-    const sig = await sendAndConfirmTransaction(connection, tx, [master]);
-    console.log(`  Transferred ${(lamports / LAMPORTS_PER_SOL).toFixed(4)} SOL (tx: ${sig.slice(0, 12)}...)`);
+    const botUsdcBalance = Number(botAta.amount);
+    if (botUsdcBalance < USDC_PER_BOT) {
+      const mintAmount = USDC_PER_BOT - botUsdcBalance;
+      await mintTo(
+        connection, master, usdcMint, botAta.address,
+        master.publicKey,
+        mintAmount
+      );
+      console.log(`  USDC: minted ${(mintAmount / 1_000_000).toFixed(0)} USDC`);
+    } else {
+      console.log(`  USDC: ${(botUsdcBalance / 1_000_000).toFixed(0)} (ok)`);
+    }
   }
 
-  console.log("\nSetup complete! Bot keypairs are derived deterministically.");
+  console.log("\nSetup complete! All bots have SOL + USDC.");
   console.log("Run: npm run start:devnet");
 }
 
