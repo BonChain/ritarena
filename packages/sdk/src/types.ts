@@ -139,3 +139,52 @@ export const BATTLE_ROYALE_TEMPLATE: CreateArenaConfig = {
   minWins: 0,
   minRegistrationAge: 0,
 };
+
+// --- GameServer types ---
+
+export interface GameServerConfig {
+  entryFee: number;
+  maxAgents: number;
+  minAgents?: number;
+  prizeSplit: number[];
+  actionSchema: string;
+  duration?: number;
+  eliminationInterval?: number;
+  creatorFeeBps?: number;
+  stakeBondAmount?: number;
+  retryAttempts?: number;
+  retryBaseDelay?: number;
+  mock?: boolean;
+}
+
+export interface GameAction {
+  snakeId: string;
+  round: number;
+  tick: number;
+  action: string;
+  result: string;
+  score: number;
+}
+
+export interface RoundReport {
+  confirmed: boolean;
+  tx?: string;
+  round: number;
+}
+
+export interface ArenaInfo {
+  arenaId: number;
+  entryFee: number;
+  prizePool: number;
+  prizeSplit: number[];
+  currentRound: number;
+  phase: string;
+  arenaPda: string;
+  explorerUrl?: string;
+}
+
+export interface ArenaFilter {
+  state?: "registration" | "active" | "finished";
+  maxEntryFee?: number;
+  creator?: PublicKey;
+}

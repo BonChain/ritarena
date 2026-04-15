@@ -29,6 +29,11 @@ export type {
   FinalizeArenaParams,
   ScoreUpdate,
   PrizeAssignment,
+  GameServerConfig,
+  GameAction,
+  RoundReport,
+  ArenaInfo,
+  ArenaFilter,
 } from "./types";
 
 export { BATTLE_ROYALE_TEMPLATE } from "./types";
