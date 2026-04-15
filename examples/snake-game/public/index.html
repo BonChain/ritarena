@@ -168,15 +168,16 @@
       margin-top: 2px;
     }
 
-    /* Winner overlay */
+    /* Winner banner — overlays canvas only, rest of UI stays clickable */
     #winner-overlay {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 10;
+      pointer-events: none;
     }
 
     #winner-overlay.show {
@@ -187,8 +188,9 @@
       background: #111;
       border: 2px solid #14F195;
       border-radius: 8px;
-      padding: 40px 60px;
+      padding: 32px 48px;
       text-align: center;
+      pointer-events: auto;
     }
 
     #winner-box p {
@@ -434,6 +436,13 @@
         <p id="preflight-msg"></p>
         <button id="btn-retry" style="display:none">Retry</button>
       </div>
+      <div id="winner-overlay">
+        <div id="winner-box">
+          <p>Winner</p>
+          <h2 id="winner-name"></h2>
+          <button id="btn-play-again">Play Again</button>
+        </div>
+      </div>
     </div>
 
     <aside>
@@ -468,13 +477,6 @@
     <div id="log-panel"></div>
   </section>
 
-  <div id="winner-overlay">
-    <div id="winner-box">
-      <p>Winner</p>
-      <h2 id="winner-name"></h2>
-      <button id="btn-play-again">Play Again</button>
-    </div>
-  </div>
 
   <script src="/renderer.js"></script>
 </body>
