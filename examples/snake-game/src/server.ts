@@ -226,22 +226,26 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
       });
     }
 
-    const roundEnd = engine.endRound();
-    if (roundEnd) {
-      setPhase(`round ${engine.round}`);
-      if (roundEnd.deaths.length > 0) {
-        const deathBots = roundEnd.deaths
-          .map((id) => botIdentities.get(id))
-          .filter((b): b is BotIdentity => b !== undefined);
+    // Skip round-end processing if game ended this tick —
+    // finalizeArena will be called on the next interval tick
+    if (!engine.gameOver) {
+      const roundEnd = engine.endRound();
+      if (roundEnd) {
+        setPhase(`round ${engine.round}`);
+        if (roundEnd.deaths.length > 0) {
+          const deathBots = roundEnd.deaths
+            .map((id) => botIdentities.get(id))
+            .filter((b): b is BotIdentity => b !== undefined);
 
-        await adapter.submitElimination(arenaId, {
-          roundNumber: roundEnd.roundNumber,
-          deaths: deathBots,
-          scores: roundEnd.scores,
-          actions: roundActions,
-        });
+          await adapter.submitElimination(arenaId, {
+            roundNumber: roundEnd.roundNumber,
+            deaths: deathBots,
+            scores: roundEnd.scores,
+            actions: roundActions,
+          });
+        }
+        roundActions = [];
       }
-      roundActions = [];
     }
 
     broadcast({ type: "state", state: engine.getState() });
