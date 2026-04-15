@@ -376,5 +376,34 @@ wss.on("connection", (ws) => {
 
 server.listen(PORT, () => {
   console.log(`\nSnake Game server running at http://localhost:${PORT}`);
-  console.log("Open the URL in your browser. Select mode and press Start.\n");
+  console.log("Open the URL in your browser. Select mode and press Start.");
+  console.log("Press Ctrl+C to stop. Active devnet arenas will need manual cleanup.\n");
 });
+
+// --- Graceful shutdown ---
+async function shutdown() {
+  console.log("\nShutting down...");
+
+  if (gameLoop) {
+    clearInterval(gameLoop);
+    gameLoop = null;
+  }
+
+  // Note: In devnet mode, the arena will remain Active on-chain.
+  // Users can call abandonArena after eliminationInterval * 2 (1400s) to get refunds.
+  // A future version could auto-cancel/finalize here.
+
+  addLog({
+    message: "[RitArena] Server shutting down. Arena may remain active on-chain. Use abandonArena after timeout for refunds.",
+    kind: "info"
+  });
+
+  // Give WS clients time to receive the message
+  await new Promise(r => setTimeout(r, 500));
+
+  server.close();
+  process.exit(0);
+}
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
