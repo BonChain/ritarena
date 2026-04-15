@@ -12,3 +12,9 @@ export const STRATEGY_COLORS: Record<string, string> = {
   aggressive: "#ef4444", // red
   random: "#9ca3af",     // gray
 };
+
+export function botLabel(id: string): string {
+  // "greedy-1" -> "G1", "cautious-2" -> "C2", "aggressive-1" -> "A1", "random-1" -> "R1"
+  const parts = id.split("-");
+  return (parts[0][0].toUpperCase() + (parts[1] || "")).slice(0, 2);
+}
