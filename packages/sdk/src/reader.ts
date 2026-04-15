@@ -4,12 +4,7 @@ import { createHash } from "crypto";
 import { PROGRAM_ID } from "./constants";
 import { pdas } from "./pda";
 import { IDL } from "./idl";
-import type {
-  Arena,
-  AgentProfile,
-  ArenaEntry,
-  ProtocolConfig,
-} from "./types";
+import type { Arena, AgentProfile, ArenaEntry, ProtocolConfig, ArenaFilter } from "./types";
 
 const dummyWallet = {
   publicKey: PublicKey.default,
@@ -134,5 +129,76 @@ export class RitArenaReader {
       leaf,
       proof
     );
+  }
+
+  async listArenas(filter?: ArenaFilter): Promise<Arena[]> {
+    const accounts = await (this.program.account as any).arena.all();
+    let arenas: Arena[] = accounts.map((a: any) => a.account);
+
+    if (filter?.state) {
+      arenas = arenas.filter((a) => filter.state! in a.state);
+    }
+    if (filter?.maxEntryFee !== undefined) {
+      arenas = arenas.filter((a) => Number(a.entryFee) <= filter.maxEntryFee!);
+    }
+    if (filter?.creator) {
+      arenas = arenas.filter((a) => a.creator.equals(filter.creator!));
+    }
+
+    return arenas;
+  }
+
+  watchArena(
+    arenaId: number,
+    callback: (arena: Arena) => void
+  ): () => void {
+    const arenaPda = pdas.arena(arenaId);
+    const subId = this.connection.onAccountChange(
+      arenaPda,
+      (accountInfo) => {
+        try {
+          const decoded = (this.program.coder.accounts as any).decode(
+            "arena",
+            accountInfo.data
+          );
+          callback(decoded);
+        } catch {
+          // ignore decode errors
+        }
+      },
+      "confirmed"
+    );
+    return () => {
+      this.connection.removeAccountChangeListener(subId);
+    };
+  }
+
+  watchEntry(
+    arenaId: number,
+    agentOwner: PublicKey,
+    callback: (entry: ArenaEntry) => void
+  ): () => void {
+    const arenaPda = pdas.arena(arenaId);
+    const profilePda = pdas.agentProfile(agentOwner);
+    const entryPda = pdas.arenaEntry(arenaPda, profilePda);
+
+    const subId = this.connection.onAccountChange(
+      entryPda,
+      (accountInfo) => {
+        try {
+          const decoded = (this.program.coder.accounts as any).decode(
+            "arenaEntry",
+            accountInfo.data
+          );
+          callback(decoded);
+        } catch {
+          // ignore decode errors
+        }
+      },
+      "confirmed"
+    );
+    return () => {
+      this.connection.removeAccountChangeListener(subId);
+    };
   }
 }
