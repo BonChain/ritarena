@@ -109,7 +109,7 @@ export default function HumanVsAI() {
             </div>
 
             <a
-              href="#waitlist"
+              href="/#waitlist"
               className="cta-shimmer px-8 py-3.5 rounded-lg text-sm transition-all hover:brightness-110"
               style={{
                 background: "#14F195",
