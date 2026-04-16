@@ -191,72 +191,52 @@ export type ArenaState =
  * });
  */
 export interface CreateArenaConfig {
-  // ── ENFORCED BY ON-CHAIN PROGRAM ──
+  // ── ECONOMY: money in, money out ──
 
-  /** ⚡ ENFORCED — Entry fee in USDC lamports (6 decimals). 5_000_000 = 5 USDC. Held in escrow vault. */
+  /** Entry fee in USDC lamports (6 decimals). 5_000_000 = 5 USDC. Held in escrow. */
   entryFee: number;
-  /** ⚡ ENFORCED — Max participants. Up to 100, but ~30 practical limit due to tx size. */
-  maxAgents: number;
-  /** ⚡ ENFORCED — Minimum agents required before startArena() can be called. */
-  minAgents: number;
-  /** ⚡ ENFORCED — Creator fee in basis points. 500 = 5%, max 2000 = 20%. Paid from prize pool on finalize. */
+  /** Creator fee in basis points. 500 = 5%, max 2000 = 20%. Paid from pool on finalize. */
   creatorFeeBps: number;
-  /** ⚡ ENFORCED — Prize distribution. [60, 30, 10] = 1st 60%, 2nd 30%, 3rd 10%. Must sum to 100. Max 10 slots. */
+  /** Prize distribution. [60, 30, 10] = 1st 60%, 2nd 30%, 3rd 10%. Must sum to 100. Max 10 slots. */
   prizeSplit: number[];
-  /** ⚡ ENFORCED — Optional creator stake bond in USDC lamports. Slashed to treasury if arena is abandoned. Default: 0 */
+  /** Optional creator stake bond in USDC lamports. Slashed if arena abandoned. Default: 0 */
   stakeBondAmount?: number;
 
-  // ── USED FOR ABANDON TIMEOUT ONLY ──
+  // ── STRUCTURE: how the arena is set up ──
 
+  /** Max participants. Up to 100, ~30 practical due to tx size. */
+  maxAgents: number;
+  /** Minimum agents required before startArena() can be called. */
+  minAgents: number;
   /**
-   * 🕐 TIMEOUT — Seconds between rounds. Must be > 0.
-   * The ONLY on-chain use: abandon timeout = `eliminationInterval × 2`.
-   * If the oracle is silent for this long, anyone can call abandonArena()
-   * to refund all players and slash the creator's bond.
-   *
-   * Set high (e.g. `duration + 100`) if your game server handles timing manually.
-   * GameServer defaults to this automatically.
+   * Abandon timeout control. Must be > 0.
+   * If your game server goes silent for `eliminationInterval × 2` seconds,
+   * anyone can abandon the arena and refund all players.
+   * GameServer sets this to `duration + 100` by default (safe for manual control).
    */
   eliminationInterval: number;
 
-  // ── METADATA ONLY (stored but not enforced) ──
+  // ── LABELS: stored on-chain for display, NOT enforced during gameplay ──
 
-  /**
-   * 📋 METADATA — Arena duration in seconds. 3600 = 1 hour. Must be > 0.
-   * Stored on-chain but NOT enforced by any instruction.
-   * Used by frontends to display "this arena lasts X minutes."
-   * The oracle can run the game for any length regardless of this value.
-   */
+  /** Display hint: arena duration in seconds. 3600 = 1 hour. Your server controls actual timing. */
   duration: number;
-  /**
-   * 📋 METADATA — Percentage eliminated per round (1-99). Must be >= 1.
-   * Stored on-chain but NOT enforced during submitElimination.
-   * The oracle decides who gets eliminated — this is just a hint for bots/UIs.
-   * Set to 1 if your game handles eliminations manually.
-   */
+  /** Display hint: % eliminated per round (1-99). Your server decides who actually dies. */
   eliminationPercent: number;
   /**
-   * 📋 METADATA — Valid actions. Max 256 chars.
-   * Stored on-chain for bots to read. The game server enforces it, not the blockchain.
-   *
-   * Examples by game type:
-   * - Snake/grid game: "up,down,left,right"
-   * - Position game:   "move(x,y),attack(x,y)"
-   * - Card game:       "bid:number|pass|fold"
-   * - Trading game:    "buy:amount|sell:amount|hold"
-   * - Free-form JSON:  "json:{type,x,y,data}"
+   * Display hint: valid actions for bots. Your game server enforces this, not the blockchain.
+   * Examples: "up,down,left,right" | "move(x,y),attack(x,y)" | "bid:number,pass,fold"
    */
   actionSchema: string;
-  /** 📋 METADATA — 32-byte SHA256 hash of your game rules. For verification, not enforced. */
+  /** SHA256 hash of your game rules document. For verification only. */
   rulesHash: Uint8Array;
 
-  // ── ENTRY GATES (enforced on enterArena) ──
+  // ── ENTRY REQUIREMENTS: who can join ──
 
-  /** 🚪 GATE — Agents must have completed this many arenas. Default: 0 (no gate) */
+  /** Player must have completed this many arenas. Default: 0 (anyone can join) */
   minArenasCompleted?: number;
-  /** 🚪 GATE — Agents must have this many wins. Default: 0 */
+  /** Player must have this many wins. Default: 0 */
   minWins?: number;
-  /** 🚪 GATE — Profile must be this old in seconds. Default: 0 */
+  /** Player's profile must be this old in seconds. Default: 0 */
   minRegistrationAge?: number;
 }
 
