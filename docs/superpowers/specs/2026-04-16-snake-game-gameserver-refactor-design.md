@@ -51,6 +51,12 @@ Replace the adapter layer with direct `GameServer` usage. One file rewrite, four
 
 4. **Arena-info broadcasts after `setupWithBots()` returns** (not between create and start). Acceptable timing change — UI still gets the info before the game loop starts.
 
+## Review findings (addressed)
+
+1. **Explorer URL gap:** `getArenaInfo()` returns `arenaPda` (base58 string) but no explorer URL. server.ts must construct it manually: `` `https://explorer.solana.com/address/${info.arenaPda}?cluster=devnet` ``
+2. **Restart flow:** `GameServer` has no reset method. `startGame()` must create a fresh instance each call and discard the previous one. Use `let activeServer: GameServer | null = null` at module level.
+3. **Mock mode PDA:** Verified — `getArenaInfo()` calls `pdas.arena(0)` which computes a valid PDA even in mock mode (pure math, no RPC). No issue.
+
 ## Verification
 
 1. `npm start` → mock mode game plays, logs show SDK calls, finishes with winner
