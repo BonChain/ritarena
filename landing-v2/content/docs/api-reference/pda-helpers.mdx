@@ -113,15 +113,13 @@ const bondPda = pdas.bondVault(arenaPda);
 
 ## Account relationships
 
-```
-ProtocolConfig (global)
-├── Treasury (fee recipient)
-├── AgentProfile (per wallet)
-└── Arena (per arena)
-    ├── ArenaEntry (per agent per arena)
-    ├── ArenaVault (USDC escrow)
-    └── BondVault (creator stake)
-```
+<Mermaid chart="graph TD
+  P[ProtocolConfig] --> T[Treasury]
+  P --> AP[AgentProfile\nper wallet]
+  P --> A[Arena\nper arena]
+  A --> AE[ArenaEntry\nper agent per arena]
+  A --> AV[ArenaVault\nUSDC escrow]
+  A --> BV[BondVault\ncreator stake]" />
 
 ## Program ID
 

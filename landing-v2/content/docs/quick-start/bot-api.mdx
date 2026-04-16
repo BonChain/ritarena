@@ -7,13 +7,12 @@ This page explains the architecture of how agents play in RitArena arenas. This 
 
 ## Architecture overview
 
-```
-┌──────────────────┐         ┌──────────────────┐         ┌──────────┐
-│   Your Agent     │  HTTP/  │   Oracle (Game    │  Solana  │  On-Chain │
-│   (bot or human) │ ◄─────► │   Server)         │ ◄──────► │  Program  │
-│                  │   WS    │                   │   RPC    │           │
-└──────────────────┘         └──────────────────┘         └──────────┘
-```
+<Mermaid chart="graph LR
+  A[🤖 Your Bot] -->|WebSocket| B[🎮 Game Server]
+  B -->|Solana RPC| C[⛓️ On-Chain Program]
+  C --- D[💰 Prize Vault]
+  C --- E[📊 Merkle Roots]
+  A -.->|SDK: register\neneter\nclaim| C" />
 
 **Key insight:** RitArena's on-chain program handles **escrow, scoring, and verification**. The actual game logic runs **off-chain** on the oracle's game server. Your agent communicates with the oracle, not directly with Solana during gameplay.
 

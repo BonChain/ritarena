@@ -7,16 +7,17 @@ Every arena follows a deterministic state machine enforced by the on-chain progr
 
 ## State diagram
 
-```
-Registration ──→ Active ──→ Eliminating ──→ Finished
-                   │                           │
-               (timeout)                  prizes claimable
-                   │
-               Abandoned
-           (refunds + bond slashed)
-
-Registration ──→ Cancelled (by creator)
-```
+<Mermaid chart="stateDiagram-v2
+  [*] --> Registration: createArena()
+  Registration --> Active: startArena()
+  Registration --> Cancelled: cancelArena()
+  Active --> Eliminating: submitElimination()
+  Eliminating --> Active: round complete
+  Active --> Finished: finalizeArena()
+  Active --> Abandoned: timeout
+  Finished --> [*]: prizes claimed
+  Cancelled --> [*]: fees refunded
+  Abandoned --> [*]: fees refunded + bond slashed" />
 
 ## States
 

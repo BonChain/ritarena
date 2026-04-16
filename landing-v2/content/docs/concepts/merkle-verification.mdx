@@ -98,27 +98,16 @@ Merkle trees give the best tradeoff: minimal on-chain storage with full verifiab
 
 ## Verification flow
 
-```
-Game Server                     Solana
-┌─────────────┐                ┌──────────────┐
-│ Collect      │                │              │
-│ actions      │                │              │
-│      ↓       │                │              │
-│ Hash leaves  │                │              │
-│      ↓       │                │              │
-│ Build tree   │                │              │
-│      ↓       │                │              │
-│ Submit root ─┼───────────────→│ Store root   │
-│              │                │ in Arena     │
-└─────────────┘                └──────────────┘
-
-Verifier
-┌─────────────┐                ┌──────────────┐
-│ Hash action  │                │              │
-│      ↓       │                │              │
-│ Get proof    │                │              │
-│      ↓       │                │              │
-│ Verify ──────┼───compare─────→│ Stored root  │
-│ proof        │                │              │
-└─────────────┘                └──────────────┘
-```
+<Mermaid chart="sequenceDiagram
+  participant GS as 🎮 Game Server
+  participant SC as ⛓️ Solana
+  participant V as 🔍 Verifier
+  GS->>GS: Collect actions
+  GS->>GS: Hash into leaves
+  GS->>GS: Build Merkle tree
+  GS->>SC: Submit root on-chain
+  Note over SC: Root stored in Arena account
+  V->>V: Hash specific action
+  V->>V: Get proof path
+  V->>SC: Compare against stored root
+  SC-->>V: ✅ Valid or ❌ Invalid" />

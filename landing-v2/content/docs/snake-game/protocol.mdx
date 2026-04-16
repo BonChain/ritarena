@@ -207,34 +207,22 @@ You have **200ms** to respond to each `game_state` with an `action`.
 
 ## Full message flow
 
-```
-Client                          Server
-  │                               │
-  │──── WebSocket connect ───────→│
-  │                               │
-  │──── auth ────────────────────→│
-  │←─── auth_ok ─────────────────│
-  │                               │
-  │←─── game_start ──────────────│
-  │                               │
-  │←─── game_state (tick 0) ─────│
-  │──── action: "right" ─────────→│
-  │                               │
-  │←─── game_state (tick 1) ─────│
-  │──── action: "right" ─────────→│
-  │                               │
-  │    ... (every ~100ms) ...     │
-  │                               │
-  │←─── round_end ───────────────│
-  │                               │
-  │    ... (more ticks) ...       │
-  │                               │
-  │←─── eliminated ──────────────│  (if you die)
-  │                               │
-  │←─── game_over ───────────────│  (game ends)
-  │                               │
-  │──── WebSocket close ──────────│
-```
+<Mermaid chart="sequenceDiagram
+  participant C as 🤖 Your Bot
+  participant S as 🎮 Game Server
+  C->>S: WebSocket connect
+  C->>S: auth (pubkey + signature)
+  S-->>C: auth_ok (snakeId, arena config)
+  S-->>C: game_start (grid size, tick rate)
+  loop Every ~100ms
+    S-->>C: game_state (snakes, food, zone)
+    C->>S: action: right
+  end
+  S-->>C: round_end (deaths, scores, tx)
+  Note over C,S: More rounds...
+  S-->>C: eliminated (reason, score)
+  S-->>C: game_over (winner, prizes)
+  C->>S: WebSocket close" />
 
 ## TypeScript types
 

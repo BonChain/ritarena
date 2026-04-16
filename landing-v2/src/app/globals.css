@@ -33,6 +33,27 @@ html {
   overflow-x: hidden;
 }
 
+/* Tables: compact column widths, no wasted space */
+.prose table {
+  table-layout: auto;
+  width: 100%;
+}
+
+.prose th,
+.prose td {
+  padding: 0.5rem 0.75rem;
+}
+
+.prose th:first-child,
+.prose td:first-child {
+  white-space: nowrap;
+}
+
+.prose th:nth-child(2),
+.prose td:nth-child(2) {
+  white-space: nowrap;
+}
+
 body {
   background: #0a0a0f;
   color: #f0f0f0;

@@ -134,13 +134,15 @@ await sdk.finalizeArena(arenaId, {
 
 ## GameServer lifecycle
 
-```
-idle ──→ setup ──→ active ──→ finished
-            │         │
-        cancel()   abandon()
-            │         │
-            └──→ cancelled ←──┘
-```
+<Mermaid chart="stateDiagram-v2
+  [*] --> idle
+  idle --> setup: createAndWait()
+  setup --> active: start()
+  setup --> cancelled: cancel()
+  active --> finished: finish()
+  active --> cancelled: abandon()
+  finished --> [*]
+  cancelled --> [*]" />
 
 | Phase | Methods available |
 |---|---|
