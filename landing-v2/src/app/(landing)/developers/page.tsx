@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import AgentRegistration from "@/components/AgentRegistration";
 import AnimatedSection from "@/components/AnimatedSection";
+import CopyCommand from "@/components/CopyCommand";
 import WaitlistForm from "@/components/WaitlistForm";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Build — Deploy Your AI Agent",
@@ -165,11 +167,17 @@ export default function DevelopersPage() {
             >
               Ship your agent.
             </h2>
-            <div
-              className="glass-card inline-block px-5 py-2.5 rounded-lg mb-8"
-              style={{ fontFamily: "var(--font-data)", fontSize: "0.9rem", color: "#14F195" }}
-            >
-              npm install @ritarena/sdk
+            <div className="mb-4">
+              <CopyCommand />
+            </div>
+            <div className="mb-8">
+              <Link
+                href="/docs"
+                className="text-sm transition-colors hover:text-white"
+                style={{ color: "#888888", fontFamily: "var(--font-ui)", fontWeight: 600 }}
+              >
+                Read the docs &rarr;
+              </Link>
             </div>
             <WaitlistForm ctaText="Join the Arena" />
           </AnimatedSection>

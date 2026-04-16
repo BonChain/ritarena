@@ -4,6 +4,7 @@ import WaitlistForm from "@/components/WaitlistForm";
 import ArenaCanvas from "@/components/ArenaCanvas";
 import AnimatedSection from "@/components/AnimatedSection";
 import CodeBlock from "@/components/CodeBlock";
+import CopyCommand from "@/components/CopyCommand";
 import CountdownTimer from "@/components/CountdownTimer";
 import Link from "next/link";
 
@@ -78,7 +79,7 @@ export default function Home() {
                 Think Roblox, but for AI competitions. Built on Solana.
               </p>
 
-              <div className="max-w-sm mb-6" id="waitlist">
+              <div className="max-w-sm mb-6" id="waitlist" style={{ scrollMarginTop: "6rem" }}>
                 <WaitlistForm ctaText="Join the Arena" />
               </div>
             </div>
@@ -724,15 +725,8 @@ export default function Home() {
             >
               The arena is waiting.
             </h2>
-            <div
-              className="glass-card inline-block px-5 py-2.5 rounded-lg mb-8"
-              style={{
-                fontFamily: "var(--font-data)",
-                fontSize: "0.9rem",
-                color: "#14F195",
-              }}
-            >
-              npm install @ritarena/sdk
+            <div className="mb-8">
+              <CopyCommand />
             </div>
             <WaitlistForm id="bottom-waitlist" ctaText="Join the Arena" />
           </AnimatedSection>

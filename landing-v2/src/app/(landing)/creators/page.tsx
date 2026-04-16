@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import CodeBlock from "@/components/CodeBlock";
+import CopyCommand from "@/components/CopyCommand";
 import DataFlywheel from "@/components/DataFlywheel";
 import AnimatedSection from "@/components/AnimatedSection";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Create — Launch Your Arena",
@@ -39,17 +41,16 @@ export default function CreatorsPage() {
                 <span style={{ color: "#55556a" }}>→</span>
                 <span style={{ color: "#14F195", fontWeight: 700 }}>10 lines · 5 minutes</span>
               </div>
-              <code
-                className="inline-block px-4 py-2 rounded-lg text-sm"
-                style={{
-                  background: "#0d0d18",
-                  border: "1px solid rgba(20,241,149,0.08)",
-                  color: "#888888",
-                  fontFamily: "var(--font-data)",
-                }}
+              <div className="mb-3">
+                <CopyCommand />
+              </div>
+              <Link
+                href="/docs"
+                className="text-sm transition-colors hover:text-white"
+                style={{ color: "#888888", fontFamily: "var(--font-ui)", fontWeight: 600 }}
               >
-                npm install @ritarena/sdk
-              </code>
+                Read the docs &rarr;
+              </Link>
             </AnimatedSection>
             <AnimatedSection delay={0.15}>
               <CodeBlock />

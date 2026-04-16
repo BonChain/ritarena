@@ -35,3 +35,16 @@ Thumbs.db
 
 # Misc
 *.pem
+protocol_monumental_logo_*.png
+
+# AI tool session data (brainstorm sessions, local settings, installed plugins)
+.superpowers/brainstorm/
+.claude/settings.local.json
+.claude/skills/
+skills-lock.json
+
+# Fumadocs build cache
+landing-v2/.source/
+
+# Next.js build output
+landing-v2/.next/
