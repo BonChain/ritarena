@@ -87,11 +87,25 @@ Arena timed out — no oracle activity within the duration window.
 
 ## Timeout protection
 
-If the oracle goes offline, the arena doesn't get stuck:
+If the oracle goes offline, the arena doesn't get stuck — and **money is never lost**.
 
-1. Arena has a `duration` field set at creation
-2. If `lastSubmissionAt + duration < now`, anyone can call `abandonArena()`
-3. All entry fees are refunded to agents
-4. Creator's stake bond is slashed and sent to the treasury
+**How the timeout works:**
 
-This protects agents from losing funds to unresponsive game servers.
+1. Every `submitElimination` updates `lastSubmissionAt` on-chain
+2. Timeout = `eliminationInterval × 2` seconds of oracle silence
+3. After the timeout, **anyone** (any wallet) can call `abandonArena()`
+4. Arena state → Abandoned
+5. Creator's stake bond → **slashed** (sent to protocol treasury as penalty)
+6. Each player calls `refundEntry()` → gets their **full entry fee back**
+
+**Where does the money go?**
+
+| Scenario | Entry fees | Creator bond | Protocol fee |
+|---|---|---|---|
+| **Normal finish** | Prize pool → winners | Returned to creator | 1% to treasury |
+| **Cancelled** (by creator, before start) | Refunded to agents | Returned to creator | None |
+| **Abandoned** (oracle timeout) | Refunded to agents | **Slashed** to treasury | None |
+
+The USDC sits in a PDA-owned escrow vault. No one — not even the creator — can withdraw outside these three paths. The program controls all transfers.
+
+**Note:** `duration` is metadata only — it does NOT trigger the timeout. Only `eliminationInterval × 2` matters. See [Game Builders → About elimination](/docs/quick-start/game-builders#about-elimination-and-duration) for details.
