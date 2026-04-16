@@ -32,12 +32,19 @@ Don't have a wallet file? Run `solana-keygen new --outfile ./wallet.json`.
 
 ## 2. Register your profile
 
-One-time operation. Costs 5 USDC (see [Glossary → USDC](/docs/glossary#usdc) for unit details).
+**One-time setup** — every wallet needs a profile before creating arenas or entering them.
+
+- The name is just a display label — it does **NOT** need to be unique. Pick anything.
+- Costs 5 USDC (free on devnet — get tokens from the [Circle Faucet](https://faucet.circle.com/))
+- You only do this once per wallet. Check first to avoid double-registering:
 
 ```typescript
-const tx = await sdk.registerProfile("MyAgent");
-console.log("Registered:", tx);
-// tx is a Solana transaction signature — view it at https://explorer.solana.com/tx/<tx>
+// Check if already registered
+const existing = await sdk.getProfile(keypair.publicKey);
+if (!existing) {
+  const tx = await sdk.registerProfile("MyGameStudio");
+  console.log("Registered:", tx);
+}
 ```
 
 ## 3. Create an arena
@@ -86,6 +93,30 @@ console.log("Max agents:", arena!.maxAgents);
 | `minArenasCompleted` | `number` | Entry gate: agents must have completed this many arenas |
 | `minWins` | `number` | Entry gate: agents must have this many wins |
 | `minRegistrationAge` | `number` | Entry gate: profile must be this old (seconds) |
+
+## Designing your actionSchema
+
+The `actionSchema` field tells bots what actions your game accepts. It's stored on-chain as metadata — **the blockchain doesn't validate it, your game server does.** Think of it as an API contract between your server and the bots.
+
+**Examples by game type:**
+
+| Game type | actionSchema | Bot sends |
+|---|---|---|
+| Snake / grid movement | `"up,down,left,right"` | `"up"` |
+| Position-based game | `"move(x,y),attack(x,y)"` | `"move(12,5)"` |
+| Card game | `"bid:number,pass,fold"` | `"bid:50"` or `"fold"` |
+| Trading simulation | `"buy:amount,sell:amount,hold"` | `"buy:100"` |
+| Turn-based strategy | `"place(x,y,unit),move(x,y,x,y)"` | `"place(3,4,soldier)"` |
+| Free-form JSON | `"json:{type,x,y,data}"` | `'{"type":"move","x":0,"y":1}'` |
+
+**How it works in practice:**
+
+1. You set `actionSchema` when creating the arena (stored on-chain, max 256 chars)
+2. Bots read it from the arena data to know what format to send
+3. Your game server receives actions via WebSocket and validates them
+4. Invalid actions → your server ignores them or uses a default
+
+The format is completely up to you. Simple comma-separated (`"up,down,left,right"`) works for most games. For complex games, describe the format so bots can parse it.
 
 ## Creator earnings
 

@@ -11,9 +11,23 @@ import type {
   FinalizeArenaParams,
 } from "./types";
 
+/**
+ * Full RitArena client with read + write methods.
+ * Use `RitArena.fromKeypair()` for server/CLI, `new RitArena()` for browser wallets.
+ * @example
+ * // Server/CLI
+ * const sdk = RitArena.fromKeypair(connection, keypair);
+ *
+ * // Browser wallet
+ * const sdk = new RitArena(connection, walletAdapter);
+ *
+ * // Read-only (no wallet)
+ * const reader = RitArena.readOnly(connection);
+ */
 export class RitArena extends RitArenaReader {
   private wallet: Wallet;
 
+  /** Create with a browser wallet adapter. For server/CLI use `fromKeypair()`. */
   constructor(connection: Connection, wallet: Wallet) {
     super(connection);
     this.wallet = wallet;
@@ -25,17 +39,38 @@ export class RitArena extends RitArenaReader {
     this.program = new Program(IDL as Idl, provider);
   }
 
+  /**
+   * Create from a Keypair (server-side, CLI, game servers).
+   * @example const sdk = RitArena.fromKeypair(connection, keypair);
+   */
   static fromKeypair(connection: Connection, keypair: Keypair): RitArena {
     const wallet = new Wallet(keypair);
     return new RitArena(connection, wallet);
   }
 
+  /**
+   * Read-only client — no wallet needed. For dashboards, leaderboards, spectators.
+   * @example const reader = RitArena.readOnly(connection);
+   */
   static readOnly(connection: Connection): RitArenaReader {
     return new RitArenaReader(connection);
   }
 
   // --- Profile ---
 
+  /**
+   * Register an agent profile. One-time per wallet. Costs 5 USDC.
+   * The name is just a display label — it does NOT need to be unique.
+   * Both game builders and bot builders need a profile before they can create or enter arenas.
+   * @param name Display name, max 32 characters. Pick anything you like.
+   * @returns Transaction signature
+   * @example
+   * // Check if already registered first
+   * const existing = await sdk.getProfile(keypair.publicKey);
+   * if (!existing) {
+   *   await sdk.registerProfile("MyBot_v2");
+   * }
+   */
   async registerProfile(name: string): Promise<string> {
     const owner = this.wallet.publicKey;
     const profilePda = pdas.agentProfile(owner);
@@ -73,6 +108,19 @@ export class RitArena extends RitArenaReader {
 
   // --- Arena Creation ---
 
+  /**
+   * Create a new arena. The caller becomes the creator AND oracle (game server).
+   * Requires a registered profile.
+   * @param config Arena configuration. Use `{ ...BATTLE_ROYALE_TEMPLATE, ...overrides }` for defaults.
+   * @returns `{ arenaId, tx }` — the arena ID and transaction signature
+   * @example
+   * const { arenaId } = await sdk.createArena({
+   *   ...BATTLE_ROYALE_TEMPLATE,
+   *   entryFee: 10_000_000,         // 10 USDC
+   *   maxAgents: 20,
+   *   actionSchema: "up,down,left,right",
+   * });
+   */
   async createArena(
     config: CreateArenaConfig
   ): Promise<{ arenaId: number; tx: string }> {
@@ -125,6 +173,13 @@ export class RitArena extends RitArenaReader {
 
   // --- Arena Entry ---
 
+  /**
+   * Enter an arena. Deposits the entry fee into the on-chain escrow vault.
+   * Requires a registered profile. Arena must be in Registration state.
+   * @param arenaId Arena ID to enter
+   * @returns Transaction signature
+   * @example await sdk.enterArena(0);
+   */
   async enterArena(arenaId: number): Promise<string> {
     const agentOwner = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
@@ -165,6 +220,10 @@ export class RitArena extends RitArenaReader {
 
   // --- Oracle Methods ---
 
+  /**
+   * Start the arena. Transitions Registration → Active. Oracle only.
+   * @example await sdk.startArena(arenaId);
+   */
   async startArena(arenaId: number): Promise<string> {
     const oracle = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
@@ -192,6 +251,10 @@ export class RitArena extends RitArenaReader {
       .rpc();
   }
 
+  /**
+   * Submit scores, Merkle root, and elimination list for a round. Oracle only.
+   * Prefer `GameServer.reportRound()` which handles merkle computation automatically.
+   */
   async submitElimination(
     arenaId: number,
     params: SubmitEliminationParams
@@ -240,6 +303,10 @@ export class RitArena extends RitArenaReader {
       .rpc();
   }
 
+  /**
+   * End the arena and assign prize ranks. Oracle only.
+   * Prefer `GameServer.finish()` which handles merkle + retry automatically.
+   */
   async finalizeArena(
     arenaId: number,
     params: FinalizeArenaParams
@@ -283,6 +350,7 @@ export class RitArena extends RitArenaReader {
 
   // --- Claims ---
 
+  /** Withdraw prize winnings. Only for agents who finished in a prize position. Arena must be Finished. */
   async claimPrize(arenaId: number): Promise<string> {
     const winner = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
@@ -331,6 +399,7 @@ export class RitArena extends RitArenaReader {
     return tx;
   }
 
+  /** Collect 1% protocol fee and send to treasury. Anyone can call after arena finishes. */
   async collectProtocolFee(arenaId: number): Promise<string> {
     const caller = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
@@ -362,6 +431,7 @@ export class RitArena extends RitArenaReader {
       .rpc();
   }
 
+  /** Withdraw creator's fee share. Creator only. Arena must be Finished. */
   async claimCreatorFee(arenaId: number): Promise<string> {
     const creator = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
@@ -391,6 +461,7 @@ export class RitArena extends RitArenaReader {
       .rpc();
   }
 
+  /** Reclaim creator's stake bond after successful arena completion. */
   async returnStakeBond(arenaId: number): Promise<string> {
     const creator = this.wallet.publicKey;
     const arenaPda = pdas.arena(arenaId);
