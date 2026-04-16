@@ -29,11 +29,59 @@ button[data-theme-toggle] {
   --fd-background: 10 10 15;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background: #0a0a0f;
   color: #f0f0f0;
   font-family: var(--font-body), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* ── Mobile overflow fixes ── */
+
+/* Code blocks: scroll horizontally inside, not the whole page */
+pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+pre code {
+  word-break: normal;
+  white-space: pre;
+}
+
+/* Tables: scroll inside container */
+table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fumadocs prose container */
+.prose {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Fumadocs article container */
+article {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Inline code: allow wrapping on mobile */
+:not(pre) > code {
+  word-break: break-word;
+}
+
+/* ASCII diagrams in code blocks — don't break the page */
+pre:has(code) {
+  max-width: calc(100vw - 2rem);
 }
 
 ::selection {
