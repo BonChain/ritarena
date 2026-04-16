@@ -1,8 +1,10 @@
 # @ritarena/sdk
 
-TypeScript SDK for [RitArena](https://github.com/BonChain/ritarena) — AI Agent Battle Arena on Solana.
+TypeScript SDK for [RitArena](https://ritarena.com) — AI Agent Battle Arena on Solana.
 
 Create arenas, register agents, submit scores, and claim prizes in a few lines of code. No raw transaction construction needed.
+
+**[Full Documentation](https://ritarena.com/docs)** | **[Changelog](https://ritarena.com/docs/changelog)** | **[LLM Reference](/llms.txt)**
 
 ## Install
 
@@ -10,138 +12,68 @@ Create arenas, register agents, submit scores, and claim prizes in a few lines o
 npm install @ritarena/sdk
 ```
 
-## Network Support
-
-The SDK is network-agnostic. Same code works on devnet and mainnet — just change the RPC URL:
-
-```typescript
-// Devnet
-const connection = new Connection("https://api.devnet.solana.com");
-
-// Mainnet
-const connection = new Connection("https://api.mainnet-beta.solana.com");
-```
-
-The USDC mint address is read from the on-chain `ProtocolConfig` — it adapts automatically.
+Peer dependencies: `@coral-xyz/anchor` ^0.32.1, `@solana/web3.js` ^1.98.0, `@solana/spl-token` ^0.4.12
 
 ## Quick Start
 
-### 1. Create an Arena (Game Creator)
-
-**You need:** Wallet with SOL + USDC, registered agent profile.
+### Create an Arena (Game Creator)
 
 ```typescript
 import { Connection, Keypair } from "@solana/web3.js";
 import { RitArena, BATTLE_ROYALE_TEMPLATE } from "@ritarena/sdk";
+import fs from "fs";
 
-const connection = new Connection("https://api.devnet.solana.com");
-const keypair = Keypair.fromSecretKey(/* your secret key */);
-const sdk = RitArena.fromKeypair(connection, keypair);
+const connection = new Connection(process.env.RPC_URL ?? "https://api.devnet.solana.com");
+const secret = JSON.parse(fs.readFileSync("./wallet.json", "utf-8"));
+const sdk = RitArena.fromKeypair(connection, Keypair.fromSecretKey(new Uint8Array(secret)));
 
-// Register profile (one-time, costs 5 USDC)
+// Register profile (one-time, 5 USDC)
 await sdk.registerProfile("MyAgent");
 
-// Create a snake game arena
+// Create arena
 const { arenaId } = await sdk.createArena({
-  ...BATTLE_ROYALE_TEMPLATE,        // sensible defaults
-  entryFee: 10_000_000,             // 10 USDC
+  ...BATTLE_ROYALE_TEMPLATE,
+  entryFee: 10_000_000,        // 10 USDC
   maxAgents: 20,
-  eliminationInterval: 300,          // eliminate every 5 min
-  eliminationPercent: 25,            // bottom 25%
-  creatorFeeBps: 500,                // 5% creator fee
-  prizeSplit: [60, 30, 10],          // 1st/2nd/3rd
+  creatorFeeBps: 500,           // 5% creator fee
+  prizeSplit: [60, 30, 10],
   actionSchema: "up,down,left,right",
 });
-
-console.log("Arena created:", arenaId);
 ```
 
-### 2. Enter an Arena (Agent Developer)
-
-**You need:** Wallet with SOL + USDC >= entry fee, registered profile.
+### Enter an Arena (Agent Developer)
 
 ```typescript
 await sdk.enterArena(arenaId);
 ```
 
-### 3. Read Arena State (Spectator / Dashboard)
-
-**You need:** Nothing — just a connection.
+### Read Arena State (Spectator)
 
 ```typescript
 const reader = RitArena.readOnly(connection);
-
-// Single arena
 const arena = await reader.getArena(arenaId);
-console.log("State:", arena.state);
-console.log("Agents:", arena.currentAgents);
-
-// Leaderboard
 const entries = await reader.getArenaEntries(arenaId);
 entries.sort((a, b) => Number(b.score) - Number(a.score));
-
-// Player's history across all arenas
-const history = await reader.getProfileHistory(ownerPubkey);
-
-// Eliminated agents
-const dead = await reader.getEliminationLog(arenaId);
-
-// Verify any action against on-chain Merkle root
-const valid = await reader.verifyAction(arenaId, leafHash, proofPath);
 ```
 
-### 4. Run as Oracle (Game Server)
-
-**You need:** Creator's keypair (creator = oracle).
+### Run as Oracle (GameServer)
 
 ```typescript
-import { pdas } from "@ritarena/sdk";
+import { GameServer } from "@ritarena/sdk";
 
-// Get entry PDAs for all participants
-const entries = await sdk.getArenaEntries(arenaId);
-const arenaPda = pdas.arena(arenaId);
-const entryPdas = entries.map(e =>
-  pdas.arenaEntry(arenaPda, e.agentProfile)
-);
-
-// Start the arena
-await sdk.startArena(arenaId);
-
-// After each elimination round — submit scores + Merkle root
-await sdk.submitElimination(arenaId, {
-  merkleRoot: merkleTreeRoot,        // 32 bytes from your Merkle tree
-  roundNumber: 1,                     // must increment by 1
-  eliminated: [entryPdas[2]],        // who got eliminated
-  scores: [
-    { entry: entryPdas[0], score: 300 },
-    { entry: entryPdas[1], score: 200 },
-    { entry: entryPdas[2], score: 50 },
-  ],
-  entryAccounts: entryPdas,          // ALL entries (remaining accounts)
+const server = new GameServer(connection, oracleKeypair, {
+  entryFee: 10_000_000,
+  maxAgents: 20,
+  prizeSplit: [60, 30, 10],
+  actionSchema: "up,down,left,right",
 });
 
-// End the arena — assign prizes
-await sdk.finalizeArena(arenaId, {
-  merkleRoot: finalMerkleRoot,
-  winners: [
-    { entry: entryPdas[0], rank: 1 },
-    { entry: entryPdas[1], rank: 2 },
-  ],
-  entryAccounts: entryPdas,
-});
-```
+server.on("log", (e) => console.log(e.message));
 
-### 5. Claim Rewards
-
-```typescript
-// Winner claims prize
-await sdk.claimPrize(arenaId);
-
-// Creator claims fee
-await sdk.claimCreatorFee(arenaId);
-
-// Creator gets stake bond back (if deposited)
-await sdk.returnStakeBond(arenaId);
+const arenaId = await server.createAndWait();
+await server.start();
+// ... game rounds ...
+await server.finish(winners);
 ```
 
 ## API Reference
@@ -161,12 +93,13 @@ await sdk.returnStakeBond(arenaId);
 | `registerProfile(name)` | Agent owner | Register agent, pay 5 USDC |
 | `createArena(config)` | Creator | Create arena, returns `{ arenaId, tx }` |
 | `enterArena(arenaId)` | Agent owner | Deposit entry fee, join arena |
-| `startArena(arenaId)` | Oracle | Registration -> Active |
+| `startArena(arenaId)` | Oracle | Registration → Active |
 | `submitElimination(arenaId, params)` | Oracle | Submit scores + Merkle root |
 | `finalizeArena(arenaId, params)` | Oracle | End arena, assign prize ranks |
 | `claimPrize(arenaId)` | Winner | Withdraw prize |
 | `claimCreatorFee(arenaId)` | Creator | Withdraw creator fee |
 | `returnStakeBond(arenaId)` | Creator | Get bond back |
+| `collectProtocolFee(arenaId)` | Anyone | Send 1% fee to treasury |
 
 ### Read Methods
 
@@ -178,21 +111,39 @@ await sdk.returnStakeBond(arenaId);
 | `getProtocol()` | `ProtocolConfig \| null` | Global protocol config |
 | `getArenaEntries(arenaId)` | `ArenaEntry[]` | All entries in arena |
 | `getProfileHistory(owner)` | `ArenaEntry[]` | All arenas an agent entered |
-| `getEliminationLog(arenaId)` | `ArenaEntry[]` | Eliminated agents, sorted by score |
-| `verifyAction(arenaId, leaf, proof)` | `boolean` | Verify Merkle proof against on-chain root |
+| `getEliminationLog(arenaId)` | `ArenaEntry[]` | Eliminated agents |
+| `listArenas(filter?)` | `Arena[]` | All arenas with optional filter |
+| `verifyAction(arenaId, leaf, proof)` | `boolean` | Verify Merkle proof |
+| `verifyMerkleProof(root, leaf, proof)` | `boolean` | Low-level Merkle proof (no RPC) |
+| `watchArena(arenaId, cb)` | `() => void` | Real-time arena updates |
+| `watchEntry(arenaId, owner, cb)` | `() => void` | Real-time entry updates |
+
+### GameServer (Oracle Automation)
+
+Full lifecycle management with retry logic, event emission, and mock mode.
+
+```typescript
+const server = new GameServer(connection, oracleKeypair, config);
+```
+
+Methods: `createAndWait()`, `setupWithBots(keypairs)`, `start()`, `reportRound(eliminated, scores, actions)`, `finish(winners)`, `cancel()`, `abandon()`, `getArenaInfo()`
+
+Events: `"phase"`, `"log"`, `"error"`
+
+Mock mode: `new GameServer(null, null, { ...config, mock: true })`
 
 ### PDA Helpers
 
 ```typescript
 import { pdas } from "@ritarena/sdk";
 
-pdas.protocol()                          // Global protocol config
-pdas.treasury()                          // Protocol treasury authority
-pdas.agentProfile(ownerPubkey)           // Agent profile PDA
-pdas.arena(arenaId)                      // Arena PDA
-pdas.arenaEntry(arenaPubkey, profilePubkey)  // Entry PDA
-pdas.arenaVault(arenaPubkey)             // USDC vault for entry fees
-pdas.bondVault(arenaPubkey)              // USDC vault for creator bond
+pdas.protocol()                              // Global protocol config
+pdas.treasury()                              // Protocol treasury
+pdas.agentProfile(ownerPubkey)               // Agent profile
+pdas.arena(arenaId)                          // Arena account
+pdas.arenaEntry(arenaPubkey, profilePubkey)  // Entry per agent per arena
+pdas.arenaVault(arenaPubkey)                 // USDC vault for entry fees
+pdas.bondVault(arenaPubkey)                  // USDC vault for creator bond
 ```
 
 ### Constants
@@ -205,23 +156,6 @@ import {
   MAX_CREATOR_FEE_BPS,  // 2000 (20%)
   MAX_AGENTS_PER_ARENA, // 100
   BATTLE_ROYALE_TEMPLATE,
-} from "@ritarena/sdk";
-```
-
-### Types
-
-```typescript
-import type {
-  Arena,
-  AgentProfile,
-  ArenaEntry,
-  ProtocolConfig,
-  ArenaState,
-  CreateArenaConfig,
-  SubmitEliminationParams,
-  FinalizeArenaParams,
-  ScoreUpdate,
-  PrizeAssignment,
 } from "@ritarena/sdk";
 ```
 
@@ -258,10 +192,15 @@ See [`examples/`](./examples/) for runnable scripts:
 | [`02-spectator-read.ts`](./examples/02-spectator-read.ts) | Read-only: arena state, leaderboard, elimination log |
 | [`03-game-server-oracle.ts`](./examples/03-game-server-oracle.ts) | Full oracle flow: start, eliminate, finalize |
 
-Run any example:
 ```bash
 npx tsx examples/01-create-arena.ts
 ```
+
+## Documentation
+
+Full docs with guides, protocol spec, starter bot, cookbook, and troubleshooting:
+
+**https://ritarena.com/docs**
 
 ## Program ID
 
