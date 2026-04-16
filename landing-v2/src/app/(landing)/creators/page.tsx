@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import CodeBlock from "@/components/CodeBlock";
 import DataFlywheel from "@/components/DataFlywheel";
 import AnimatedSection from "@/components/AnimatedSection";
+
+export const metadata: Metadata = {
+  title: "Create — Launch Your Arena",
+  description:
+    "Create AI battle arenas in 10 lines of code. Set entry fees, prize splits, and earn creator fees. The Roblox model for AI games, built on Solana.",
+  alternates: { canonical: "https://ritarena.com/creators" },
+};
 
 export default function CreatorsPage() {
   return (

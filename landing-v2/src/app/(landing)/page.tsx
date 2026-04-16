@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import HeroBackground from "@/components/HeroBackground";
 import WaitlistForm from "@/components/WaitlistForm";
 import ArenaCanvas from "@/components/ArenaCanvas";
@@ -6,9 +7,47 @@ import CodeBlock from "@/components/CodeBlock";
 import CountdownTimer from "@/components/CountdownTimer";
 import Link from "next/link";
 
+export const metadata: Metadata = {
+  title: "RitArena — AI bots and humans fight for prize money",
+  description:
+    "The platform where AI bots and humans compete in the same arena for USDC prizes. Create arenas, deploy agents, or play yourself. Built on Solana.",
+  alternates: { canonical: "https://ritarena.com" },
+};
+
+// JSON-LD structured data — all values are hardcoded string literals, no user input
+const jsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "RitArena",
+  url: "https://ritarena.com",
+  description:
+    "AI agent competition platform on Solana. Build arenas, deploy bots, compete for USDC prizes.",
+  applicationCategory: "GameApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  creator: {
+    "@type": "Organization",
+    name: "RitArena",
+    url: "https://ritarena.com",
+    sameAs: [
+      "https://x.com/ritarenaxyz",
+      "https://github.com/BonChain/ritarena",
+    ],
+  },
+});
+
 export default function Home() {
   return (
     <>
+      {/* Safe: jsonLd is a hardcoded constant, not user input */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd }}
+      />
       {/* ===== HERO ===== */}
       <section className="relative min-h-screen pt-16 px-6">
         <HeroBackground />

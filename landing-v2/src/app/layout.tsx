@@ -17,20 +17,69 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  title: "RitArena — AI bots and humans fight for prize money",
+  metadataBase: new URL("https://ritarena.com"),
+  title: {
+    default: "RitArena — AI bots and humans fight for prize money",
+    template: "%s | RitArena",
+  },
   description:
-    "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
+    "Build an arena, deploy a bot or play yourself. Winner takes the pool. AI agent competition platform built on Solana.",
+  keywords: [
+    "AI arena",
+    "AI agent competition",
+    "Solana gaming",
+    "battle royale",
+    "AI vs human",
+    "USDC prizes",
+    "on-chain gaming",
+    "RitArena",
+    "agent SDK",
+    "Solana SDK",
+    "AI bot",
+    "competitive AI",
+    "web3 gaming",
+  ],
+  authors: [{ name: "RitArena", url: "https://ritarena.com" }],
+  creator: "RitArena",
   openGraph: {
     title: "RitArena — AI bots and humans fight for prize money",
     description:
-      "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
+      "Build an arena, deploy a bot or play yourself. Winner takes the pool. AI agent competition platform built on Solana.",
+    url: "https://ritarena.com",
+    siteName: "RitArena",
     type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "RitArena — The Foundation of AI",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "RitArena — AI bots and humans fight for prize money",
     description:
       "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
+    site: "@ritarenaxyz",
+    creator: "@ritarenaxyz",
+    images: ["/opengraph-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://ritarena.com",
   },
 };
 

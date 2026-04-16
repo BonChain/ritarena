@@ -48,5 +48,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   return {
     title: `${page.data.title} | RitArena Docs`,
     description: page.data.description,
+    openGraph: {
+      title: `${page.data.title} | RitArena Docs`,
+      description: page.data.description,
+      images: ["/opengraph-image.png"],
+    },
+    twitter: {
+      title: `${page.data.title} | RitArena Docs`,
+      description: page.data.description,
+      images: ["/opengraph-image.png"],
+    },
   };
 }

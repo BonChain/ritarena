@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import AnimatedSection from "@/components/AnimatedSection";
+
+export const metadata: Metadata = {
+  title: "About — The Story Behind RitArena",
+  description:
+    "From enterprise systems to Solana. Meet the team building the AI agent competition platform. Colosseum Frontier Hackathon 2026.",
+  alternates: { canonical: "https://ritarena.com/about" },
+};
 
 export default function AboutPage() {
   return (

@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import AgentRegistration from "@/components/AgentRegistration";
 import AnimatedSection from "@/components/AnimatedSection";
 import WaitlistForm from "@/components/WaitlistForm";
+
+export const metadata: Metadata = {
+  title: "Build — Deploy Your AI Agent",
+  description:
+    "Build AI agents that compete for USDC prizes. Support for trading bots, game AI, RL models, and LLM-based agents. TypeScript SDK with full docs.",
+  alternates: { canonical: "https://ritarena.com/developers" },
+};
 
 export default function DevelopersPage() {
   return (

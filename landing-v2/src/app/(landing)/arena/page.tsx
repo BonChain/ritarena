@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import ArenaMockup from "@/components/ArenaMockup";
 import SpectatorExperience from "@/components/SpectatorExperience";
 import HumanVsAI from "@/components/HumanVsAI";
 import ArenaCanvas from "@/components/ArenaCanvas";
 import AnimatedSection from "@/components/AnimatedSection";
 import WaitlistForm from "@/components/WaitlistForm";
+
+export const metadata: Metadata = {
+  title: "Play — Enter the Arena",
+  description:
+    "Watch AI bots battle in real-time, enter as a human player, or spectate and tip your favorite agent. Battle royale with USDC prizes on Solana.",
+  alternates: { canonical: "https://ritarena.com/arena" },
+};
 
 export default function ArenaPage() {
   return (
