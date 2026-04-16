@@ -345,6 +345,7 @@ fn build_collect_protocol_fee_ix(
     usdc_mint: &Pubkey,
     treasury_usdc: &Pubkey,
 ) -> Instruction {
+    let (protocol_pda, _) = protocol_pda();
     let (arena, _) = arena_pda(arena_id);
     let (arena_vault, _) = arena_vault_pda(&arena);
     let disc = anchor_discriminator("collect_protocol_fee");
@@ -353,6 +354,7 @@ fn build_collect_protocol_fee_ix(
         program_id: PROGRAM_ID,
         accounts: vec![
             AccountMeta::new_readonly(*caller, true),
+            AccountMeta::new_readonly(protocol_pda, false),
             AccountMeta::new(arena, false),
             AccountMeta::new(arena_vault, false),
             AccountMeta::new(*treasury_usdc, false),

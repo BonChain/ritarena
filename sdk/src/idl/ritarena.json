@@ -952,6 +952,7 @@
         },
         {
           "name": "arena",
+          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -1651,9 +1652,29 @@
       "msg": "Invalid USDC mint (must have 6 decimals)"
     },
     {
-      "code": 6022,
+      "code": 6029,
       "name": "InvalidTreasury",
       "msg": "Treasury account does not match protocol treasury"
+    },
+    {
+      "code": 6030,
+      "name": "EliminationIntervalOutOfBounds",
+      "msg": "Elimination interval out of bounds (10s - 86400s)"
+    },
+    {
+      "code": 6031,
+      "name": "DurationTooLong",
+      "msg": "Duration exceeds maximum (30 days)"
+    },
+    {
+      "code": 6032,
+      "name": "RegistrationExpired",
+      "msg": "Registration period has expired — arena never started"
+    },
+    {
+      "code": 6033,
+      "name": "UnauthorizedAbandon",
+      "msg": "Caller is not authorized to abandon this arena"
     }
   ],
   "types": [
@@ -1804,6 +1825,10 @@
           {
             "name": "current_round",
             "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
           },
           {
             "name": "started_at",
