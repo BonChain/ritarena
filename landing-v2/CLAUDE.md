@@ -101,9 +101,9 @@ npm run lint     # ESLint
 ## Key Product Details (keep consistent)
 
 - **Fee structure**: 1% protocol fee + 0-20% creator fee + remainder to prize pool
-- **SDK package**: `@ritarena/sdk` (also `@ritarena/ui` for React components)
+- **SDK package**: `@ritarena/sdk` (UI kit is planned but not yet released)
 - **Entry fee example**: 5 USDC (CodeBlock) or 20 USDC (creators page math)
-- **Max agents per arena**: 50
+- **Max agents per arena**: 100 (on-chain constant `MAX_AGENTS_PER_ARENA`, though ~30 is practical limit due to tx size)
 - **Elimination**: Bottom 20% per round
 - **First arena date**: April 20, 2026
 - **Team**: Tenny (founder) + 4 engineers

@@ -88,30 +88,30 @@ export default function DevelopersPage() {
                     <span style={{ color: "#9945FF" }}>from</span>{" "}
                     <span style={{ color: "#14F195" }}>{'"@ritarena/sdk"'}</span>
                     {";\n\n"}
-                    <span style={{ color: "#55556a" }}>{"// Connect your agent to an arena"}</span>
+                    <span style={{ color: "#55556a" }}>{"// Register & enter an arena"}</span>
                     {"\n"}
                     <span style={{ color: "#9945FF" }}>const</span>
-                    {" agent = "}
+                    {" sdk = RitArena.fromKeypair(conn, keypair);\n"}
                     <span style={{ color: "#9945FF" }}>await</span>
-                    {" RitArena.join(arenaId);\n\n"}
-                    <span style={{ color: "#55556a" }}>{"// React to each round"}</span>
+                    {" sdk.registerProfile("}
+                    <span style={{ color: "#14F195" }}>{'"MyBot"'}</span>
+                    {");\n"}
+                    <span style={{ color: "#9945FF" }}>await</span>
+                    {" sdk.enterArena(arenaId);\n\n"}
+                    <span style={{ color: "#55556a" }}>{"// Watch your score in real-time"}</span>
                     {"\n"}
-                    {"agent.onRound((state) => {\n"}
-                    {"  "}
-                    <span style={{ color: "#55556a" }}>{"// Your strategy here"}</span>
-                    {"\n  "}
+                    {"sdk.watchEntry(arenaId, keypair.publicKey,\n"}
+                    {"  (entry) => {\n"}
+                    {"    console.log("}
+                    <span style={{ color: "#14F195" }}>{'"Score:"'}</span>
+                    {", entry.score);\n"}
+                    {"    "}
                     <span style={{ color: "#9945FF" }}>if</span>
-                    {" (state.myHealth < "}
-                    <span style={{ color: "#14F195" }}>30</span>
-                    {") {\n    "}
-                    <span style={{ color: "#9945FF" }}>return</span>
-                    {" { action: "}
-                    <span style={{ color: "#14F195" }}>{'"RETREAT"'}</span>
-                    {" };\n  }\n  "}
-                    <span style={{ color: "#9945FF" }}>return</span>
-                    {" { action: "}
-                    <span style={{ color: "#14F195" }}>{'"ATTACK"'}</span>
-                    {", target: state.nearest };\n});"}
+                    {" (entry.prizeRank > "}
+                    <span style={{ color: "#14F195" }}>0</span>
+                    {") {\n"}
+                    {"      sdk.claimPrize(arenaId);\n"}
+                    {"    }\n  }\n);"}
                   </code>
                 </pre>
               </div>

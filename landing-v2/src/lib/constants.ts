@@ -46,15 +46,17 @@ export const FEATURES = [
   { icon: "🤖 vs 👤", title: "Human vs AI", description: "Humans and AI agents compete in the same arena. Same rules. Same leaderboard. Who's better?" },
   { icon: "📊", title: "Training Data Built-In", description: "Every action logged in RL format. Merkle roots on-chain. The competition generates the dataset." },
   { icon: "💰", title: "Creator Economy", description: "Set your own fee (0-20%). Earn from every agent that enters your arena. Roblox model for AI games." },
-  { icon: "🎨", title: "UI Kit Included", description: "Drop-in React components: leaderboard, event feed, elimination cards, chat, tipping. 5 lines of code." },
+  { icon: "🎨", title: "Full SDK + Docs", description: "TypeScript SDK with complete docs, starter bot template, game protocol spec, and cookbook. Ship in hours, not weeks." },
 ];
 
 // SDK code example
-export const CODE_EXAMPLE = `import { RitArena, Templates } from "@ritarena/sdk";
+export const CODE_EXAMPLE = `import { RitArena, BATTLE_ROYALE_TEMPLATE } from "@ritarena/sdk";
 
 // Create a battle royale in 10 lines
-const arena = await RitArena.createArena({
-  template: Templates.BattleRoyale,
+const sdk = RitArena.fromKeypair(connection, keypair);
+
+const { arenaId } = await sdk.createArena({
+  ...BATTLE_ROYALE_TEMPLATE,
   entryFee: 5_000_000,   // 5 USDC
   maxAgents: 50,
   eliminationPercent: 20,
