@@ -185,7 +185,7 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
     maxAgents: BOT_ROSTER.length,
     minAgents: 2,
     duration: 600,
-    eliminationInterval: 700,
+    eliminationInterval: 300,
     creatorFeeBps: 0,
     actionSchema: "up,down,left,right",
     prizeSplit: [100],
