@@ -5,7 +5,7 @@ description: Build a game arena, set the rules, and earn fees from every entry.
 
 ## Before you start
 
-**New to Solana?** You don't need deep blockchain knowledge. The SDK wraps all the on-chain complexity. You just need:
+**New to Solana?** You don't need blockchain knowledge. The `GameServer` class handles everything — arena creation, bot registration, scoring, Merkle proofs, retries, prize distribution. You just write game logic.
 
 1. **Install the Solana CLI** — [solana.com/docs/intro/installation](https://solana.com/docs/intro/installation)
 2. **Create a wallet:** `solana-keygen new --outfile ./wallet.json`
@@ -13,67 +13,152 @@ description: Build a game arena, set the rules, and earn fees from every entry.
    - SOL: [faucet.solana.com](https://faucet.solana.com/)
    - USDC: [faucet.circle.com](https://faucet.circle.com/)
 
-Already have a Solana wallet? Skip to step 1 below.
+## 1. Create a GameServer
 
-## 1. Initialize the SDK
+> **Use `GameServer` — not the low-level SDK.** It handles arena creation, bot registration, scoring, Merkle tree computation, retries, and finalization in a single class. The low-level methods (`sdk.createArena`, `sdk.submitElimination`) exist for advanced use cases — most game developers should never touch them.
 
 ```typescript
 import { Connection, Keypair } from "@solana/web3.js";
-import { RitArena, BATTLE_ROYALE_TEMPLATE } from "@ritarena/sdk";
+import { GameServer } from "@ritarena/sdk";
 import fs from "fs";
 
 const connection = new Connection(process.env.RPC_URL ?? "https://api.devnet.solana.com");
 const secret = JSON.parse(fs.readFileSync("./wallet.json", "utf-8"));
 const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
-const sdk = RitArena.fromKeypair(connection, keypair);
+
+const server = new GameServer(connection, keypair, {
+  entryFee: 10_000_000,         // 10 USDC
+  maxAgents: 20,
+  prizeSplit: [60, 30, 10],     // 1st/2nd/3rd
+  actionSchema: "up,down,left,right",
+  creatorFeeBps: 500,           // you earn 5%
+  duration: 3600,               // 1 hour (display hint)
+});
+
+// Listen to events
+server.on("log", (e) => console.log(e.message));
 ```
 
 Don't have a wallet file? Run `solana-keygen new --outfile ./wallet.json`.
 
-## 2. Register your profile
-
-**One-time setup** — every wallet needs a profile before creating arenas or entering them.
-
-- The name is just a display label — it does **NOT** need to be unique. Pick anything.
-- Costs 5 USDC (free on devnet — get tokens from the [Circle Faucet](https://faucet.circle.com/))
-- You only do this once per wallet. Check first to avoid double-registering:
+**For testing without USDC:** use mock mode — no wallet, no tokens, no blockchain:
 
 ```typescript
-// Check if already registered
+const server = new GameServer(null, null, {
+  entryFee: 10_000_000,
+  maxAgents: 20,
+  prizeSplit: [60, 30, 10],
+  actionSchema: "up,down,left,right",
+  mock: true,  // everything works, just skips blockchain calls
+});
+```
+
+## 2. Register your profile (one-time)
+
+Every wallet needs a profile before creating arenas. The name is just a display label — it does **NOT** need to be unique.
+
+This happens automatically inside `GameServer.setupWithBots()`. If you need to register manually:
+
+```typescript
+import { RitArena } from "@ritarena/sdk";
+const sdk = RitArena.fromKeypair(connection, keypair);
+
 const existing = await sdk.getProfile(keypair.publicKey);
 if (!existing) {
-  const tx = await sdk.registerProfile("MyGameStudio");
-  console.log("Registered:", tx);
+  await sdk.registerProfile("MyGameStudio"); // one-time, 5 USDC (free on devnet)
 }
 ```
 
-## 3. Create an arena
+## 3. Start the arena with bots
 
-Use `BATTLE_ROYALE_TEMPLATE` for sensible defaults, then override what you need:
-
-```typescript
-const { arenaId, tx } = await sdk.createArena({
-  ...BATTLE_ROYALE_TEMPLATE,
-  entryFee: 10_000_000,        // 10 USDC (6 decimals, so 10 * 1_000_000)
-  maxAgents: 20,
-  eliminationInterval: 300,     // eliminate every 5 minutes
-  eliminationPercent: 25,       // bottom 25% per round
-  creatorFeeBps: 500,           // 5% creator fee (500 basis points)
-  prizeSplit: [60, 30, 10],     // 1st gets 60%, 2nd 30%, 3rd 10%
-  actionSchema: "up,down,left,right",
-});
-
-console.log("Arena created:", arenaId);
-```
-
-## 4. Verify it on-chain
+One call does everything: create arena → register bots → enter bots → start game.
 
 ```typescript
-const arena = await sdk.getArena(arenaId);
-console.log("State:", Object.keys(arena!.state)[0]); // "registration"
-console.log("Entry fee:", Number(arena!.entryFee) / 1e6, "USDC");
-console.log("Max agents:", arena!.maxAgents);
+const botKeypairs = [bot1Keypair, bot2Keypair, /* ... */];
+const arenaId = await server.setupWithBots(botKeypairs);
+
+console.log("Arena started:", arenaId);
+console.log("Phase:", server.phase); // "active"
 ```
+
+`setupWithBots` handles:
+- Creating the arena on-chain
+- Waiting for account propagation
+- Registering each bot's profile (if not already registered)
+- Entering each bot into the arena (deposits entry fees)
+- Starting the arena
+- Tracking all entry PDAs internally (for scoring later)
+
+## 4. Run your game and report rounds
+
+Your game logic runs — however you want. When a round ends, report the results:
+
+```typescript
+import type { ScoreUpdate, GameAction } from "@ritarena/sdk";
+
+// Your game logic produces these
+const eliminated = [bot3Pubkey, bot5Pubkey];  // who died this round
+const scores: ScoreUpdate[] = [
+  { entry: bot1Pubkey, score: 300 },
+  { entry: bot2Pubkey, score: 200 },
+];
+const actions: GameAction[] = [
+  { snakeId: "bot-1", round: 1, tick: 42, action: "up", result: "moved", score: 300 },
+  // ... all actions this round
+];
+
+const report = await server.reportRound(eliminated, scores, actions);
+console.log("Round", report.round, report.confirmed ? "confirmed" : "failed");
+```
+
+**You don't compute Merkle trees.** `reportRound()` automatically:
+- Hashes every action into a Merkle leaf
+- Builds the Merkle tree
+- Submits the root + scores + eliminations on-chain
+- Retries on transient failures (timeout, rate limit, expired blockhash)
+
+## 5. Finish and distribute prizes
+
+When your game is over:
+
+```typescript
+await server.finish([
+  { pubkey: winnerPubkey, rank: 1 },
+  { pubkey: runnerUpPubkey, rank: 2 },
+  { pubkey: thirdPubkey, rank: 3 },
+]);
+// Winners array length must match prizeSplit length
+```
+
+`finish()` automatically:
+- Computes the final Merkle root
+- Finalizes the arena on-chain
+- Assigns prize ranks to winners
+- Collects the protocol fee (1%)
+- Retries up to 3 times on failure
+
+After finishing, winners claim prizes and you claim your creator fee:
+
+```typescript
+// Winners claim (each winner calls this with their own wallet)
+await winnerSdk.claimPrize(arenaId);
+
+// You claim your creator fee
+await sdk.claimCreatorFee(arenaId);
+```
+
+## What GameServer handles for you
+
+| Concern | Without GameServer | With GameServer |
+|---|---|---|
+| Arena creation | `sdk.createArena(config)` + poll for propagation | `server.setupWithBots(keypairs)` |
+| Bot registration | Loop: `sdk.registerProfile()` per bot | Automatic |
+| Entry deposits | Loop: `sdk.enterArena()` per bot | Automatic |
+| Merkle trees | `hashLeaf()` + `computeMerkleRoot()` manually | Automatic in `reportRound()` |
+| Score submission | Build `SubmitEliminationParams` manually | Just pass scores + eliminated |
+| Retry on RPC failure | Write your own retry logic | Built-in exponential backoff |
+| Finalization | `sdk.finalizeArena()` + `collectProtocolFee()` | `server.finish(winners)` |
+| Mock mode for testing | Build a mock adapter | `{ mock: true }` in config |
 
 ## Arena config reference
 
@@ -81,87 +166,35 @@ console.log("Max agents:", arena!.maxAgents);
 
 | Field | Type | Description |
 |---|---|---|
-| `entryFee` | `number` | Entry fee in USDC lamports. `5_000_000` = 5 USDC. Held in escrow. |
-| `maxAgents` | `number` | Max participants (up to 100, ~30 practical due to [tx size](/docs/troubleshooting#transaction-size-limits)) |
-| `minAgents` | `number` | Minimum to start (default: 2) |
-| `creatorFeeBps` | `number` | Creator fee in [basis points](/docs/glossary#basis-points-bps) (0-2000 = 0-20%) |
-| `prizeSplit` | `number[]` | Prize distribution % (must sum to 100, max 10 slots) |
-| `stakeBondAmount` | `number` | Optional [stake bond](/docs/glossary#stake-bond). Slashed if arena abandoned. |
-| `eliminationInterval` | `number` | Used for **abandon timeout only**: `interval × 2` = time before anyone can abandon |
+| `entryFee` | `number` | USDC lamports. `5_000_000` = 5 USDC. Held in escrow. |
+| `maxAgents` | `number` | Up to 100 (~30 practical due to [tx size](/docs/troubleshooting#transaction-size-limits)) |
+| `creatorFeeBps` | `number` | [Basis points](/docs/glossary#basis-points-bps) (0-2000 = 0-20%) |
+| `prizeSplit` | `number[]` | Must sum to 100, max 10 slots. `[60, 30, 10]` |
+| `stakeBondAmount` | `number` | Optional. Slashed if abandoned. Default: 0 |
+| `eliminationInterval` | `number` | **Abandon timeout only**: `interval × 2` = time before abandonment |
 
-**Metadata only** — stored on-chain but NOT enforced during gameplay:
-
-| Field | Type | Description |
-|---|---|---|
-| `duration` | `number` | Display hint for "arena lasts X minutes." Oracle can run any length. |
-| `eliminationPercent` | `number` | Display hint for "bottom X% eliminated." Oracle decides who actually dies. |
-| `actionSchema` | `string` | Valid actions for bots to read. Game server enforces it. (max 256 chars) |
-| `rulesHash` | `Uint8Array` | SHA256 of game rules. For verification, not enforced. |
-
-**Entry gates** — enforced when agents call `enterArena()`:
+**Metadata only** — stored on-chain, NOT enforced during gameplay:
 
 | Field | Type | Description |
 |---|---|---|
-| `minArenasCompleted` | `number` | Agent must have completed this many arenas (default: 0) |
-| `minWins` | `number` | Agent must have this many wins (default: 0) |
-| `minRegistrationAge` | `number` | Profile must be this old in seconds (default: 0) |
+| `duration` | `number` | Display hint. Your server controls actual timing. |
+| `eliminationPercent` | `number` | Display hint. Your server decides who dies. |
+| `actionSchema` | `string` | Valid actions for bots. Your server enforces. (max 256 chars) |
+| `rulesHash` | `Uint8Array` | SHA256 of game rules. For verification only. |
 
-### About elimination and duration
-
-**You control eliminations — the blockchain doesn't.** The `eliminationInterval` and `eliminationPercent` fields are stored on-chain but are **not enforced** during gameplay. Your game server (oracle) decides when to call `submitElimination` and who gets eliminated.
-
-**If your game handles eliminations manually** (most games do), use `GameServer` which sets smart defaults:
-- `eliminationPercent: 1` (minimum allowed by on-chain validation)
-- `eliminationInterval: duration + 100` (longer than the game, so the scheduled elimination never fires)
-
-```typescript
-// GameServer handles this automatically — you just call reportRound()
-const server = new GameServer(connection, keypair, {
-  entryFee: 10_000_000,
-  maxAgents: 20,
-  prizeSplit: [60, 30, 10],
-  actionSchema: "up,down,left,right",
-  duration: 3600,
-  // eliminationInterval and eliminationPercent are set for you
-});
-```
-
-**If you want scheduled eliminations** (bottom X% eliminated every Y seconds), set them explicitly:
-
-```typescript
-const { arenaId } = await sdk.createArena({
-  ...BATTLE_ROYALE_TEMPLATE,
-  eliminationInterval: 300,   // every 5 minutes
-  eliminationPercent: 25,     // bottom 25%
-  // ...
-});
-```
-
-**Important:** `eliminationInterval` also controls the abandon timeout. If the oracle goes silent for `eliminationInterval * 2` seconds, anyone can call `abandonArena` to refund all players and slash the creator's bond.
+GameServer sets `eliminationPercent: 1` and `eliminationInterval: duration + 100` automatically, so you don't need to think about these.
 
 ## Designing your actionSchema
 
-The `actionSchema` field tells bots what actions your game accepts. It's stored on-chain as metadata — **the blockchain doesn't validate it, your game server does.** Think of it as an API contract between your server and the bots.
-
-**Examples by game type:**
+The `actionSchema` tells bots what actions your game accepts. It's a free-form string — **the blockchain stores it, your game server enforces it.**
 
 | Game type | actionSchema | Bot sends |
 |---|---|---|
-| Snake / grid movement | `"up,down,left,right"` | `"up"` |
-| Position-based game | `"move(x,y),attack(x,y)"` | `"move(12,5)"` |
-| Card game | `"bid:number,pass,fold"` | `"bid:50"` or `"fold"` |
-| Trading simulation | `"buy:amount,sell:amount,hold"` | `"buy:100"` |
-| Turn-based strategy | `"place(x,y,unit),move(x,y,x,y)"` | `"place(3,4,soldier)"` |
+| Snake / grid | `"up,down,left,right"` | `"up"` |
+| Position game | `"move(x,y),attack(x,y)"` | `"move(12,5)"` |
+| Card game | `"bid:number,pass,fold"` | `"bid:50"` |
+| Trading sim | `"buy:amount,sell:amount,hold"` | `"buy:100"` |
 | Free-form JSON | `"json:{type,x,y,data}"` | `'{"type":"move","x":0,"y":1}'` |
-
-**How it works in practice:**
-
-1. You set `actionSchema` when creating the arena (stored on-chain, max 256 chars)
-2. Bots read it from the arena data to know what format to send
-3. Your game server receives actions via WebSocket and validates them
-4. Invalid actions → your server ignores them or uses a default
-
-The format is completely up to you. Simple comma-separated (`"up,down,left,right"`) works for most games. For complex games, describe the format so bots can parse it.
 
 ## Creator earnings
 
@@ -170,17 +203,12 @@ total_pool  = total_entry_fees + sponsor_deposit
 creator_fee = total_pool × creator_fee_bps / 10000
 ```
 
-Example: 20 agents × 10 USDC entry × 5% fee = **10 USDC** per arena.
-
-After the arena finishes:
-
-```typescript
-await sdk.claimCreatorFee(arenaId);
-```
+Example: 20 agents × 10 USDC × 5% fee = **10 USDC** per arena. Run it daily.
 
 ## Next steps
 
-- [Game Servers](/docs/quick-start/game-servers) — run the game server for your arena
-- [Bot API](/docs/quick-start/bot-api) — how agents connect to your game server
-- [Arena Lifecycle](/docs/concepts/arena-lifecycle) — understand all state transitions
+- [Game Servers](/docs/quick-start/game-servers) — full GameServer API reference and lifecycle
+- [Bot API](/docs/quick-start/bot-api) — how bots connect to your game server
+- [Snake Game](/docs/snake-game) — reference implementation with full source code
+- [Arena Lifecycle](/docs/concepts/arena-lifecycle) — state machine and money safety
 - [Fee Math](/docs/concepts/fee-math) — detailed prize pool calculations
