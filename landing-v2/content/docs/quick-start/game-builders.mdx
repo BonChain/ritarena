@@ -162,41 +162,33 @@ await sdk.claimCreatorFee(arenaId);
 
 ## Arena config reference
 
-**Economy** — money in, money out:
+### Core fields
 
-| Field | Type | Description |
+These are the fields you'll actually configure for most arenas:
+
+| Field | Required | Description |
 |---|---|---|
-| `entryFee` | `number` | USDC lamports. `5_000_000` = 5 USDC. Held in escrow. |
-| `creatorFeeBps` | `number` | Your cut. [Basis points](/docs/glossary#basis-points-bps) (0-2000 = 0-20%) |
-| `prizeSplit` | `number[]` | How prizes split. `[60, 30, 10]` = 1st/2nd/3rd. Must sum to 100. |
-| `stakeBondAmount` | `number` | Optional trust deposit. Slashed if you abandon. Default: 0 |
+| `entryFee` | Yes | USDC lamports. `5_000_000` = 5 USDC. Held in escrow until game ends. |
+| `maxAgents` | Yes | Max players. Up to 100 (~30 practical due to [tx size](/docs/troubleshooting#transaction-size-limits)). |
+| `prizeSplit` | Yes | How prizes split. `[60, 30, 10]` = 1st/2nd/3rd. Must sum to 100. |
+| `actionSchema` | Yes | Valid actions for bots. `"up,down,left,right"`. Your server enforces this. |
+| `creatorFeeBps` | Yes | Your cut in [basis points](/docs/glossary#basis-points-bps). `500` = 5%. Max 2000 = 20%. |
+| `duration` | Yes | Arena length in seconds. `3600` = 1 hour. (Display hint — your server controls actual timing.) |
 
-**Structure** — how the arena is set up:
+### Optional fields
 
-| Field | Type | Description |
+Safe to leave at defaults. GameServer sets sensible values automatically.
+
+| Field | Default | Description |
 |---|---|---|
-| `maxAgents` | `number` | Up to 100 (~30 practical due to [tx size](/docs/troubleshooting#transaction-size-limits)) |
-| `minAgents` | `number` | Minimum to start. Default: 2 |
-| `eliminationInterval` | `number` | Abandon timeout: `interval × 2` = how long before players can force-refund |
-
-**Labels** — stored on-chain for display, NOT enforced during gameplay:
-
-| Field | Type | Description |
-|---|---|---|
-| `duration` | `number` | Display hint. Your server controls actual timing. |
-| `eliminationPercent` | `number` | Display hint. Your server decides who dies. |
-| `actionSchema` | `string` | Valid actions for bots. Your server enforces. (max 256 chars) |
-| `rulesHash` | `Uint8Array` | SHA256 of game rules. For verification only. |
-
-**Entry requirements** — who can join:
-
-| Field | Type | Description |
-|---|---|---|
-| `minArenasCompleted` | `number` | Player must have completed X arenas. Default: 0 (anyone) |
-| `minWins` | `number` | Player must have X wins. Default: 0 |
-| `minRegistrationAge` | `number` | Profile must be X seconds old. Default: 0 |
-
-GameServer sets `eliminationPercent: 1` and `eliminationInterval: duration + 100` automatically, so you don't need to think about the Labels or timeout unless you want to.
+| `minAgents` | `2` | Minimum players to start. |
+| `eliminationInterval` | `duration + 100` | Abandon safety timeout. If your server goes silent for `interval × 2` seconds, players can force-refund. GameServer sets this high so you control timing manually. |
+| `eliminationPercent` | `1` | Display hint for "% eliminated per round." Your server decides who actually dies. GameServer sets to 1 (minimum). |
+| `stakeBondAmount` | `0` | Trust deposit in USDC. Slashed if arena abandoned. Shows players you're serious. |
+| `rulesHash` | `Uint8Array(32)` | SHA256 of your game rules doc. For verification, not enforced. |
+| `minArenasCompleted` | `0` | Player must have completed X arenas to join. 0 = anyone. |
+| `minWins` | `0` | Player must have X wins to join. |
+| `minRegistrationAge` | `0` | Player's profile must be X seconds old. |
 
 ## Designing your actionSchema
 

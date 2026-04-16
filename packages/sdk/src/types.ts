@@ -191,50 +191,43 @@ export type ArenaState =
  * });
  */
 export interface CreateArenaConfig {
-  // ── ECONOMY: money in, money out ──
+  // ── Core: you'll set these for every arena ──
 
   /** Entry fee in USDC lamports (6 decimals). 5_000_000 = 5 USDC. Held in escrow. */
   entryFee: number;
-  /** Creator fee in basis points. 500 = 5%, max 2000 = 20%. Paid from pool on finalize. */
-  creatorFeeBps: number;
-  /** Prize distribution. [60, 30, 10] = 1st 60%, 2nd 30%, 3rd 10%. Must sum to 100. Max 10 slots. */
-  prizeSplit: number[];
-  /** Optional creator stake bond in USDC lamports. Slashed if arena abandoned. Default: 0 */
-  stakeBondAmount?: number;
-
-  // ── STRUCTURE: how the arena is set up ──
-
   /** Max participants. Up to 100, ~30 practical due to tx size. */
   maxAgents: number;
-  /** Minimum agents required before startArena() can be called. */
-  minAgents: number;
+  /** Prize distribution. [60, 30, 10] = 1st 60%, 2nd 30%, 3rd 10%. Must sum to 100. Max 10 slots. */
+  prizeSplit: number[];
   /**
-   * Abandon timeout control. Must be > 0.
-   * If your game server goes silent for `eliminationInterval × 2` seconds,
-   * anyone can abandon the arena and refund all players.
-   * GameServer sets this to `duration + 100` by default (safe for manual control).
-   */
-  eliminationInterval: number;
-
-  // ── LABELS: stored on-chain for display, NOT enforced during gameplay ──
-
-  /** Display hint: arena duration in seconds. 3600 = 1 hour. Your server controls actual timing. */
-  duration: number;
-  /** Display hint: % eliminated per round (1-99). Your server decides who actually dies. */
-  eliminationPercent: number;
-  /**
-   * Display hint: valid actions for bots. Your game server enforces this, not the blockchain.
+   * Valid actions for bots. Max 256 chars. Your game server enforces this, not the blockchain.
    * Examples: "up,down,left,right" | "move(x,y),attack(x,y)" | "bid:number,pass,fold"
    */
   actionSchema: string;
-  /** SHA256 hash of your game rules document. For verification only. */
+  /** Creator fee in basis points. 500 = 5%, max 2000 = 20%. Paid from pool on finalize. */
+  creatorFeeBps: number;
+  /** Arena duration in seconds. 3600 = 1 hour. Display hint — your server controls actual timing. */
+  duration: number;
+
+  // ── Optional: safe to leave at defaults. GameServer sets these automatically. ──
+
+  /** Minimum agents to start. Default: 2 */
+  minAgents: number;
+  /**
+   * Abandon timeout control. Default: `duration + 100` (set by GameServer).
+   * If your server goes silent for `eliminationInterval × 2` seconds,
+   * anyone can abandon the arena and refund players.
+   */
+  eliminationInterval: number;
+  /** Display hint: % eliminated per round (1-99). Your server decides who dies. Default: 1 via GameServer. */
+  eliminationPercent: number;
+  /** SHA256 hash of your game rules. For verification only. */
   rulesHash: Uint8Array;
-
-  // ── ENTRY REQUIREMENTS: who can join ──
-
-  /** Player must have completed this many arenas. Default: 0 (anyone can join) */
+  /** Creator stake bond in USDC lamports. Slashed if abandoned. Default: 0 */
+  stakeBondAmount?: number;
+  /** Player must have completed this many arenas to join. Default: 0 (anyone) */
   minArenasCompleted?: number;
-  /** Player must have this many wins. Default: 0 */
+  /** Player must have this many wins to join. Default: 0 */
   minWins?: number;
   /** Player's profile must be this old in seconds. Default: 0 */
   minRegistrationAge?: number;
