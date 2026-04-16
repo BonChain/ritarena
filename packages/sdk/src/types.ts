@@ -197,11 +197,24 @@ export interface CreateArenaConfig {
   maxAgents: number;
   /** Minimum agents to start. Default: 2 */
   minAgents: number;
-  /** Arena duration in seconds. 3600 = 1 hour */
+  /**
+   * Arena duration in seconds. 3600 = 1 hour. Must be > 0.
+   * Also used for abandon timeout: arena can be abandoned after `eliminationInterval * 2` of inactivity.
+   */
   duration: number;
-  /** Seconds between elimination rounds. 600 = 10 minutes */
+  /**
+   * Seconds between elimination rounds. Must be > 0 (on-chain requirement).
+   * Set to `duration + 100` if your game server handles eliminations manually
+   * (this effectively disables the on-chain schedule — the oracle decides when to eliminate).
+   * Also used for abandon timeout: `eliminationInterval * 2`.
+   */
   eliminationInterval: number;
-  /** Percentage eliminated per round. 25 = bottom 25% */
+  /**
+   * Percentage eliminated per round (1-99). On-chain requires >= 1.
+   * Set to 1 if your game server handles eliminations manually.
+   * Note: this is metadata only — the on-chain program does NOT enforce it
+   * during submitElimination. The oracle decides who actually gets eliminated.
+   */
   eliminationPercent: number;
   /** Creator fee in basis points. 500 = 5%, max 2000 = 20% */
   creatorFeeBps: number;
@@ -333,9 +346,13 @@ export interface GameServerConfig {
   prizeSplit: number[];
   /** Valid actions string. See CreateArenaConfig.actionSchema for examples. */
   actionSchema: string;
-  /** Arena duration in seconds. Default: 3600 */
+  /** Arena duration in seconds. Default: 3600. Must be > 0. */
   duration?: number;
-  /** Seconds between elimination rounds */
+  /**
+   * Seconds between elimination rounds. Default: `duration + 100` (effectively manual).
+   * GameServer sets this high by default so YOU control when to eliminate via reportRound().
+   * Also sets the abandon timeout: arena can be abandoned after `eliminationInterval * 2` of oracle inactivity.
+   */
   eliminationInterval?: number;
   /** Creator fee in basis points (0-2000) */
   creatorFeeBps?: number;
