@@ -39,6 +39,11 @@ pub fn handler(
     let remaining = &ctx.remaining_accounts;
 
     for account_info in remaining.iter() {
+        // Verify account is owned by this program
+        if account_info.owner != &crate::ID {
+            continue;
+        }
+
         let mut data = account_info.try_borrow_mut_data()?;
 
         if data.len() < 8 {

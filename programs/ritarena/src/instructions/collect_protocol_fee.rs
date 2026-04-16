@@ -3,11 +3,17 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 use crate::constants::*;
 use crate::error::RitArenaError;
-use crate::state::{Arena, ArenaState};
+use crate::state::{Arena, ArenaState, ProtocolConfig};
 
 #[derive(Accounts)]
 pub struct CollectProtocolFee<'info> {
     pub caller: Signer<'info>,
+
+    #[account(
+        seeds = [PROTOCOL_SEED],
+        bump = protocol.bump,
+    )]
+    pub protocol: Account<'info, ProtocolConfig>,
 
     #[account(
         mut,
@@ -28,6 +34,7 @@ pub struct CollectProtocolFee<'info> {
     #[account(
         mut,
         token::mint = usdc_mint,
+        constraint = treasury_usdc.owner == protocol.treasury @ RitArenaError::InvalidTreasury,
     )]
     pub treasury_usdc: Account<'info, TokenAccount>,
 

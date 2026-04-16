@@ -3,9 +3,13 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 
 const FILE_PATH = join(process.cwd(), "data", "waitlist.json");
-const EXPORT_KEY = process.env.WAITLIST_EXPORT_KEY || "ritarena2026";
+const EXPORT_KEY = process.env.WAITLIST_EXPORT_KEY;
 
 export async function GET(request: NextRequest) {
+  if (!EXPORT_KEY) {
+    return NextResponse.json({ error: "Export disabled — WAITLIST_EXPORT_KEY not set" }, { status: 503 });
+  }
+
   const key = request.nextUrl.searchParams.get("key");
 
   if (key !== EXPORT_KEY) {

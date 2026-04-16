@@ -60,4 +60,6 @@ pub enum RitArenaError {
     MinAgentsNotReached,
     #[msg("Invalid USDC mint (must have 6 decimals)")]
     InvalidUsdcMint,
+    #[msg("Treasury account does not match protocol treasury")]
+    InvalidTreasury,
 }

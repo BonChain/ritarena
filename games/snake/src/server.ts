@@ -379,8 +379,16 @@ wss.on("connection", (ws) => {
       return;
     }
 
+    // Admin commands (start/restart) require GAME_ADMIN_KEY in devnet mode
+    const adminKey = process.env.GAME_ADMIN_KEY;
+    const isAdmin = !adminKey || msg.adminKey === adminKey;
+
     if (msg.type === "start" && (phase === "lobby" || phase === "finished")) {
       const mode = msg.mode === "devnet" ? "devnet" : "mock";
+      if (mode === "devnet" && !isAdmin) {
+        ws.send(JSON.stringify({ type: "error", message: "Unauthorized — set GAME_ADMIN_KEY" }));
+        return;
+      }
       broadcast({ type: "reset" });
       startGame(mode).catch((err) => {
         console.error("Failed to start game:", err);
@@ -388,6 +396,10 @@ wss.on("connection", (ws) => {
         setPhase("lobby");
       });
     } else if (msg.type === "restart" && phase === "finished") {
+      if (currentMode === "devnet" && !isAdmin) {
+        ws.send(JSON.stringify({ type: "error", message: "Unauthorized" }));
+        return;
+      }
       broadcast({ type: "reset" });
       startGame(currentMode).catch((err) => {
         console.error("Failed to restart game:", err);

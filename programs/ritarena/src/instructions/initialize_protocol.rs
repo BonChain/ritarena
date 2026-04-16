@@ -35,6 +35,9 @@ pub struct InitializeProtocol<'info> {
 }
 
 pub fn handler(ctx: Context<InitializeProtocol>) -> Result<()> {
+    // The PDA `init` constraint already prevents re-initialization.
+    // On mainnet, deploy this program with upgrade authority restricted to your wallet,
+    // and call initialize_protocol in the same transaction as deployment to prevent frontrunning.
     let protocol = &mut ctx.accounts.protocol;
     protocol.authority = ctx.accounts.authority.key();
     protocol.usdc_mint = ctx.accounts.usdc_mint.key();

@@ -33,6 +33,7 @@ pub struct AbandonArena<'info> {
     #[account(
         mut,
         token::mint = usdc_mint,
+        constraint = treasury_usdc.owner == protocol.treasury @ RitArenaError::InvalidTreasury,
     )]
     pub treasury_usdc: Account<'info, TokenAccount>,
 
@@ -44,6 +45,13 @@ pub struct AbandonArena<'info> {
 
 pub fn handler(ctx: Context<AbandonArena>) -> Result<()> {
     let arena = &ctx.accounts.arena;
+    let caller = ctx.accounts.caller.key();
+
+    // Only protocol authority or arena creator can abandon
+    require!(
+        caller == ctx.accounts.protocol.authority || caller == arena.creator,
+        RitArenaError::UnauthorizedOracle
+    );
 
     // Check timeout
     let now = Clock::get()?.unix_timestamp;
