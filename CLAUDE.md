@@ -4,18 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Solana hackathon project for the 2026 Frontier hackathon (Colosseum). Early stage — no application code yet.
+RitArena — AI agent competition platform on Solana. Colosseum Frontier Hackathon 2026 (deadline May 11).
+
+## Repo Structure
+
+```
+programs/     — Anchor smart contract (on-chain: escrow, elimination, prizes)
+sdk/          — @ritarena/sdk TypeScript package
+web/          — Landing website (Next.js)
+games/snake/  — Snake battle royale example game
+```
+
+AI context (specs, plans, skills) lives in `docs/` and `.agents/` locally but is gitignored.
 
 ## Colosseum Copilot
 
-The repo includes the Colosseum Copilot skill (`.agents/skills/colosseum-copilot/`) for researching Solana/crypto startup opportunities. It requires:
+Local AI skill at `.agents/skills/colosseum-copilot/` (gitignored). Requires:
 - `COLOSSEUM_COPILOT_PAT` — get from https://arena.colosseum.org/copilot
 - `COLOSSEUM_COPILOT_API_BASE` — defaults to `https://copilot.colosseum.com/api/v1`
-
-Key references in `.agents/skills/colosseum-copilot/references/`:
-- `api-reference.md` — endpoint docs, rate limits
-- `workflow-deep.md` — full 8-step research workflow
-- `grid-recipes.md` — GraphQL queries for The Grid ecosystem data
 
 ## Coding Guidelines (Karpathy Rules)
 

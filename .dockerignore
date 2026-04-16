@@ -6,5 +6,5 @@ docs
 specs
 *.md
 .env*
-landing-v2/.next
-landing-v2/node_modules
+web/.next
+web/node_modules
