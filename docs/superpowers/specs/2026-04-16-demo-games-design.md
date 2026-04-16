@@ -21,6 +21,74 @@ Each game is a different format, different player count, different interaction m
 
 ---
 
+## Revenue Model (6 Streams)
+
+### 1. Protocol Fee (1% of every prize pool)
+Every match, every game, every arena. Scales with volume. 1,000 matches/day x 40 USDC avg pool = $400/day passive.
+
+### 2. Spectator God Powers (microtransactions)
+Three viewer tiers:
+- **Free** — watch any game, see commentary, no wallet needed
+- **God Mode** — connect wallet, pay per power (e.g. 0.1 USDC to bomb a tile, 0.05 USDC to drop a wall). Revenue split: creator gets 70%, protocol gets 30%.
+- **Competitor** — connect wallet, pay entry fee, compete as agent
+
+God powers are the spectator monetization layer. Every viewer is a potential spender. Low friction — one click, small amount.
+
+### 3. Training Data Sales (B2B)
+Every match generates RL-format action logs (merkle-verified). Multi-agent competitive data is rare and valuable.
+- Snake: spatial decision-making under pressure
+- Auction: bidding strategy, budget optimization
+- RPS: human behavioral patterns, bluff detection
+- Buyers: AI labs, research teams, hedge funds training trading bots
+- Pricing: per-match data packs or API subscription
+
+### 4. Sponsored Arenas (brand promotion)
+Brands/projects pay to sponsor an arena:
+- Custom branding on the game UI (logo, colors, theme)
+- Sponsored prize pool (brand puts up the prize money — free entry for players)
+- Featured placement on the platform
+- Example: "Jupiter Trading Arena — sponsored by Jupiter Exchange, 500 USDC prize pool"
+- Revenue: flat sponsorship fee + brand gets exposure to engaged crypto audience
+
+### 5. IP Collaboration Events
+Partner with crypto projects, NFT communities, or IRL brands for themed events:
+- "Bonk Battle Royale" — Bonk-themed snake game, Bonk token prizes
+- "Mad Lads Championship" — NFT holders get free entry, exclusive arena
+- "Solana Foundation Cup" — official tournament series
+- Revenue: event fee + co-marketing + token/NFT integration fees
+
+### 6. Creator Economy (creator fees 0-20%)
+Creators build games and earn from every entry. Platform takes nothing extra from creators — their cut comes from streams 1-2 above. This keeps creators incentivized to build and promote their own games.
+- Creator earns: entry fees (0-20%) + god power revenue share (70%)
+- Creator pays: nothing upfront (optional stake bond for credibility)
+
+### Revenue Summary for Judges
+
+| Stream | Who Pays | When | Scales With |
+|---|---|---|---|
+| Protocol fee (1%) | Prize pool | Every match | Match volume |
+| God powers | Spectators | During matches | Viewership |
+| Data sales | AI labs/B2B | Monthly/API | Match history |
+| Sponsored arenas | Brands | Per event | Platform reach |
+| IP collabs | Partners | Per event | Community size |
+| Creator fees | Players (to creator) | Every match | Creator ecosystem |
+
+**For the demo video:** Show streams 1, 2, and 6 live (protocol fee, god power payment, creator fee visible on screen). Mention streams 3, 4, 5 in the pitch as growth levers.
+
+---
+
+## Spectator Access Tiers
+
+| Tier | Access | Wallet Required | Cost |
+|---|---|---|---|
+| **Watch** | View any live game, commentary, leaderboard | No | Free |
+| **God Mode** | All above + god powers (bomb, curse, wall, etc.) | Yes (connect) | Pay per use (0.05-0.1 USDC) |
+| **Compete** | All above + enter as agent, compete for prizes | Yes (connect) | Entry fee (varies per arena) |
+
+Free spectating is critical for growth — anyone can watch, share clips, get hooked. God mode converts engaged viewers into spenders. Competition converts builders into recurring players.
+
+---
+
 ## Shared Platform Layer
 
 All three games use the same infrastructure:
@@ -129,16 +197,16 @@ Battlesnake tournament stream meets Jelle's Marble League. Real-time action, nam
 Auction house meets turf war. Strategic bidding with a visual map result. Viewer plays god.
 
 ### Rules
-- 8x8 grid = 64 tiles
+- 6x6 grid = 36 tiles
 - Each round, 1 tile goes up for auction (order: corners first, then edges, then center — strategic value increases)
 - All agents submit a bid from their budget (commit-reveal: bids hidden until reveal)
 - Highest bid wins the tile. All bidders pay nothing except winner (first-price sealed-bid auction)
 - **Scoring:** tiles you own = 1 point each. Adjacent tiles (horizontal/vertical) in a cluster = bonus: cluster of N = N squared points. So 3 connected tiles = 9 points, not 3.
-- **Elimination:** Every 8 rounds (after 8 tiles auctioned), lowest-scoring agent is eliminated
+- **Elimination:** Every 4 rounds, lowest-scoring agent is eliminated
 - **Budget:** Each agent starts with 100 coins. No refills. Spend wisely.
-- **Match:** ~20 rounds of auctions, ~4 eliminations, 1 winner
-- Round duration: 10 seconds (bid phase) + 3 seconds (reveal) + 2 seconds (result) = 15 seconds per round
-- Total match: ~5 minutes
+- **Match:** ~16 rounds of auctions, ~4 eliminations, 1 winner
+- Round duration: 5 seconds (bid phase) + 2 seconds (reveal) + 1 second (result) = 8 seconds per round
+- Total match: ~2 minutes
 
 ### Agent Interface
 - Agent receives via WebSocket each round:
@@ -152,13 +220,13 @@ Auction house meets turf war. Strategic bidding with a visual map result. Viewer
 - Timeout = bid of 0
 
 ### Commit-Reveal (maps directly to on-chain primitive)
-1. **Commit phase (10 sec):** Agents submit bid. Server hashes each bid as merkle leaf. Nobody sees others' bids.
-2. **Reveal phase (3 sec):** All bids revealed simultaneously. Highest bid wins tile.
-3. **Result (2 sec):** Grid updates, scores recalculated, commentary fires.
+1. **Commit phase (5 sec):** Agents submit bid. Server hashes each bid as merkle leaf. Nobody sees others' bids.
+2. **Reveal phase (2 sec):** All bids revealed simultaneously. Highest bid wins tile.
+3. **Result (1 sec):** Grid updates, scores recalculated, commentary fires.
 
 ### Viewer God Powers
 - **Bomb tile** — destroy a claimed tile. Owner loses territory and cluster bonus recalculates. 1 per 3 rounds.
-- **Curse tile** — next tile up for auction appears normal but is actually worth 0 (or negative — drains 5 points). Agents don't know. Viewer sees a skull icon. Revealed after auction.
+- **Curse tile** — next tile up for auction is worthless (0 points, no cluster bonus). Agents don't know. Viewer sees a skull icon. Revealed after auction. Whoever wins it wasted their budget.
 - **Inflation** — all agents' budgets doubled for 1 round. Creates a bidding war.
 - **Freeze agent** — lock 1 agent out of bidding for 1 round. 1 per 5 rounds.
 
@@ -241,10 +309,11 @@ This means the game has skill depth despite simple rules. Pattern recognition (A
 - After blind phase: server collects final picks, reveals both
 
 ### AI Pattern Learning (visible to spectator)
-The UI shows the AI's "brain":
-- **Pattern confidence:** "AI thinks you'll throw ROCK (62%)" — updates each round
-- **Prediction history:** shows what AI predicted vs what happened
-- **Adaptation:** when human breaks pattern, confidence drops visibly
+The UI shows the AI's "brain" in plain English (no raw percentages — casual viewers need to get it instantly):
+- **Prediction callout:** "AI PREDICTS: ROCK" with a confidence bar (high/medium/low). Not percentages.
+- **Pattern callout:** "You switch after losing 78% of the time" — plain English, one line
+- **Prediction history:** streak of correct/wrong icons (checkmark/X)
+- **Adaptation moment:** when human breaks pattern, bar drops + "PATTERN BROKEN" flash
 - This is the data flywheel proof: the AI is literally learning in real-time from match data
 
 ### Anti-Exploit Measures
@@ -277,9 +346,9 @@ Prize split: [100] (winner takes all in 1v1).
 |                                                |
 +-----------------------------------------------+
 | AI BRAIN:                                      |
-| Prediction: ROCK (62%)  PAPER (25%)  SCIS (13%)|
-| Last 5: correct, wrong, correct, wrong, wrong  |
-| Your pattern: after losing, you switch 78%     |
+| AI PREDICTS: ROCK  [====----] medium confidence |
+| Last 5: [X] [X] [V] [X] [V]                   |
+| "You switch after losing 78% of the time"      |
 +-----------------------------------------------+
 |                                                |
 |  [ ROCK ]    [ PAPER ]    [ SCISSORS ]         |
@@ -340,9 +409,15 @@ During blind phase, the opponent's pick area shows:
 - Final round, dramatic reveal
 - Click txn link → Explorer
 
-**2:45-3:00 — Platform proof**
+**2:45-2:55 — "Build your own game" moment**
+- Show ~10 lines of code: create arena, define rules, start match
+- "Want to build game #4? Here's 50 lines. Same SDK. Same escrow. Your rules."
+- This is the moment that converts judges from "cool demo" to "this is a platform"
+
+**2:55-3:00 — Platform proof**
 - Split screen: 3 games, same Anchor program, same SDK
-- "Creators build the game. Agents compete. Winners get paid. All on-chain."
+- "Any game. Any agent. Verified on-chain."
+- 6 revenue streams: protocol fee, god powers, data sales, sponsored arenas, IP collabs, creator economy
 - Waitlist CTA
 
 ---
