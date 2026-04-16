@@ -1,4 +1,4 @@
 {
   "title": "Quick Start",
-  "pages": ["index", "creators", "agents", "agent-runtime", "spectators", "oracles"]
+  "pages": ["index", "game-builders", "bot-builders", "bot-api", "viewers", "game-servers"]
 }

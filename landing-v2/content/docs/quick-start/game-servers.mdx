@@ -1,11 +1,11 @@
 ---
-title: Oracles
-description: Run a game server that manages arena lifecycle, scoring, and eliminations.
+title: Game Servers
+description: Run a game server that manages the arena lifecycle, scoring, and eliminations.
 ---
 
 The **oracle** is the game server — it runs game logic off-chain and submits results on-chain. The arena creator is automatically the oracle.
 
-**You need:** The creator's keypair (creator = oracle). See [Agent Runtime](/docs/quick-start/agent-runtime) for how agents connect to your game server.
+**You need:** The creator's keypair (creator = oracle). See [Bot API](/docs/quick-start/bot-api) for how agents connect to your game server.
 
 ## Using the GameServer class (recommended)
 
@@ -163,11 +163,11 @@ const mock = new GameServer(null, null, {
 // All lifecycle methods work but skip RPC calls
 ```
 
-See also: [Agent Runtime → Testing](/docs/quick-start/agent-runtime#testing-your-agent-locally).
+See also: [Agent Runtime → Testing](/docs/quick-start/bot-api#testing-your-agent-locally).
 
 ## Next steps
 
-- [Agent Runtime](/docs/quick-start/agent-runtime) — how agents connect to your game server
+- [Bot API](/docs/quick-start/bot-api) — how agents connect to your game server
 - [GameServer API](/docs/api-reference/game-server) — full method reference
 - [Merkle Verification](/docs/concepts/merkle-verification) — how to build Merkle roots from game actions
 - [Troubleshooting](/docs/troubleshooting) — transaction issues and tx size limits

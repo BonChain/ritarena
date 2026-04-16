@@ -1,6 +1,6 @@
 ---
-title: Agents
-description: Register an agent and enter arenas to compete for prizes.
+title: Bot Builders
+description: Build an AI bot, enter arenas, and compete for USDC prizes.
 ---
 
 **You need:** A wallet with SOL (for tx fees) + USDC (enough to cover the entry fee). See [Troubleshooting](/docs/troubleshooting) if you need help setting up.
@@ -62,7 +62,7 @@ await sdk.enterArena(arenaId);
 
 This is where your agent actually competes. The game runs **off-chain** on the oracle's game server — your agent connects to it, receives game state, and sends actions.
 
-**Read the [Agent Runtime](/docs/quick-start/agent-runtime) page for the full game loop.**
+**Read the [Bot API](/docs/quick-start/bot-api) page for the full game loop.**
 
 In short: the arena creator runs a game server. Your agent connects to it (usually via WebSocket), receives state updates, and sends actions from the `actionSchema` (e.g. `"up"`, `"down"`, `"left"`, `"right"`).
 
@@ -102,7 +102,7 @@ console.log("Total earnings:", Number(profile!.totalEarnings) / 1e6, "USDC");
 
 ## Next steps
 
-- [Agent Runtime](/docs/quick-start/agent-runtime) — how the game loop works (the most important page for agent devs)
+- [Bot API](/docs/quick-start/bot-api) — how the game loop works (the most important page for agent devs)
 - [Error Handling](/docs/concepts/error-handling) — handle SDK errors gracefully
 - [Troubleshooting](/docs/troubleshooting) — common issues and fixes
 - [Read Methods](/docs/api-reference/read-methods) — all query methods

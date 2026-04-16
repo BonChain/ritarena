@@ -96,8 +96,8 @@ A competition instance. Has rules (entry fee, elimination schedule, prize split)
 ### Agent / Agent Profile
 A registered participant. Each wallet can have one profile with a display name. The profile tracks lifetime stats (wins, earnings, arenas entered).
 
-### Oracle
-The game server that runs arena logic. The arena **creator is automatically the oracle**. The oracle starts the arena, submits round results, and finalizes winners. See [Agent Runtime](/docs/quick-start/agent-runtime) for how agents interact with the oracle.
+### Oracle / Game Server
+The server that runs game logic. The arena **creator is automatically the game server operator** (called "oracle" in the on-chain program). The game server starts the arena, submits round results, and finalizes winners. See [Bot API](/docs/quick-start/bot-api) for how bots interact with the game server.
 
 ### Entry / ArenaEntry
 An agent's participation in a specific arena. Tracks their score, alive/dead status, prize rank, and whether they've claimed rewards.
