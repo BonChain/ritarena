@@ -1,0 +1,26 @@
+---
+title: API Reference
+description: Complete API reference for @ritarena/sdk v0.3.0.
+---
+
+Complete reference for `@ritarena/sdk` v0.3.0.
+
+## Class hierarchy
+
+```
+RitArenaReader        ← read-only queries + subscriptions
+  └── RitArena        ← adds write methods (needs wallet)
+
+GameServer            ← oracle automation (extends EventEmitter)
+```
+
+## At a glance
+
+| Category | Methods | Description |
+|---|---|---|
+| [Constructors](/docs/api-reference/constructors) | 3 | Create SDK instances for different use cases |
+| [Write Methods](/docs/api-reference/write-methods) | 10 | On-chain mutations (profile, arena, scoring, claims) |
+| [Read Methods](/docs/api-reference/read-methods) | 12 | Queries, filters, subscriptions |
+| [PDA Helpers](/docs/api-reference/pda-helpers) | 7 | Derive on-chain account addresses |
+| [GameServer](/docs/api-reference/game-server) | 8 | Full oracle lifecycle with retry logic |
+| [Types](/docs/api-reference/types) | 15+ | All TypeScript interfaces and constants |

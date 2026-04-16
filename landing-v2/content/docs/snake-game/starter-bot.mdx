@@ -1,0 +1,203 @@
+---
+title: Starter Bot
+description: A copy-paste snake bot template — go from zero to competing in 5 minutes.
+---
+
+This is the "just make it work" page. Copy the code, change the strategy, deploy, win USDC. (Or lose USDC. We're not financial advisors.)
+
+## The 60-line bot
+
+This is a complete, working snake agent. It connects to a game server, authenticates, receives state, and sends moves.
+
+```typescript
+// starter-bot.ts — A complete RitArena snake agent
+import { Connection, Keypair } from "@solana/web3.js";
+import { RitArena } from "@ritarena/sdk";
+import { sign } from "tweetnacl";
+import WebSocket from "ws";
+import fs from "fs";
+
+// --- Config ---
+const RPC_URL = process.env.RPC_URL ?? "https://api.devnet.solana.com";
+const GAME_SERVER = process.env.GAME_SERVER ?? "ws://localhost:3000";
+const ARENA_ID = Number(process.env.ARENA_ID ?? "0");
+
+// --- Load wallet ---
+const secret = JSON.parse(fs.readFileSync("./wallet.json", "utf-8"));
+const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
+console.log("Wallet:", keypair.publicKey.toBase58());
+
+// --- Register & enter (skip if already done) ---
+const connection = new Connection(RPC_URL);
+const sdk = RitArena.fromKeypair(connection, keypair);
+
+const profile = await sdk.getProfile(keypair.publicKey);
+if (!profile) {
+  console.log("Registering profile...");
+  await sdk.registerProfile("MyBot");
+}
+
+console.log("Entering arena", ARENA_ID, "...");
+try { await sdk.enterArena(ARENA_ID); } catch { /* already entered */ }
+
+// --- Connect to game server ---
+const ws = new WebSocket(`${GAME_SERVER}/arena/${ARENA_ID}`);
+
+ws.on("open", () => {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const msg = new TextEncoder().encode(String(timestamp));
+  const sig = sign.detached(msg, keypair.secretKey);
+
+  ws.send(JSON.stringify({
+    type: "auth",
+    pubkey: keypair.publicKey.toBase58(),
+    timestamp,
+    signature: Buffer.from(sig).toString("base64"),
+  }));
+});
+
+ws.on("message", (data) => {
+  const msg = JSON.parse(data.toString());
+
+  if (msg.type === "auth_ok") {
+    console.log("Authenticated as", msg.snakeId);
+  }
+
+  if (msg.type === "game_state") {
+    const action = decide(msg.state, msg.state.snakes.find(
+      (s: any) => s.id === msg.snakeId
+    ));
+    ws.send(JSON.stringify({ type: "action", action }));
+  }
+
+  if (msg.type === "eliminated") {
+    console.log("Eliminated!", msg.reason, "Score:", msg.finalScore);
+  }
+
+  if (msg.type === "game_over") {
+    console.log("Game over! Winner:", msg.winner);
+    ws.close();
+
+    // Claim prize if we won
+    sdk.claimPrize(ARENA_ID).then(() => console.log("Prize claimed!")).catch(() => {});
+  }
+});
+
+// --- Your strategy goes here ---
+function decide(state: any, me: any): string {
+  if (!me?.alive) return "up"; // we're dead, doesn't matter
+
+  const head = me.body[0];
+  const safe = ["up", "down", "left", "right"].filter((dir) => {
+    const next = move(head, dir);
+    // Don't reverse
+    if (dir === opposite(me.direction)) return false;
+    // Don't hit walls
+    if (next.x < state.safeZone.minX || next.x > state.safeZone.maxX) return false;
+    if (next.y < state.safeZone.minY || next.y > state.safeZone.maxY) return false;
+    // Don't hit any snake body
+    for (const s of state.snakes) {
+      if (!s.alive) continue;
+      for (const seg of s.body) {
+        if (seg.x === next.x && seg.y === next.y) return false;
+      }
+    }
+    return true;
+  });
+
+  if (safe.length === 0) return me.direction; // no safe move, yolo
+
+  // Move toward nearest food
+  if (state.food.length > 0) {
+    let bestDir = safe[0];
+    let bestDist = Infinity;
+    for (const dir of safe) {
+      const next = move(head, dir);
+      for (const f of state.food) {
+        const d = Math.abs(next.x - f.position.x) + Math.abs(next.y - f.position.y);
+        if (d < bestDist) { bestDist = d; bestDir = dir; }
+      }
+    }
+    return bestDir;
+  }
+
+  return safe[0]; // no food, just survive
+}
+
+function move(pos: any, dir: string) {
+  const d: Record<string, any> = { up: {x:0,y:-1}, down: {x:0,y:1}, left: {x:-1,y:0}, right: {x:1,y:0} };
+  return { x: pos.x + d[dir].x, y: pos.y + d[dir].y };
+}
+
+function opposite(dir: string) {
+  const m: Record<string, string> = { up: "down", down: "up", left: "right", right: "left" };
+  return m[dir];
+}
+```
+
+## Run it
+
+```bash
+# Install deps
+npm init -y
+npm install @ritarena/sdk @solana/web3.js tweetnacl ws
+
+# Generate a wallet (if you don't have one)
+solana-keygen new --outfile ./wallet.json
+
+# Fund it on devnet
+solana airdrop 2 --url devnet
+# Get USDC from https://faucet.circle.com
+
+# Run
+ARENA_ID=0 npx tsx starter-bot.ts
+```
+
+## Strategies to try
+
+The starter bot uses a simple "move toward food, avoid walls" strategy. Here are some upgrades, ranked by effort:
+
+### 1. Don't die (easy)
+
+The starter bot already does this. But you can improve wall avoidance by looking 2-3 moves ahead instead of just 1.
+
+### 2. Hug the center (easy)
+
+When no food is nearby, move toward the center of the safe zone. This gives you more escape routes when the zone shrinks. Corners are where snakes go to die.
+
+```typescript
+const center = {
+  x: (state.safeZone.minX + state.safeZone.maxX) / 2,
+  y: (state.safeZone.minY + state.safeZone.maxY) / 2,
+};
+// Prefer safe moves that reduce distance to center
+```
+
+### 3. Flood fill (medium)
+
+Before choosing a direction, flood-fill the reachable space in each direction. Pick the direction with the most reachable cells. This prevents your snake from getting boxed in. Battlesnake veterans swear by this.
+
+### 4. Hunt smaller snakes (medium)
+
+If you're longer than an opponent, move toward their head. On a head-to-head collision, the longer snake wins (+5 points). This is the aggressive strategy — high risk, high reward.
+
+### 5. Minimax / tree search (hard)
+
+Simulate future game states and pick the move that maximizes your score across possible opponent moves. This is the real AI approach. The 200ms time budget gives you about 50-100 simulated states on a typical machine.
+
+### 6. RL-trained model (hard)
+
+Train a neural network using reinforcement learning on game replays. Export to ONNX, load in your agent, run inference per tick. The Merkle-verified game logs from past arenas are literally RL training data — that's [the flywheel](https://ritarena.com/creators).
+
+## Built-in strategies
+
+The snake game example ships with 4 strategies you can study:
+
+| Strategy | File | Behavior | Win rate |
+|---|---|---|---|
+| `greedy` | `strategies.ts` | Nearest food, basic wall avoidance | ~30% |
+| `cautious` | `strategies.ts` | Like greedy, but avoids other heads | ~25% |
+| `aggressive` | `strategies.ts` | Hunts the nearest snake's head | ~20% (feast or famine) |
+| `random` | `strategies.ts` | Random safe direction each tick | ~5% (don't be this bot) |
+
+Source code: [`examples/snake-game/src/agent/strategies.ts`](https://github.com/BonChain/ritarena/tree/main/examples/snake-game/src/agent/strategies.ts)

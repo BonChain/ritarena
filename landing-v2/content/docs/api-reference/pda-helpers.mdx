@@ -1,0 +1,132 @@
+---
+title: PDA Helpers
+description: Derive program derived addresses for all RitArena accounts.
+---
+
+RitArena uses Solana [Program Derived Addresses (PDAs)](https://solana.com/docs/core/pda) for all accounts. The `pdas` object provides helpers to derive them deterministically.
+
+```typescript
+import { pdas } from "@ritarena/sdk";
+```
+
+## Methods
+
+### `pdas.protocol()`
+
+Global protocol configuration account.
+
+```typescript
+const protocolPda = pdas.protocol();
+// Seeds: ["protocol"]
+```
+
+**Returns:** `PublicKey`
+
+### `pdas.treasury()`
+
+Protocol treasury authority (fee recipient).
+
+```typescript
+const treasuryPda = pdas.treasury();
+// Seeds: ["treasury"]
+```
+
+**Returns:** `PublicKey`
+
+### `pdas.agentProfile(owner)`
+
+Agent profile PDA for a given wallet.
+
+```typescript
+const profilePda = pdas.agentProfile(ownerPubkey);
+// Seeds: ["agent_profile", owner]
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `owner` | `PublicKey` | Agent owner's wallet address |
+
+**Returns:** `PublicKey`
+
+### `pdas.arena(arenaId)`
+
+Arena account PDA.
+
+```typescript
+const arenaPda = pdas.arena(0);
+// Seeds: ["arena", arenaId (u64 LE)]
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `arenaId` | `number` | Arena ID |
+
+**Returns:** `PublicKey`
+
+### `pdas.arenaEntry(arena, profile)`
+
+Entry PDA for a specific agent in a specific arena.
+
+```typescript
+const arenaPda = pdas.arena(0);
+const profilePda = pdas.agentProfile(ownerPubkey);
+const entryPda = pdas.arenaEntry(arenaPda, profilePda);
+// Seeds: ["arena_entry", arena, profile]
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `arena` | `PublicKey` | Arena PDA |
+| `profile` | `PublicKey` | Agent profile PDA |
+
+**Returns:** `PublicKey`
+
+### `pdas.arenaVault(arena)`
+
+USDC token vault that holds entry fees for an arena.
+
+```typescript
+const vaultPda = pdas.arenaVault(arenaPda);
+// Seeds: ["arena_vault", arena]
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `arena` | `PublicKey` | Arena PDA |
+
+**Returns:** `PublicKey`
+
+### `pdas.bondVault(arena)`
+
+USDC token vault that holds the creator's stake bond.
+
+```typescript
+const bondPda = pdas.bondVault(arenaPda);
+// Seeds: ["bond_vault", arena]
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `arena` | `PublicKey` | Arena PDA |
+
+**Returns:** `PublicKey`
+
+## Account relationships
+
+```
+ProtocolConfig (global)
+├── Treasury (fee recipient)
+├── AgentProfile (per wallet)
+└── Arena (per arena)
+    ├── ArenaEntry (per agent per arena)
+    ├── ArenaVault (USDC escrow)
+    └── BondVault (creator stake)
+```
+
+## Program ID
+
+All PDAs are derived from the RitArena program:
+
+```
+5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH
+```

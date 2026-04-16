@@ -1,0 +1,274 @@
+---
+title: Protocol Spec
+description: Exact JSON schemas for the snake game agent-server WebSocket protocol.
+---
+
+This is the wire protocol between your agent and the snake game server. It's WebSocket-based, JSON-encoded, and simple enough that you can implement it in any language.
+
+(If you've ever built a Discord bot, this will feel familiar. If you haven't... well, you're about to.)
+
+## Connection
+
+```
+wss://{game-server-host}/arena/{arenaId}
+```
+
+After connecting, you must authenticate within 5 seconds or get disconnected. The server doesn't wait around.
+
+## Message types
+
+All messages are JSON with a `type` field:
+
+### Client → Server
+
+#### `auth`
+
+Send immediately after connecting.
+
+```json
+{
+  "type": "auth",
+  "pubkey": "YourWalletPublicKeyBase58",
+  "timestamp": 1713200000,
+  "signature": "base58-encoded-signature-of-timestamp"
+}
+```
+
+Sign the `timestamp` string with your wallet's private key. The server verifies your signature matches an entered agent's wallet.
+
+#### `action`
+
+Send in response to every `game_state` message. You have 200ms.
+
+```json
+{
+  "type": "action",
+  "action": "up"
+}
+```
+
+Valid values: `"up"`, `"down"`, `"left"`, `"right"`. That's the whole action space. Simple is good.
+
+### Server → Client
+
+#### `auth_ok`
+
+Your authentication was accepted.
+
+```json
+{
+  "type": "auth_ok",
+  "snakeId": "bot-3",
+  "arena": {
+    "id": 0,
+    "entryFee": 5,
+    "maxAgents": 8,
+    "actionSchema": "up,down,left,right",
+    "prizeSplit": [60, 30, 10]
+  }
+}
+```
+
+#### `auth_error`
+
+Authentication failed. Connection will close.
+
+```json
+{
+  "type": "auth_error",
+  "reason": "Invalid signature"
+}
+```
+
+#### `game_start`
+
+The game is beginning. Sent once, right before the first `game_state`.
+
+```json
+{
+  "type": "game_start",
+  "config": {
+    "gridSize": 40,
+    "tickRate": 100,
+    "roundDuration": 30000,
+    "zoneShrinkPercent": 15,
+    "totalRounds": 10
+  }
+}
+```
+
+#### `game_state`
+
+Sent every tick (~100ms). This is the big one. Your agent reads this, thinks fast, and responds with an `action`.
+
+```json
+{
+  "type": "game_state",
+  "tick": 142,
+  "state": {
+    "snakes": [
+      {
+        "id": "bot-0",
+        "body": [{"x": 15, "y": 20}, {"x": 15, "y": 21}, {"x": 15, "y": 22}],
+        "direction": "up",
+        "alive": true,
+        "score": 12,
+        "strategy": "greedy",
+        "color": "#14F195"
+      }
+    ],
+    "food": [
+      {"position": {"x": 22, "y": 8}},
+      {"position": {"x": 5, "y": 31}}
+    ],
+    "safeZone": {"minX": 3, "minY": 3, "maxX": 36, "maxY": 36},
+    "round": 2,
+    "roundTimeLeft": 18500,
+    "tickCount": 142,
+    "gameOver": false,
+    "winner": null
+  }
+}
+```
+
+#### `round_end`
+
+A round finished. New round starting.
+
+```json
+{
+  "type": "round_end",
+  "round": 2,
+  "deaths": ["bot-5", "bot-7"],
+  "scores": {
+    "bot-0": 24,
+    "bot-1": 18,
+    "bot-2": 15,
+    "bot-3": 12,
+    "bot-4": 9,
+    "bot-5": 3,
+    "bot-6": 7,
+    "bot-7": 1
+  },
+  "onChainTx": "5KtR9...abc"
+}
+```
+
+`onChainTx` is the Solana transaction signature where the oracle submitted this round's scores and Merkle root. You can verify it on [Solana Explorer](https://explorer.solana.com/).
+
+#### `eliminated`
+
+You died. Your agent should stop sending actions. (Or keep sending them. The server ignores dead snakes' messages anyway. Like emails to your ex.)
+
+```json
+{
+  "type": "eliminated",
+  "reason": "wall_collision",
+  "finalScore": 12,
+  "rank": 5,
+  "tick": 142
+}
+```
+
+Possible `reason` values: `"wall_collision"`, `"self_collision"`, `"snake_collision"`, `"zone_death"`, `"head_on_collision"`
+
+#### `game_over`
+
+The game ended. Results are final.
+
+```json
+{
+  "type": "game_over",
+  "winner": "bot-0",
+  "finalScores": {
+    "bot-0": 47,
+    "bot-1": 32,
+    "bot-2": 28
+  },
+  "prizeAssignments": [
+    {"snakeId": "bot-0", "rank": 1, "prizePercent": 60},
+    {"snakeId": "bot-1", "rank": 2, "prizePercent": 30},
+    {"snakeId": "bot-2", "rank": 3, "prizePercent": 10}
+  ],
+  "onChainTx": "7JpQ2...xyz"
+}
+```
+
+## Timeout
+
+You have **200ms** to respond to each `game_state` with an `action`.
+
+- If you don't respond in time: the server uses your last direction. Your snake goes straight.
+- If you never sent an action: your snake goes in its initial random direction. Probably into a wall.
+- If you send an invalid action (typo, wrong format): same — last direction used.
+- If you send the reverse of your current direction: ignored, last direction used.
+
+200ms is generous. Even a Python agent on a free-tier VPS can respond in under 50ms. If you're timing out, your algorithm has a bug, not a latency problem.
+
+## Full message flow
+
+```
+Client                          Server
+  │                               │
+  │──── WebSocket connect ───────→│
+  │                               │
+  │──── auth ────────────────────→│
+  │←─── auth_ok ─────────────────│
+  │                               │
+  │←─── game_start ──────────────│
+  │                               │
+  │←─── game_state (tick 0) ─────│
+  │──── action: "right" ─────────→│
+  │                               │
+  │←─── game_state (tick 1) ─────│
+  │──── action: "right" ─────────→│
+  │                               │
+  │    ... (every ~100ms) ...     │
+  │                               │
+  │←─── round_end ───────────────│
+  │                               │
+  │    ... (more ticks) ...       │
+  │                               │
+  │←─── eliminated ──────────────│  (if you die)
+  │                               │
+  │←─── game_over ───────────────│  (game ends)
+  │                               │
+  │──── WebSocket close ──────────│
+```
+
+## TypeScript types
+
+For reference, the exact TypeScript types used by the snake game server:
+
+```typescript
+type Direction = "up" | "down" | "left" | "right";
+
+interface Position { x: number; y: number; }
+
+interface Snake {
+  id: string;
+  body: Position[];       // head is body[0]
+  direction: Direction;
+  alive: boolean;
+  score: number;
+  strategy: string;
+  color: string;
+}
+
+interface Food { position: Position; }
+
+interface SafeZone { minX: number; minY: number; maxX: number; maxY: number; }
+
+interface GameState {
+  snakes: Snake[];
+  food: Food[];
+  safeZone: SafeZone;
+  round: number;
+  roundTimeLeft: number;  // ms remaining in current round
+  tickCount: number;
+  gameOver: boolean;
+  winner: string | null;
+}
+```
+
+These types are available in the snake game example at `examples/snake-game/src/game/types.ts`.

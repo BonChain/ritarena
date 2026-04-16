@@ -1,0 +1,214 @@
+---
+title: GameServer
+description: Oracle automation class with full lifecycle management, retry logic, and event emission.
+---
+
+The `GameServer` class automates the oracle role — creating arenas, submitting rounds, and finalizing results. It extends `EventEmitter` for real-time status updates.
+
+```typescript
+import { GameServer } from "@ritarena/sdk";
+```
+
+## Constructor
+
+```typescript
+const server = new GameServer(connection, oracleKeypair, config);
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `connection` | `Connection \| null` | Solana RPC connection (`null` for mock mode) |
+| `oracleKeypair` | `Keypair \| null` | Oracle's signing keypair (`null` for mock mode) |
+| `config` | `GameServerConfig` | Arena and server configuration |
+
+### GameServerConfig
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `entryFee` | `number` | required | Entry fee in USDC lamports |
+| `maxAgents` | `number` | required | Maximum participants |
+| `minAgents` | `number` | `2` | Minimum to start |
+| `prizeSplit` | `number[]` | required | Prize distribution (must sum to 100) |
+| `actionSchema` | `string` | required | Valid action types |
+| `duration` | `number` | `3600` | Arena duration (seconds) |
+| `eliminationInterval` | `number` | `duration + 100` | Seconds between eliminations |
+| `creatorFeeBps` | `number` | `0` | Creator fee (0-2000) |
+| `stakeBondAmount` | `number` | `0` | Creator stake bond |
+| `retryAttempts` | `number` | `3` | Max RPC retry attempts |
+| `retryBaseDelay` | `number` | `1000` | Base retry delay (ms) |
+| `mock` | `boolean` | `false` | Enable mock mode (no RPC) |
+
+## Properties
+
+| Property | Type | Description |
+|---|---|---|
+| `arenaId` | `number \| null` | Current arena ID (set after create) |
+| `phase` | `Phase` | Current lifecycle phase |
+| `currentRound` | `number` | Last confirmed round number |
+
+## Lifecycle Methods
+
+### `createAndWait()`
+
+Create an arena and poll until the account is confirmed on-chain.
+
+```typescript
+const arenaId = await server.createAndWait();
+```
+
+**Phase:** `idle` → `setup`
+
+**Returns:** `Promise<number>` — arena ID.
+
+### `setupWithBots(keypairs)`
+
+Create arena, register + enter bots, then start. Useful for demos and testing.
+
+```typescript
+const arenaId = await server.setupWithBots([bot1Keypair, bot2Keypair]);
+```
+
+**Phase:** `idle` → `setup` → `active`
+
+**Returns:** `Promise<number>` — arena ID.
+
+### `start()`
+
+Start the arena (Registration → Active).
+
+```typescript
+await server.start();
+```
+
+**Phase:** `setup` → `active`
+
+### `reportRound(eliminated, scores, actions)`
+
+Submit a round of game results.
+
+```typescript
+const report = await server.reportRound(eliminated, scores, actions);
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `eliminated` | `PublicKey[]` | Agents to eliminate this round |
+| `scores` | `ScoreUpdate[]` | Score updates for all agents |
+| `actions` | `GameAction[]` | Game actions (hashed into Merkle tree) |
+
+**Phase:** must be `active`.
+
+**Returns:** `Promise<RoundReport>`
+
+```typescript
+interface RoundReport {
+  confirmed: boolean;
+  tx?: string;
+  round: number;
+}
+```
+
+### `finish(winners)`
+
+Finalize the arena and assign prizes.
+
+```typescript
+await server.finish([
+  { pubkey: winner1, rank: 1 },
+  { pubkey: winner2, rank: 2 },
+]);
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `winners` | `Array<{ pubkey: PublicKey; rank: number }>` | Winners list (length must match `prizeSplit`) |
+
+**Phase:** `active` → `finished`
+
+### `cancel()`
+
+Cancel the arena during setup (refunds all entries).
+
+```typescript
+await server.cancel();
+```
+
+**Phase:** `setup` → `cancelled`
+
+### `abandon()`
+
+Abandon the arena (triggers refunds + bond slash).
+
+```typescript
+await server.abandon();
+```
+
+**Phase:** any → `cancelled`
+
+## Info
+
+### `getArenaInfo()`
+
+Get current arena status.
+
+```typescript
+const info = server.getArenaInfo();
+```
+
+**Returns:** `ArenaInfo | null`
+
+```typescript
+interface ArenaInfo {
+  arenaId: number;
+  entryFee: number;       // in USDC (already divided by 1e6 — NOT lamports)
+  prizePool: number;      // in USDC (already divided by 1e6 — NOT lamports)
+  prizeSplit: number[];
+  currentRound: number;
+  phase: string;
+  arenaPda: string;
+}
+```
+
+**Warning:** `ArenaInfo.entryFee` and `ArenaInfo.prizePool` are in **human-readable USDC** (e.g. `10` = 10 USDC), unlike every other fee field in the SDK which uses **USDC lamports** (e.g. `10_000_000` = 10 USDC). Be careful when comparing values across types.
+
+## Events
+
+```typescript
+server.on("phase", (phase: string) => { /* idle | setup | active | finished | cancelled */ });
+server.on("log", (entry: { message: string; kind: string; tx?: string; explorerUrl?: string }) => {});
+server.on("error", (err: Error) => {});
+```
+
+| Event | Payload | When |
+|---|---|---|
+| `phase` | `string` | Phase transitions |
+| `log` | `LogEntry` | Every RPC call, with Solana Explorer URL |
+| `error` | `Error` | RPC failures that weren't retried |
+
+## Retry Logic
+
+The GameServer automatically retries transient RPC failures:
+
+- **Retryable errors:** timeout, 429 rate limit, blockhash not found
+- **Strategy:** Exponential backoff (1s, 2s, 4s, max 8s)
+- **Max attempts:** Configurable via `retryAttempts` (default: 3)
+
+## Mock Mode
+
+Test game logic without hitting Solana:
+
+```typescript
+const mock = new GameServer(null, null, {
+  entryFee: 10_000_000,
+  maxAgents: 20,
+  prizeSplit: [60, 30, 10],
+  actionSchema: "up,down,left,right",
+  mock: true,
+});
+
+const arenaId = await mock.createAndWait(); // returns 0, no RPC
+await mock.start();
+const report = await mock.reportRound([], scores, actions); // mock tx
+```
+
+All lifecycle methods work — they log to console and emit events, but skip actual transactions.

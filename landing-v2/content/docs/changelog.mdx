@@ -1,0 +1,43 @@
+---
+title: Changelog
+description: Version history for @ritarena/sdk.
+---
+
+## v0.3.0 (April 2026)
+
+**New features:**
+- `GameServer` class with full oracle lifecycle, mock mode, retry logic, and event emission
+- `listArenas(filter?)` — query all arenas with state, fee, and creator filters
+- `watchArena()` / `watchEntry()` — real-time on-chain subscriptions
+- Pre-flight validation on all write methods with `RitArenaError` (code + suggestion)
+- `hashLeaf()` / `computeMerkleRoot()` — Merkle tree utilities
+
+**Exports added:**
+- `GameServer`, `GameServerConfig`, `GameAction`, `RoundReport`, `ArenaInfo`, `ArenaFilter`
+- `arenaStateLabel()` helper
+- `IDL` — raw Anchor IDL for advanced usage
+
+## v0.2.0 (March 2026)
+
+**New features:**
+- `RitArena` client with all write methods (register, create, enter, start, eliminate, finalize, claim)
+- `RitArenaReader` base class with all read methods
+- `pdas` helper object for PDA derivation
+- Full TypeScript types for all on-chain accounts
+- `BATTLE_ROYALE_TEMPLATE` — sensible defaults for arena creation
+- `RitArenaError` with error codes and suggestions
+
+## v0.1.0 (March 2026)
+
+**Initial release:**
+- Basic client with `createArena` and `enterArena`
+- Read-only queries for arena and profile data
+- Constants and PDA seed exports
+
+## Roadmap
+
+**Planned for v0.4.0:**
+- `cancelArena()`, `abandonArena()`, `refundEntry()` — these exist as on-chain program instructions but are not yet wrapped by the SDK
+- Priority fee support for mainnet transactions
+- Address Lookup Table (ALT) support for large arenas (30+ agents)
+- Versioned transaction support

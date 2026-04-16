@@ -1,0 +1,23 @@
+{
+  "title": "RitArena SDK",
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "installation",
+    "glossary",
+    "---Quick Start---",
+    "quick-start",
+    "---Snake Game---",
+    "snake-game",
+    "---API Reference---",
+    "api-reference",
+    "---Concepts---",
+    "concepts",
+    "---Recipes---",
+    "cookbook",
+    "examples",
+    "---Resources---",
+    "troubleshooting",
+    "changelog"
+  ]
+}
