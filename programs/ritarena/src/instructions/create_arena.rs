@@ -83,8 +83,11 @@ pub fn handler(
     require!(max_agents <= MAX_AGENTS_PER_ARENA, RitArenaError::TooManyMaxAgents);
     require!(creator_fee_bps <= MAX_CREATOR_FEE_BPS, RitArenaError::CreatorFeeTooHigh);
     require!(prize_split.len() <= MAX_PRIZE_SLOTS, RitArenaError::TooManyPrizeSlots);
-    require!(duration > 0, RitArenaError::InvalidDuration);
-    require!(elimination_interval > 0, RitArenaError::InvalidEliminationInterval);
+    require!(duration > 0 && duration <= MAX_DURATION, RitArenaError::DurationTooLong);
+    require!(
+        elimination_interval >= MIN_ELIMINATION_INTERVAL && elimination_interval <= MAX_ELIMINATION_INTERVAL,
+        RitArenaError::EliminationIntervalOutOfBounds
+    );
     require!(
         elimination_percent >= 1 && elimination_percent <= 99,
         RitArenaError::InvalidEliminationPercent
@@ -142,6 +145,7 @@ pub fn handler(
     arena.current_agents = 0;
     arena.alive_agents = 0;
     arena.current_round = 0;
+    arena.created_at = Clock::get()?.unix_timestamp;
     arena.started_at = 0;
     arena.last_submission_at = 0;
 

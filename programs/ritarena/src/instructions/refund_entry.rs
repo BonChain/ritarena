@@ -10,9 +10,9 @@ pub struct RefundEntry<'info> {
     pub agent_owner: Signer<'info>,
 
     #[account(
+        mut,
         seeds = [ARENA_SEED, &arena.id.to_le_bytes()],
         bump = arena.bump,
-        constraint = arena.state == ArenaState::Cancelled || arena.state == ArenaState::Abandoned @ RitArenaError::ArenaNotRefundable,
     )]
     pub arena: Box<Account<'info, Arena>>,
 
@@ -46,26 +46,47 @@ pub struct RefundEntry<'info> {
 }
 
 pub fn handler(ctx: Context<RefundEntry>) -> Result<()> {
-    let arena = &ctx.accounts.arena;
+    // Refund allowed if:
+    // 1. Arena is Cancelled or Abandoned (normal path), OR
+    // 2. Arena is still in Registration and REGISTRATION_TIMEOUT has elapsed (stuck arena rescue)
+    let state = ctx.accounts.arena.state.clone();
+    let refundable = state == ArenaState::Cancelled
+        || state == ArenaState::Abandoned
+        || (state == ArenaState::Registration && {
+            let now = Clock::get()?.unix_timestamp;
+            let elapsed = now.saturating_sub(ctx.accounts.arena.created_at);
+            elapsed >= REGISTRATION_TIMEOUT
+        });
 
-    let arena_id_bytes = arena.id.to_le_bytes();
-    let signer_seeds: &[&[&[u8]]] = &[&[ARENA_SEED, &arena_id_bytes, &[arena.bump]]];
+    require!(refundable, RitArenaError::ArenaNotRefundable);
 
-    token::transfer(
-        CpiContext::new_with_signer(
-            ctx.accounts.token_program.key(),
-            Transfer {
-                from: ctx.accounts.arena_vault.to_account_info(),
-                to: ctx.accounts.agent_usdc.to_account_info(),
-                authority: ctx.accounts.arena.to_account_info(),
-            },
-            signer_seeds,
-        ),
-        arena.entry_fee,
-    )?;
+    // Auto-cancel the registration arena if it timed out
+    if state == ArenaState::Registration {
+        ctx.accounts.arena.state = ArenaState::Cancelled;
+    }
 
-    let entry = &mut ctx.accounts.arena_entry;
-    entry.refunded = true;
+    // Transfer entry fee back (skip if zero-fee arena)
+    let entry_fee = ctx.accounts.arena.entry_fee;
+    if entry_fee > 0 {
+        let arena_id_bytes = ctx.accounts.arena.id.to_le_bytes();
+        let bump = ctx.accounts.arena.bump;
+        let signer_seeds: &[&[&[u8]]] = &[&[ARENA_SEED, &arena_id_bytes, &[bump]]];
+
+        token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.key(),
+                Transfer {
+                    from: ctx.accounts.arena_vault.to_account_info(),
+                    to: ctx.accounts.agent_usdc.to_account_info(),
+                    authority: ctx.accounts.arena.to_account_info(),
+                },
+                signer_seeds,
+            ),
+            entry_fee,
+        )?;
+    }
+
+    ctx.accounts.arena_entry.refunded = true;
 
     Ok(())
 }

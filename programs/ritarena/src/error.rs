@@ -62,4 +62,12 @@ pub enum RitArenaError {
     InvalidUsdcMint,
     #[msg("Treasury account does not match protocol treasury")]
     InvalidTreasury,
+    #[msg("Elimination interval out of bounds (10s - 86400s)")]
+    EliminationIntervalOutOfBounds,
+    #[msg("Duration exceeds maximum (30 days)")]
+    DurationTooLong,
+    #[msg("Registration period has expired — arena never started")]
+    RegistrationExpired,
+    #[msg("Caller is not authorized to abandon this arena")]
+    UnauthorizedAbandon,
 }

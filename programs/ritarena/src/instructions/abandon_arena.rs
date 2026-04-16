@@ -45,15 +45,9 @@ pub struct AbandonArena<'info> {
 
 pub fn handler(ctx: Context<AbandonArena>) -> Result<()> {
     let arena = &ctx.accounts.arena;
-    let caller = ctx.accounts.caller.key();
 
-    // Only protocol authority or arena creator can abandon
-    require!(
-        caller == ctx.accounts.protocol.authority || caller == arena.creator,
-        RitArenaError::UnauthorizedOracle
-    );
-
-    // Check timeout
+    // Check timeout first — arena must have timed out
+    // (oracle inactive for > 2x elimination_interval)
     let now = Clock::get()?.unix_timestamp;
     let elapsed = now
         .checked_sub(arena.last_submission_at)

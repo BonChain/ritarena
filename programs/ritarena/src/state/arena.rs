@@ -42,6 +42,7 @@ pub struct Arena {
     pub current_agents: u16,
     pub alive_agents: u16,
     pub current_round: u32,
+    pub created_at: i64,        // set at arena creation
     pub started_at: i64,       // 0 = not started yet; set by start_arena
     pub last_submission_at: i64, // 0 = no submissions yet; used for timeout detection
 

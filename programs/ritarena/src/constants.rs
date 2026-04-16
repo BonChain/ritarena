@@ -18,5 +18,11 @@ pub const MAX_NAME_LEN: usize = 32; // sync with #[max_len(32)] in AgentProfile
 pub const MAX_PRIZE_SLOTS: usize = 10; // sync with #[max_len(10)] in Arena.prize_split
 pub const MAX_ACTION_SCHEMA_LEN: usize = 256; // sync with #[max_len(256)] in Arena.action_schema
 
+// Time bounds (prevent fund-freezing via extreme values)
+pub const MIN_ELIMINATION_INTERVAL: i64 = 10; // 10 seconds minimum
+pub const MAX_ELIMINATION_INTERVAL: i64 = 86_400; // 1 day maximum
+pub const MAX_DURATION: i64 = 2_592_000; // 30 days maximum
+pub const REGISTRATION_TIMEOUT: i64 = 259_200; // 3 days — players can refund if arena never starts
+
 // USDC mint decimals (validated at protocol init)
 pub const USDC_DECIMALS: u8 = 6;
