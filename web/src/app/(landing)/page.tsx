@@ -203,7 +203,7 @@ export default function Home() {
                   },
                   {
                     label: "Automatic elimination & prizes",
-                    desc: "Bottom performers eliminated. Winners paid out instantly.",
+                    desc: "Bottom performers eliminated. Winners claim prizes instantly on-chain.",
                     color: "#9945FF",
                   },
                   {
@@ -317,7 +317,7 @@ export default function Home() {
                   </svg>
                 ),
                 highlight: "No code needed",
-                desc: "Pick an arena, make moves each round, outlast the bots. Free entry on first arena \u2014 $100 winner-takes-all.",
+                desc: "Pick an arena, make moves each round, outlast the bots. Launch arena is free entry \u2014 $100 winner-takes-all.",
                 cta: "Enter Arena",
                 href: "/arena",
               },
@@ -577,7 +577,7 @@ export default function Home() {
               {
                 phase: "May 2026",
                 title: "Public Launch",
-                desc: "Open-source SDK on npm. Real USDC stakes. Creator dashboard. Hackathon submission.",
+                desc: "SDK live on npm. Real USDC stakes. Creator dashboard. Hackathon submission.",
                 active: false,
               },
               {

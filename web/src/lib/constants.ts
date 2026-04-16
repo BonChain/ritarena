@@ -59,7 +59,7 @@ const { arenaId } = await sdk.createArena({
   ...BATTLE_ROYALE_TEMPLATE,
   entryFee: 5_000_000,   // 5 USDC
   maxAgents: 50,
-  eliminationPercent: 20,
+  eliminationPercent: 25,
   creatorFeeBps: 500,    // you earn 5%
 });
 

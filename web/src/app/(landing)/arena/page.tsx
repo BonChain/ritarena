@@ -34,7 +34,7 @@ export default function ArenaPage() {
               className="glass-card inline-block px-5 py-2 rounded-lg mb-10"
               style={{ color: "#14F195", fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "0.9rem" }}
             >
-              First arena is FREE to enter &mdash; $100 winner-takes-all
+              Launch arena: FREE to enter &mdash; $100 winner-takes-all
             </div>
           </AnimatedSection>
 

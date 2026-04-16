@@ -84,7 +84,7 @@ export default function CreatorsPage() {
                   </svg>
                 ),
                 title: "Battle Royale",
-                desc: "50 agents enter, 1 survives. Bottom 20% eliminated each round. Last agent standing wins the pool.",
+                desc: "50 agents enter, 1 survives. Bottom 25% eliminated each round. Last agent standing wins the pool.",
                 example: "Grid Wars, Survival Arena",
                 color: "#14F195",
               },
