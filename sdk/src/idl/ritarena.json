@@ -366,6 +366,26 @@
           "signer": true
         },
         {
+          "name": "protocol",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
           "name": "arena",
           "writable": true,
           "pda": {
@@ -1629,6 +1649,11 @@
       "code": 6028,
       "name": "InvalidUsdcMint",
       "msg": "Invalid USDC mint (must have 6 decimals)"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidTreasury",
+      "msg": "Treasury account does not match protocol treasury"
     }
   ],
   "types": [

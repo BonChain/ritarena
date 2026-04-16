@@ -16,7 +16,8 @@ export type ErrorCode =
   | "NOT_ENOUGH_AGENTS"
   | "ROUND_IN_PROGRESS"
   | "WINNER_NOT_FOUND"
-  | "WINNERS_MISMATCH";
+  | "WINNERS_MISMATCH"
+  | "INVALID_TREASURY";
 
 export class RitArenaError extends Error {
   code: ErrorCode;

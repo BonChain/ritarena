@@ -419,10 +419,13 @@ export class RitArena extends RitArenaReader {
       true
     );
 
+    const protocolPda = pdas.protocol();
+
     return await (this.program.methods as any)
       .collectProtocolFee()
       .accounts({
         caller,
+        protocol: protocolPda,
         arena: arenaPda,
         arenaVault,
         treasuryUsdc,
@@ -456,6 +459,40 @@ export class RitArena extends RitArenaReader {
         arena: arenaPda,
         arenaVault,
         creatorUsdc,
+        usdcMint: arena.usdcMint,
+      })
+      .rpc();
+  }
+
+  /** Abandon an arena that has timed out (oracle inactive > 2x elimination interval). Only protocol authority or arena creator can call. */
+  async abandonArena(arenaId: number): Promise<string> {
+    const caller = this.wallet.publicKey;
+    const arenaPda = pdas.arena(arenaId);
+    const protocolPda = pdas.protocol();
+    const bondVault = pdas.bondVault(arenaPda);
+    const treasuryPda = pdas.treasury();
+
+    const arena = await this.getArena(arenaId);
+    if (!arena) {
+      throw new RitArenaError("ARENA_NOT_FOUND",
+        `Arena ${arenaId} not found on-chain`,
+        "Check the arena ID.");
+    }
+
+    const treasuryUsdc = await getAssociatedTokenAddress(
+      arena.usdcMint,
+      treasuryPda,
+      true
+    );
+
+    return await (this.program.methods as any)
+      .abandonArena()
+      .accounts({
+        caller,
+        protocol: protocolPda,
+        arena: arenaPda,
+        bondVault,
+        treasuryUsdc,
         usdcMint: arena.usdcMint,
       })
       .rpc();
