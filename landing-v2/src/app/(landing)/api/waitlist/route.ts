@@ -2,13 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile, writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 
-const DATA_DIR = join(process.cwd(), "data");
+// Use /data if it exists (Railway volume mount), otherwise ./data
+const DATA_DIR = process.env.DATA_DIR || join(process.cwd(), "data");
 const FILE_PATH = join(DATA_DIR, "waitlist.json");
 
 interface WaitlistEntry {
   email: string;
   timestamp: string;
   source: string;
+}
+
+async function ensureDir() {
+  await mkdir(DATA_DIR, { recursive: true });
 }
 
 async function getEntries(): Promise<WaitlistEntry[]> {
@@ -21,7 +26,7 @@ async function getEntries(): Promise<WaitlistEntry[]> {
 }
 
 async function saveEntries(entries: WaitlistEntry[]) {
-  await mkdir(DATA_DIR, { recursive: true });
+  await ensureDir();
   await writeFile(FILE_PATH, JSON.stringify(entries, null, 2));
 }
 
@@ -50,13 +55,18 @@ export async function POST(request: NextRequest) {
     await saveEntries(entries);
 
     return NextResponse.json({ message: "Added", count: entries.length });
-  } catch {
+  } catch (err) {
+    console.error("Waitlist POST error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 
 // GET — return count
 export async function GET() {
-  const entries = await getEntries();
-  return NextResponse.json({ count: entries.length });
+  try {
+    const entries = await getEntries();
+    return NextResponse.json({ count: entries.length });
+  } catch {
+    return NextResponse.json({ count: 0 });
+  }
 }
