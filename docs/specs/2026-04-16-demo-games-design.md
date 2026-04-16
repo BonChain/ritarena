@@ -24,7 +24,7 @@ Each game is a different format, different player count, different interaction m
 ## Revenue Model (6 Streams)
 
 ### 1. Protocol Fee (1% of every prize pool)
-Every match, every game, every arena. Scales with volume. 1,000 matches/day x 40 USDC avg pool = $400/day passive.
+Every match, every game, every arena. Scales with volume. At scale target: 1,000 matches/day x 40 USDC avg pool = $400/day passive.
 
 ### 2. Spectator God Powers (microtransactions)
 Three viewer tiers:
@@ -32,7 +32,9 @@ Three viewer tiers:
 - **God Mode** — connect wallet, pay per power (e.g. 0.1 USDC to bomb a tile, 0.05 USDC to drop a wall). Revenue split: creator gets 70%, protocol gets 30%.
 - **Competitor** — connect wallet, pay entry fee, compete as agent
 
-God powers are the spectator monetization layer. Every viewer is a potential spender. Low friction — one click, small amount.
+God powers are the spectator monetization layer. Every viewer is a potential spender. Low friction — one click, small amount. Payment via pre-funded session balance (deposit USDC once, spend per power) to avoid per-action wallet signatures.
+
+**Rule: Competitors cannot use god powers on matches they are entered in.** God powers are spectator-only. This prevents pay-to-win.
 
 ### 3. Training Data Sales (B2B)
 Every match generates RL-format action logs (merkle-verified). Multi-agent competitive data is rare and valuable.
@@ -103,6 +105,13 @@ All three games use the same infrastructure:
 - `claim_creator_fee` — creator collects their cut
 - Protocol fee: 1%, Creator fee: 0-20%, Rest: prize pool
 
+### Trust Model & Verifiability
+The game server (oracle) is trusted to report outcomes. All game logic runs off-chain. The chain stores: arena lifecycle, escrow, scores, elimination events, prize claims.
+
+**Merkle proofs enable post-hoc verification:** every round, the oracle submits a merkle root of all actions. Any observer can later verify that a specific action was included in the tree by checking the proof against the on-chain root. This doesn't prevent a malicious oracle, but it creates a verifiable audit trail — if the oracle lies, the proof won't match.
+
+For the hackathon demo, single-oracle is fine. For production: multi-oracle consensus or ZK proofs of game execution.
+
 ### SDK (already built)
 - `GameServer` class handles lifecycle: `createAndWait()` → `start()` → `reportRound()` → `finish()`
 - `RitArena` client for agent interactions: `enterArena()`, `claimPrize()`, `watchEntry()`
@@ -142,14 +151,14 @@ Battlesnake tournament stream meets Jelle's Marble League. Real-time action, nam
 ### Agent Interface
 - Agent receives game state each tick via WebSocket: grid, all snake positions, food locations, zone boundaries
 - Agent responds with direction: `up | down | left | right`
-- Tick rate: 200ms (5 ticks/sec)
+- Tick rate: 100ms (10 ticks/sec) — matches existing engine
 - If agent doesn't respond within tick window, snake continues in current direction
 
-### Bot Strategies (visually distinguishable)
+### Bot Strategies (visually distinguishable, matching existing codebase names)
 - **Aggressive** — hunts other snakes, hugs center
-- **Defensive** — stays near edges, avoids conflict
+- **Cautious** — stays near edges, avoids conflict
 - **Greedy** — always goes for nearest food
-- **Survivor** — prioritizes staying alive over scoring
+- **Random** — unpredictable moves, chaotic energy
 - Each strategy should be visibly different to a spectator watching the grid
 
 ### Viewer God Powers
@@ -197,9 +206,9 @@ Battlesnake tournament stream meets Jelle's Marble League. Real-time action, nam
 Auction house meets turf war. Strategic bidding with a visual map result. Viewer plays god.
 
 ### Rules
-- 6x6 grid = 36 tiles
+- **8 agents** compete on a 6x6 grid = 36 tiles
 - Each round, 1 tile goes up for auction (order: corners first, then edges, then center — strategic value increases)
-- All agents submit a bid from their budget (commit-reveal: bids hidden until reveal)
+- All agents submit a bid from their budget (sealed-bid: bids hidden until reveal)
 - Highest bid wins the tile. All bidders pay nothing except winner (first-price sealed-bid auction)
 - **Scoring:** tiles you own = 1 point each. Adjacent tiles (horizontal/vertical) in a cluster = bonus: cluster of N = N squared points. So 3 connected tiles = 9 points, not 3.
 - **Elimination:** Every 4 rounds, lowest-scoring agent is eliminated
@@ -216,11 +225,12 @@ Auction house meets turf war. Strategic bidding with a visual map result. Viewer
   - All agents' scores and alive status
   - Round number, elimination schedule
 - Agent responds with: `{ bid: number }` (0 to remaining budget)
-- Can update bid multiple times during the 10-second window. Last value before deadline counts.
+- Can update bid multiple times during the 5-second window. Last value before deadline counts.
 - Timeout = bid of 0
 
-### Commit-Reveal (maps directly to on-chain primitive)
-1. **Commit phase (5 sec):** Agents submit bid. Server hashes each bid as merkle leaf. Nobody sees others' bids.
+### Sealed-Bid Auction (server-side, merkle-verified)
+Note: this is server-side sealed bidding, not on-chain commit-reveal. Bids are collected by the game server, hashed into merkle leaves, and the root submitted on-chain for verifiability.
+1. **Bid phase (5 sec):** Agents submit bid to game server. Server collects all bids. Nobody sees others' bids.
 2. **Reveal phase (2 sec):** All bids revealed simultaneously. Highest bid wins tile.
 3. **Result (1 sec):** Grid updates, scores recalculated, commentary fires.
 
@@ -237,18 +247,18 @@ Auction house meets turf war. Strategic bidding with a visual map result. Viewer
 - **Chaotic** — unpredictable bids. Hard to read but sometimes wastes budget.
 
 ### On-Chain Flow
-Same lifecycle as Snake Royale — `create_arena` → `enter_arena` → `start_arena` → `submit_elimination` (every 8 rounds with merkle root of all bids) → `finalize_arena` → claims.
+Same lifecycle as Snake Royale — `create_arena` → `enter_arena` → `start_arena` → `submit_elimination` (every 4 rounds with merkle root of all bids) → `finalize_arena` → claims.
 
 `action_schema: "territory_auction"`
 
 ### UI Layout
 ```
 +-----------------------------------------------+
-| TERRITORY AUCTION     POOL: 80 USDC   R12/20  |
+| TERRITORY AUCTION     POOL: 40 USDC   R12/16  |
 +-----------------------------------------------+
-| 8x8 GRID          | AUCTION        | AGENTS   |
+| 6x6 GRID          | AUCTION        | AGENTS   |
 | (colored tiles)    | Tile: (3,4)    | ALPHA 78c |
-| [ ][ ][R][ ]      | Time: 7s       | DEGEN 45c |
+| [ ][ ][R][ ]      | Time: 4s       | DEGEN 45c |
 | [ ][B][B][ ]      |                | WHALE 62c |
 | [R][R][ ][G]      | [Your bid: 15] | CHAD  23c |
 | [ ][ ][G][G]      |                | -- REKT --|
@@ -414,11 +424,11 @@ During blind phase, the opponent's pick area shows:
 - "Want to build game #4? Here's 50 lines. Same SDK. Same escrow. Your rules."
 - This is the moment that converts judges from "cool demo" to "this is a platform"
 
-**2:55-3:00 — Platform proof**
+**2:55-3:00 — Closing**
 - Split screen: 3 games, same Anchor program, same SDK
 - "Any game. Any agent. Verified on-chain."
-- 6 revenue streams: protocol fee, god powers, data sales, sponsored arenas, IP collabs, creator economy
 - Waitlist CTA
+- (Save the 6 revenue streams for the 3-min pitch video, not the technical demo)
 
 ---
 
@@ -479,6 +489,18 @@ Game Server (Node.js)
 - RPS: `{ agentId, round, openPicks[], finalPick, result, score }`
 
 All actions are hashed into merkle leaves per round and root submitted on-chain.
+
+### Disconnect Handling
+- **Snake:** agent keeps moving in current direction (already in engine)
+- **Territory Auction:** disconnected agent bids 0 (forfeits round)
+- **RPS:** disconnected player's last pick stands. If no pick submitted, random pick assigned.
+
+### Commentary System
+Rule-based template engine (not LLM). Each game defines event triggers and template strings:
+- Snake: `{agent} ATE 3 FOOD IN A ROW!`, `ONLY {n} LEFT!`, `{agent} WALKED INTO THE ZONE!`
+- Auction: `{agent} OVERPAID! {bid} FOR A {tile_type}?`, `{agent} IS ALMOST BROKE!`
+- RPS: `{n} ROCKS IN A ROW!`, `AI PREDICTED CORRECTLY!`, `PATTERN BROKEN!`
+Templates are client-side string interpolation from game state events.
 
 ### Devnet Configuration
 - Program ID: `5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH`
