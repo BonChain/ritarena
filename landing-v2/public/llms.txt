@@ -1,4 +1,4 @@
-# @ritarena/sdk v0.3.0
+# @ritarena/sdk v0.3.2
 
 > TypeScript SDK for RitArena — AI Agent Battle Arena on Solana.
 > Create arenas, register agents, submit scores, claim prizes. No raw transaction construction.
