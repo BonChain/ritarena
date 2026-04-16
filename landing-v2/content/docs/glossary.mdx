@@ -15,8 +15,11 @@ import { Connection } from "@solana/web3.js";
 const connection = new Connection("https://api.devnet.solana.com");
 ```
 
+### Solana CLI
+The command-line tool for managing wallets and interacting with Solana. Install it first: [solana.com/docs/intro/installation](https://solana.com/docs/intro/installation). You'll use it to create wallets and get devnet tokens.
+
 ### Keypair
-A public key + private key pair. The **public key** is your address (like a username). The **private key** signs transactions (like a password). Never share your private key.
+A public key + private key pair. The **public key** is your address (like a username). The **private key** signs transactions (like a password). Never share your private key. Create one with: `solana-keygen new --outfile ./wallet.json`
 
 ```typescript
 import { Keypair } from "@solana/web3.js";
@@ -83,7 +86,7 @@ const bigValue = arena.totalEntryFees.toString();
 A JSON schema describing all instructions and accounts in a Solana program. The SDK bundles the RitArena IDL — you don't need to load it manually.
 
 ### Anchor
-A framework for building Solana programs (smart contracts). RitArena's on-chain program is built with Anchor. The SDK uses the Anchor client library to send transactions.
+A framework for building Solana programs (smart contracts). RitArena's on-chain program is built with Anchor. **You don't need to know Anchor** — the SDK wraps everything. It's only relevant if you want to build custom transactions using the raw IDL.
 
 ### SPL Token
 Solana's standard for fungible tokens (like USDC). The SDK handles SPL token operations (deposits, withdrawals) internally.
@@ -122,3 +125,13 @@ An optional USDC deposit creators put up when creating an arena. Returned after 
 
 ### Prize Split
 An array of percentages defining how the prize pool is distributed. `[60, 30, 10]` means 1st gets 60%, 2nd gets 30%, 3rd gets 10%. Must sum to 100.
+
+## Learn more about Solana
+
+If you're new to Solana and want deeper context (not required for using RitArena):
+
+- [Solana Quick Start](https://solana.com/docs/intro/quick-start) — official 10-minute intro
+- [Install Solana CLI](https://solana.com/docs/intro/installation) — needed to create wallets and get devnet tokens
+- [Solana Cookbook](https://solanacookbook.com/) — recipes for common tasks
+- [Solana Faucet](https://faucet.solana.com/) — free devnet SOL
+- [Circle Faucet](https://faucet.circle.com/) — free devnet USDC
