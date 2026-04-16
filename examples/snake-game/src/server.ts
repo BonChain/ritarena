@@ -3,8 +3,9 @@
 import { createServer } from "http";
 import { readFileSync } from "fs";
 import { join, extname } from "path";
-import { Keypair } from "@solana/web3.js";
-import { BATTLE_ROYALE_TEMPLATE } from "@ritarena/sdk";
+import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { GameServer, BATTLE_ROYALE_TEMPLATE, RitArena } from "@ritarena/sdk";
+import type { ScoreUpdate, GameAction } from "@ritarena/sdk";
 import { createHash } from "crypto";
 import { WebSocketServer, WebSocket } from "ws";
 import * as fs from "fs";
@@ -13,8 +14,9 @@ import * as path from "path";
 import { GameEngine } from "./game/engine.js";
 import { TICK_MS } from "./game/constants.js";
 import { BotRunner, type BotConfig } from "./agent/bot-runner.js";
-import { MockAdapter } from "./ritarena_sdk/mock-adapter.js";
-import type { ArenaAdapter, BotIdentity, GameAction, LogEntry } from "./ritarena_sdk/adapter.js";
+
+interface LogEntry { message: string; kind: string; tx?: string; explorerUrl?: string; }
+interface PreflightCheck { name: string; status: "pending" | "ok" | "fail"; detail: string; }
 
 const PORT = 3000;
 
@@ -51,6 +53,7 @@ function deriveBotKeypair(master: Keypair, index: number): Keypair {
 }
 
 // --- State ---
+let activeServer: GameServer | null = null;
 const clients: Set<WebSocket> = new Set();
 const logs: LogEntry[] = [];
 let phase: string = "lobby";
@@ -76,11 +79,57 @@ function addLog(entry: LogEntry): void {
   broadcast({ type: "log", ...entry });
 }
 
-async function createDevnetAdapter(): Promise<ArenaAdapter> {
-  const { DevnetAdapter } = await import("./ritarena_sdk/devnet-adapter.js");
-  const oracleKeypair = loadMasterKeypair();
-  return new DevnetAdapter(oracleKeypair, { onLog: addLog });
+// --- Preflight (devnet only) ---
+
+async function runPreflight(connection: Connection, oracleKeypair: Keypair, botKeypairs: Keypair[]): Promise<PreflightCheck[]> {
+  const checks: PreflightCheck[] = [];
+
+  // Check oracle SOL balance
+  try {
+    const balance = await connection.getBalance(oracleKeypair.publicKey);
+    const sol = balance / LAMPORTS_PER_SOL;
+    checks.push({
+      name: "Oracle SOL balance",
+      status: sol >= 0.1 ? "ok" : "fail",
+      detail: `${sol.toFixed(4)} SOL${sol < 0.1 ? " (need >= 0.1)" : ""}`,
+    });
+  } catch (err: any) {
+    checks.push({ name: "Oracle SOL balance", status: "fail", detail: err.message });
+  }
+
+  // Check protocol initialized
+  try {
+    const reader = RitArena.readOnly(connection);
+    const config = await reader.getProtocol();
+    checks.push({
+      name: "Protocol initialized",
+      status: config ? "ok" : "fail",
+      detail: config ? "Protocol config found" : "Protocol not initialized",
+    });
+  } catch (err: any) {
+    checks.push({ name: "Protocol initialized", status: "fail", detail: err.message });
+  }
+
+  // Check per-bot SOL balances
+  for (let i = 0; i < botKeypairs.length; i++) {
+    const kp = botKeypairs[i];
+    try {
+      const balance = await connection.getBalance(kp.publicKey);
+      const sol = balance / LAMPORTS_PER_SOL;
+      checks.push({
+        name: `Bot ${i} SOL (${kp.publicKey.toBase58().slice(0, 8)})`,
+        status: sol >= 0.01 ? "ok" : "fail",
+        detail: `${sol.toFixed(4)} SOL${sol < 0.01 ? " (need >= 0.01)" : ""}`,
+      });
+    } catch (err: any) {
+      checks.push({ name: `Bot ${i} SOL`, status: "fail", detail: err.message });
+    }
+  }
+
+  return checks;
 }
+
+// --- Game lifecycle ---
 
 async function startGame(mode: "mock" | "devnet"): Promise<void> {
   if (gameLoop) {
@@ -92,13 +141,26 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
   logs.length = 0;
   speedMultiplier = 1;
 
-  let adapter: ArenaAdapter;
+  let connection: Connection | null = null;
+  let oracleKeypair: Keypair | null = null;
+  let masterKeypair: Keypair | null = null;
 
   if (mode === "devnet") {
-    setPhase("preflight");
-    adapter = await createDevnetAdapter();
+    connection = new Connection("https://api.devnet.solana.com", "confirmed");
+    oracleKeypair = loadMasterKeypair();
+    masterKeypair = oracleKeypair;
+  }
 
-    const checks = await adapter.preflight();
+  // Generate bot keypairs
+  const botKeypairs: Keypair[] = BOT_ROSTER.map((_, i) =>
+    masterKeypair ? deriveBotKeypair(masterKeypair, i) : Keypair.generate()
+  );
+
+  // Preflight for devnet
+  if (mode === "devnet") {
+    setPhase("preflight");
+
+    const checks = await runPreflight(connection!, oracleKeypair!, botKeypairs);
     broadcast({ type: "preflight", status: "checking", checks });
 
     const failed = checks.some((c) => c.status === "fail");
@@ -108,81 +170,54 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
       return;
     }
     broadcast({ type: "preflight", status: "ready", checks });
-  } else {
-    adapter = new MockAdapter({ onLog: addLog });
   }
 
   setPhase("setup");
   console.log(`\nStarting game in ${mode} mode...`);
 
-  const rulesHash = createHash("sha256")
-    .update("snake-game:slither-io-style:shrinking-map")
-    .digest();
-
   const entryFee = 5_000_000;
-  const { arenaId } = await adapter.createArena({
-    ...BATTLE_ROYALE_TEMPLATE,
+  const gameServer = new GameServer(connection, oracleKeypair, {
     entryFee,
     maxAgents: BOT_ROSTER.length,
     minAgents: 2,
     duration: 600,
     eliminationInterval: 700,
-    eliminationPercent: 1,
     creatorFeeBps: 0,
     actionSchema: "up,down,left,right",
     prizeSplit: [100],
-    rulesHash: new Uint8Array(rulesHash),
+    mock: mode === "mock",
+  });
+  activeServer = gameServer;
+
+  gameServer.on("log", (entry: LogEntry) => addLog(entry));
+  gameServer.on("error", (err: Error) => {
+    console.error("[GameServer error]", err.message);
   });
 
-  const arenaInfo: Record<string, unknown> = {
+  const arenaId = await gameServer.setupWithBots(botKeypairs);
+
+  // Map botId -> PublicKey for game logic
+  const botPubkeys: Map<string, PublicKey> = new Map();
+  for (let i = 0; i < BOT_ROSTER.length; i++) {
+    botPubkeys.set(BOT_ROSTER[i].id, botKeypairs[i].publicKey);
+  }
+
+  // Broadcast arena info
+  const arenaInfo = gameServer.getArenaInfo();
+  const arenaInfoMsg: Record<string, unknown> = {
     type: "arena-info",
     arenaId,
-    entryFee: entryFee / 1_000_000,
-    prizePool: (entryFee * BOT_ROSTER.length) / 1_000_000,
+    entryFee: arenaInfo?.entryFee ?? entryFee / 1_000_000,
+    prizePool: arenaInfo?.prizePool ?? (entryFee * BOT_ROSTER.length) / 1_000_000,
     prizeSplit: [100],
     mode,
     botCount: BOT_ROSTER.length,
   };
-
-  if (mode === "devnet" && "getArenaExplorerUrl" in adapter) {
-    const devAdapter = adapter as any;
-    arenaInfo.address = devAdapter.getArenaAddress(arenaId);
-    arenaInfo.explorerUrl = devAdapter.getArenaExplorerUrl(arenaId);
+  if (mode === "devnet" && arenaInfo?.arenaPda) {
+    arenaInfoMsg.address = arenaInfo.arenaPda;
+    arenaInfoMsg.explorerUrl = `https://explorer.solana.com/account/${arenaInfo.arenaPda}?cluster=devnet`;
   }
-
-  broadcast(arenaInfo);
-
-  // Wait for arena account to be visible on devnet (RPC propagation delay)
-  if (mode === "devnet") {
-    addLog({ message: "[RitArena] Waiting for arena account to propagate...", kind: "info" });
-    const { Connection } = await import("@solana/web3.js");
-    const { RitArena: RitArenaReader } = await import("@ritarena/sdk");
-    const conn = new Connection("https://api.devnet.solana.com", "confirmed");
-    const reader = RitArenaReader.readOnly(conn);
-    for (let attempt = 0; attempt < 15; attempt++) {
-      const found = await reader.getArena(arenaId);
-      if (found) break;
-      await new Promise((r) => setTimeout(r, 2000));
-    }
-  }
-
-  // For devnet: use deterministic keypairs (same as setup-devnet.ts)
-  // For mock: use random keypairs (no real SOL needed)
-  let masterKeypair: Keypair | null = null;
-  if (mode === "devnet") {
-    masterKeypair = loadMasterKeypair();
-  }
-
-  const botIdentities: Map<string, BotIdentity> = new Map();
-  for (let i = 0; i < BOT_ROSTER.length; i++) {
-    const bot = BOT_ROSTER[i];
-    const keypair = masterKeypair ? deriveBotKeypair(masterKeypair, i) : Keypair.generate();
-    await adapter.registerProfile(bot.id, keypair);
-    await adapter.enterArena(arenaId, keypair);
-    botIdentities.set(bot.id, { botId: bot.id, keypair });
-  }
-
-  await adapter.startArena(arenaId);
+  broadcast(arenaInfoMsg);
 
   engine = new GameEngine();
   const botRunner = new BotRunner();
@@ -196,7 +231,6 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
   setPhase("active");
 
   let roundActions: GameAction[] = [];
-  let onChainRound = 0; // tracks arena.currentRound on-chain
   let tickInProgress = false;
 
   gameLoop = setInterval(async () => {
@@ -211,26 +245,16 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
       gameLoop = null;
       if (engine) {
         const winnerId = engine.winner!;
-        const winnerBot = botIdentities.get(winnerId)!;
-        let finalized = false;
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          try {
-            await adapter.finalizeArena(arenaId, winnerBot, Array.from(botIdentities.values()));
-            await adapter.claimPrize(arenaId, winnerBot);
-            finalized = true;
-            break;
-          } catch (err: any) {
-            if (attempt < 3) {
-              addLog({ message: "[RitArena] finalizeArena failed, retrying... (" + attempt + "/3)", kind: "info" });
-              await new Promise((r) => setTimeout(r, 2000));
-            } else {
-              addLog({ message: "[RitArena] Failed to finalize arena. Winner: " + winnerId + ". Arena may need manual finalization.", kind: "info" });
-            }
-          }
+        const winnerPubkey = botPubkeys.get(winnerId)!;
+        try {
+          await gameServer.finish([{ pubkey: winnerPubkey, rank: 1 }]);
+        } catch (err: any) {
+          addLog({ message: "[RitArena] Failed to finalize arena. Winner: " + winnerId + ". Arena may need manual finalization.", kind: "info" });
         }
+        activeServer = null;
         broadcast({ type: "state", state: engine.getState() });
         setPhase("finished");
-        console.log(`Game over! Winner: ${winnerId}${finalized ? "" : " (on-chain finalization failed)"}`);
+        console.log(`Game over! Winner: ${winnerId}`);
       }
       return;
     }
@@ -270,28 +294,24 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
       if (roundEnd) {
         setPhase(`round ${engine.round}`);
         if (roundEnd.deaths.length > 0) {
-          const deathBots = roundEnd.deaths
-            .map((id) => botIdentities.get(id))
-            .filter((b): b is BotIdentity => b !== undefined);
+          const eliminatedPubkeys = roundEnd.deaths
+            .map((id) => botPubkeys.get(id))
+            .filter((pk): pk is PublicKey => pk !== undefined);
+
+          const scoreUpdates: ScoreUpdate[] = Array.from(roundEnd.scores.entries())
+            .map(([id, score]) => ({ entry: botPubkeys.get(id)!, score }))
+            .filter((s) => s.entry !== undefined);
 
           // Cap roundActions to prevent memory growth on repeated failures
           if (roundActions.length > 10000) {
             roundActions = roundActions.slice(-5000);
           }
 
-          try {
-            await adapter.submitElimination(arenaId, {
-              roundNumber: onChainRound + 1,
-              deaths: deathBots,
-              scores: roundEnd.scores,
-              actions: roundActions,
-            });
-            onChainRound++;
+          const report = await gameServer.reportRound(eliminatedPubkeys, scoreUpdates, roundActions);
+          if (report.confirmed) {
             roundActions = [];
-          } catch (err: any) {
-            addLog({ message: "[RitArena] submitElimination failed: " + err.message + " (will retry next round)", kind: "info" });
-            // Keep roundActions so they are included in the next attempt
           }
+          // If not confirmed, keep roundActions for the next attempt
         } else {
           roundActions = [];
         }
@@ -396,14 +416,20 @@ async function shutdown() {
     gameLoop = null;
   }
 
-  // Note: In devnet mode, the arena will remain Active on-chain.
-  // Users can call abandonArena after eliminationInterval * 2 (1400s) to get refunds.
-  // A future version could auto-cancel/finalize here.
-
-  addLog({
-    message: "[RitArena] Server shutting down. Arena may remain active on-chain. Use abandonArena after timeout for refunds.",
-    kind: "info"
-  });
+  if (activeServer && activeServer.phase === "active") {
+    addLog({ message: "[RitArena] Server shutting down, abandoning active arena...", kind: "info" });
+    try {
+      await activeServer.abandon();
+    } catch (err: any) {
+      addLog({ message: `[RitArena] abandon failed: ${err.message}`, kind: "info" });
+    }
+    activeServer = null;
+  } else {
+    addLog({
+      message: "[RitArena] Server shutting down. No active arena to abandon.",
+      kind: "info"
+    });
+  }
 
   // Give WS clients time to receive the message
   await new Promise(r => setTimeout(r, 500));
