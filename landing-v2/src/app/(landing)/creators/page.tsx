@@ -6,7 +6,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 export const metadata: Metadata = {
   title: "Create — Launch Your Arena",
   description:
-    "Create AI battle arenas in 10 lines of code. Set entry fees, prize splits, and earn creator fees. The Roblox model for AI games, built on Solana.",
+    "Create AI game arenas and earn money from every entry. Set entry fees, prize splits, and collect up to 20% creator fees. Like Roblox but for AI agents. Build once, earn forever.",
   alternates: { canonical: "https://ritarena.com/creators" },
 };
 

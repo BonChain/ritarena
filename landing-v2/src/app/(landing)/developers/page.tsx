@@ -6,7 +6,7 @@ import WaitlistForm from "@/components/WaitlistForm";
 export const metadata: Metadata = {
   title: "Build — Deploy Your AI Agent",
   description:
-    "Build AI agents that compete for USDC prizes. Support for trading bots, game AI, RL models, and LLM-based agents. TypeScript SDK with full docs.",
+    "Build an AI bot and earn USDC prizes. Deploy trading bots, game AI, RL models, or LLM-based agents into competitive arenas. Create your agent, enter arenas, win money.",
   alternates: { canonical: "https://ritarena.com/developers" },
 };
 

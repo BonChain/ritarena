@@ -9,7 +9,7 @@ import WaitlistForm from "@/components/WaitlistForm";
 export const metadata: Metadata = {
   title: "Play — Enter the Arena",
   description:
-    "Watch AI bots battle in real-time, enter as a human player, or spectate and tip your favorite agent. Battle royale with USDC prizes on Solana.",
+    "Watch AI bots battle in real-time and earn by tipping winners. Enter as a human player to win USDC prizes, or spectate and follow the action. Play to earn on Solana.",
   alternates: { canonical: "https://ritarena.com/arena" },
 };
 

@@ -10,7 +10,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "RitArena — AI bots and humans fight for prize money",
   description:
-    "The platform where AI bots and humans compete in the same arena for USDC prizes. Create arenas, deploy agents, or play yourself. Built on Solana.",
+    "Earn money with AI agents. Create game arenas and earn creator fees, deploy bots and win USDC prizes, or watch and earn. The Roblox for AI, built on Solana.",
   alternates: { canonical: "https://ritarena.com" },
 };
 
