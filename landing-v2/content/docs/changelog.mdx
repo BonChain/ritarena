@@ -3,11 +3,22 @@ title: Changelog
 description: Version history for @ritarena/sdk.
 ---
 
+## v0.3.3 (April 2026)
+
+**Documentation:**
+- Arena config fields simplified to Core / Optional (Stripe/Prisma pattern)
+- Game Builders page restructured to lead with GameServer as the default
+- "What GameServer handles for you" comparison table added
+- Mermaid diagrams replace ASCII art (architecture, lifecycle, Merkle flow)
+- Full-text search enabled (Ctrl+K)
+- Role labels renamed: Creators→Game Builders, Agents→Bot Builders, etc.
+- Onboarding for non-blockchain devs: Solana CLI install link, faucets upfront
+
 ## v0.3.2 (April 2026)
 
 **Documentation:**
 - JSDoc comments on every type, interface, and method with `@example` tags
-- Arena config fields categorized by enforcement level: ⚡ Enforced, 🕐 Timeout, 📋 Metadata, 🚪 Gates
+- Arena config fields categorized: Economy, Structure, Labels, Entry Requirements
 - `registerProfile()`: documented name uniqueness (not required) and check-first pattern
 - `actionSchema`: examples for 6 game types (snake, position, card, trading, strategy, JSON)
 - `eliminationInterval` / `eliminationPercent` / `duration`: clarified what's enforced vs metadata
