@@ -191,38 +191,53 @@ export type ArenaState =
  * });
  */
 export interface CreateArenaConfig {
-  /** Entry fee in USDC lamports (6 decimals). 5_000_000 = 5 USDC, 10_000_000 = 10 USDC */
+  // ── ENFORCED BY ON-CHAIN PROGRAM ──
+
+  /** ⚡ ENFORCED — Entry fee in USDC lamports (6 decimals). 5_000_000 = 5 USDC. Held in escrow vault. */
   entryFee: number;
-  /** Maximum participants. Up to 100, but ~30 practical limit due to tx size. */
+  /** ⚡ ENFORCED — Max participants. Up to 100, but ~30 practical limit due to tx size. */
   maxAgents: number;
-  /** Minimum agents to start. Default: 2 */
+  /** ⚡ ENFORCED — Minimum agents required before startArena() can be called. */
   minAgents: number;
+  /** ⚡ ENFORCED — Creator fee in basis points. 500 = 5%, max 2000 = 20%. Paid from prize pool on finalize. */
+  creatorFeeBps: number;
+  /** ⚡ ENFORCED — Prize distribution. [60, 30, 10] = 1st 60%, 2nd 30%, 3rd 10%. Must sum to 100. Max 10 slots. */
+  prizeSplit: number[];
+  /** ⚡ ENFORCED — Optional creator stake bond in USDC lamports. Slashed to treasury if arena is abandoned. Default: 0 */
+  stakeBondAmount?: number;
+
+  // ── USED FOR ABANDON TIMEOUT ONLY ──
+
   /**
-   * Arena duration in seconds. 3600 = 1 hour. Must be > 0.
-   * Also used for abandon timeout: arena can be abandoned after `eliminationInterval * 2` of inactivity.
+   * 🕐 TIMEOUT — Seconds between rounds. Must be > 0.
+   * The ONLY on-chain use: abandon timeout = `eliminationInterval × 2`.
+   * If the oracle is silent for this long, anyone can call abandonArena()
+   * to refund all players and slash the creator's bond.
+   *
+   * Set high (e.g. `duration + 100`) if your game server handles timing manually.
+   * GameServer defaults to this automatically.
+   */
+  eliminationInterval: number;
+
+  // ── METADATA ONLY (stored but not enforced) ──
+
+  /**
+   * 📋 METADATA — Arena duration in seconds. 3600 = 1 hour. Must be > 0.
+   * Stored on-chain but NOT enforced by any instruction.
+   * Used by frontends to display "this arena lasts X minutes."
+   * The oracle can run the game for any length regardless of this value.
    */
   duration: number;
   /**
-   * Seconds between elimination rounds. Must be > 0 (on-chain requirement).
-   * Set to `duration + 100` if your game server handles eliminations manually
-   * (this effectively disables the on-chain schedule — the oracle decides when to eliminate).
-   * Also used for abandon timeout: `eliminationInterval * 2`.
-   */
-  eliminationInterval: number;
-  /**
-   * Percentage eliminated per round (1-99). On-chain requires >= 1.
-   * Set to 1 if your game server handles eliminations manually.
-   * Note: this is metadata only — the on-chain program does NOT enforce it
-   * during submitElimination. The oracle decides who actually gets eliminated.
+   * 📋 METADATA — Percentage eliminated per round (1-99). Must be >= 1.
+   * Stored on-chain but NOT enforced during submitElimination.
+   * The oracle decides who gets eliminated — this is just a hint for bots/UIs.
+   * Set to 1 if your game handles eliminations manually.
    */
   eliminationPercent: number;
-  /** Creator fee in basis points. 500 = 5%, max 2000 = 20% */
-  creatorFeeBps: number;
-  /** Prize distribution. [60, 30, 10] = 1st gets 60%, 2nd 30%, 3rd 10%. Must sum to 100. Max 10 slots. */
-  prizeSplit: number[];
   /**
-   * Declares valid actions. Max 256 chars. Stored on-chain as metadata for bots.
-   * The game server enforces this — the blockchain just stores it.
+   * 📋 METADATA — Valid actions. Max 256 chars.
+   * Stored on-chain for bots to read. The game server enforces it, not the blockchain.
    *
    * Examples by game type:
    * - Snake/grid game: "up,down,left,right"
@@ -232,15 +247,16 @@ export interface CreateArenaConfig {
    * - Free-form JSON:  "json:{type,x,y,data}"
    */
   actionSchema: string;
-  /** 32-byte SHA256 hash of your game rules. Use `createHash('sha256').update(rulesText).digest()` */
+  /** 📋 METADATA — 32-byte SHA256 hash of your game rules. For verification, not enforced. */
   rulesHash: Uint8Array;
-  /** Optional creator stake bond in USDC lamports. Slashed if arena is abandoned. Default: 0 */
-  stakeBondAmount?: number;
-  /** Entry gate: agents must have completed this many arenas. Default: 0 (no gate) */
+
+  // ── ENTRY GATES (enforced on enterArena) ──
+
+  /** 🚪 GATE — Agents must have completed this many arenas. Default: 0 (no gate) */
   minArenasCompleted?: number;
-  /** Entry gate: agents must have this many wins. Default: 0 */
+  /** 🚪 GATE — Agents must have this many wins. Default: 0 */
   minWins?: number;
-  /** Entry gate: profile must be this old in seconds. Default: 0 */
+  /** 🚪 GATE — Profile must be this old in seconds. Default: 0 */
   minRegistrationAge?: number;
 }
 
