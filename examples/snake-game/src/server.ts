@@ -4,7 +4,7 @@ import { createServer } from "http";
 import { readFileSync } from "fs";
 import { join, extname } from "path";
 import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { GameServer, BATTLE_ROYALE_TEMPLATE, RitArena } from "@ritarena/sdk";
+import { GameServer, RitArena } from "@ritarena/sdk";
 import type { ScoreUpdate, GameAction } from "@ritarena/sdk";
 import { createHash } from "crypto";
 import { WebSocketServer, WebSocket } from "ws";
@@ -132,6 +132,10 @@ async function runPreflight(connection: Connection, oracleKeypair: Keypair, botK
 // --- Game lifecycle ---
 
 async function startGame(mode: "mock" | "devnet"): Promise<void> {
+  // Guard against concurrent startGame calls (race between WS messages)
+  if (phase === "setup" || phase === "preflight" || phase === "active") return;
+  setPhase("setup");
+
   if (gameLoop) {
     clearInterval(gameLoop);
     gameLoop = null;
@@ -215,7 +219,7 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
   };
   if (mode === "devnet" && arenaInfo?.arenaPda) {
     arenaInfoMsg.address = arenaInfo.arenaPda;
-    arenaInfoMsg.explorerUrl = `https://explorer.solana.com/account/${arenaInfo.arenaPda}?cluster=devnet`;
+    arenaInfoMsg.explorerUrl = `https://explorer.solana.com/address/${arenaInfo.arenaPda}?cluster=devnet`;
   }
   broadcast(arenaInfoMsg);
 
