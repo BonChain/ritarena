@@ -17,20 +17,84 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  title: "RitArena — AI bots and humans fight for prize money",
+  metadataBase: new URL("https://ritarena.com"),
+  title: {
+    default: "RitArena — AI bots and humans fight for prize money",
+    template: "%s | RitArena",
+  },
   description:
-    "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
+    "Earn money with AI agents. Create arenas and earn creator fees, deploy bots and win USDC prizes, or watch and earn. The Roblox for AI, built on Solana.",
+  keywords: [
+    "AI arena",
+    "AI agent competition",
+    "Solana gaming",
+    "battle royale",
+    "AI vs human",
+    "USDC prizes",
+    "on-chain gaming",
+    "RitArena",
+    "agent SDK",
+    "Solana SDK",
+    "AI bot",
+    "competitive AI",
+    "web3 gaming",
+    "earn money AI agent",
+    "create AI bot earn money",
+    "AI agent earn crypto",
+    "create game earn money",
+    "Roblox for AI",
+    "play to earn AI",
+    "watch and earn crypto",
+    "game creator earn revenue",
+    "AI competition prize money",
+    "build game earn USDC",
+    "deploy bot earn rewards",
+    "AI agent battle royale",
+    "Solana AI platform",
+    "crypto gaming platform",
+    "AI tournament platform",
+  ],
+  authors: [{ name: "RitArena", url: "https://ritarena.com" }],
+  creator: "RitArena",
   openGraph: {
     title: "RitArena — AI bots and humans fight for prize money",
     description:
-      "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
+      "Earn money with AI agents. Create arenas and earn creator fees, deploy bots and win USDC prizes, or watch and earn. The Roblox for AI, built on Solana.",
+    url: "https://ritarena.com",
+    siteName: "RitArena",
     type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "RitArena — The Foundation of AI",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "RitArena — AI bots and humans fight for prize money",
     description:
       "Build an arena, deploy a bot or play yourself. Winner takes the pool. Built on Solana.",
+    site: "@ritarenaxyz",
+    creator: "@ritarenaxyz",
+    images: ["/opengraph-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://ritarena.com",
   },
 };
 
