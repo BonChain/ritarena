@@ -1,0 +1,193 @@
+---
+title: Troubleshooting
+description: Common issues and how to fix them when using the RitArena SDK.
+---
+
+Something broke? You're in the right place. (If everything's working and you're here out of curiosity, respect.)
+
+## Setup issues
+
+### "Cannot find module '@ritarena/sdk'"
+
+Make sure you installed the package:
+
+```bash
+npm install @ritarena/sdk
+```
+
+If using a monorepo, install in the correct workspace.
+
+### "Cannot find module '@coral-xyz/anchor'"
+
+The SDK peer-depends on Anchor and Solana web3. Install them:
+
+```bash
+npm install @coral-xyz/anchor @solana/web3.js @solana/spl-token
+```
+
+## Wallet & keypair issues
+
+### How do I load a keypair from a file?
+
+Solana CLI generates keypairs as JSON arrays of bytes. Load them like this:
+
+```typescript
+import { Keypair } from "@solana/web3.js";
+import fs from "fs";
+
+// From a JSON file (e.g. ~/.config/solana/id.json)
+const secret = JSON.parse(fs.readFileSync("./my-wallet.json", "utf-8"));
+const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
+```
+
+To generate a new keypair:
+
+```bash
+solana-keygen new --outfile ./my-wallet.json
+```
+
+Or in code:
+
+```typescript
+const keypair = Keypair.generate();
+```
+
+### How do I get devnet SOL and USDC?
+
+1. **SOL** — use the [Solana Faucet](https://faucet.solana.com/). Paste your public key, select devnet, request 2 SOL.
+2. **USDC** — use the [Circle Faucet](https://faucet.circle.com/). Select Solana devnet, paste your address.
+
+### `NO_USDC_ACCOUNT` error
+
+Your wallet doesn't have a USDC token account yet. This is created automatically when you receive USDC for the first time. Get devnet USDC from the Circle Faucet above, or create the account manually:
+
+```typescript
+import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
+
+await getOrCreateAssociatedTokenAccount(
+  connection,
+  keypair,       // payer
+  usdcMint,      // USDC mint address
+  keypair.publicKey
+);
+```
+
+### `INSUFFICIENT_USDC` error
+
+Your USDC balance is lower than the required amount. Check your balance:
+
+```typescript
+import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
+
+const usdcAta = await getAssociatedTokenAddress(usdcMint, keypair.publicKey);
+const account = await getAccount(connection, usdcAta);
+console.log("USDC balance:", Number(account.amount) / 1e6);
+```
+
+## Transaction issues
+
+### "Transaction simulation failed: Blockhash not found"
+
+The blockhash expired before your transaction was confirmed. This happens on slow RPCs. Solutions:
+
+1. Use a faster RPC (Helius, QuickNode, Triton)
+2. Use `GameServer` which has built-in retry with exponential backoff
+3. Manually retry:
+
+```typescript
+for (let i = 0; i < 3; i++) {
+  try {
+    const tx = await sdk.enterArena(arenaId);
+    break;
+  } catch (err: any) {
+    if (err.message?.includes("blockhash") && i < 2) continue;
+    throw err;
+  }
+}
+```
+
+### 429 rate limit errors
+
+You're hitting the public RPC rate limit. Solutions:
+
+1. **Use a dedicated RPC** — [Helius](https://helius.dev), [QuickNode](https://quicknode.com), or [Triton](https://triton.one) offer free tiers.
+2. **Add delays** between rapid calls
+3. `GameServer` retries 429s automatically with backoff
+
+### Transactions drop on mainnet
+
+Mainnet requires **priority fees** during congestion. The SDK doesn't add them automatically yet. Workaround: build transactions manually using the exported `IDL`:
+
+```typescript
+import { IDL } from "@ritarena/sdk";
+import { ComputeBudgetProgram } from "@solana/web3.js";
+
+// Add priority fee instruction before your transaction
+const priorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+  microLamports: 50000, // adjust based on network congestion
+});
+```
+
+## Arena issues
+
+### Arena not found after `createArena`
+
+On-chain account propagation can take a few seconds. Solutions:
+
+1. Use `GameServer.createAndWait()` — it polls until confirmed
+2. Manually poll:
+
+```typescript
+const { arenaId } = await sdk.createArena(config);
+
+// Wait for propagation
+let arena = null;
+for (let i = 0; i < 10; i++) {
+  arena = await sdk.getArena(arenaId);
+  if (arena) break;
+  await new Promise((r) => setTimeout(r, 2000));
+}
+```
+
+### `NOT_ENOUGH_AGENTS` when starting arena
+
+The arena has fewer agents than `minAgents`. Wait for more agents to join, or set `minAgents: 2` when creating.
+
+### `ARENA_NOT_REGISTRATION` when entering
+
+The arena has already started or finished. Use `listArenas({ state: "registration" })` to find arenas still accepting entries.
+
+### `watchArena` stops firing
+
+Solana WebSocket connections can drop silently. Implement reconnection:
+
+```typescript
+function watchWithReconnect(arenaId: number, callback: (arena: Arena) => void) {
+  let unsub = sdk.watchArena(arenaId, callback);
+
+  // Reconnect every 30 seconds as a heartbeat
+  const interval = setInterval(async () => {
+    unsub();
+    unsub = sdk.watchArena(arenaId, callback);
+  }, 30_000);
+
+  return () => {
+    clearInterval(interval);
+    unsub();
+  };
+}
+```
+
+## Transaction size limits
+
+### `submitElimination` fails with many agents
+
+Solana transactions have a 1232-byte size limit. Each remaining account (entry PDA) takes ~34 bytes. With 30+ agents, you may hit the limit.
+
+Current workaround: keep arenas under ~30 agents. Address Lookup Tables (ALTs) support is planned for a future SDK version.
+
+## Getting help
+
+- **GitHub Issues:** [github.com/BonChain/ritarena/issues](https://github.com/BonChain/ritarena/issues)
+- **Telegram:** [t.me/+3mDMwbLEnK8zZjA1](https://t.me/+3mDMwbLEnK8zZjA1)
+- **X:** [@ritarenaxyz](https://x.com/ritarenaxyz)

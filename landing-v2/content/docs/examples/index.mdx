@@ -1,0 +1,138 @@
+---
+title: Examples
+description: Runnable example scripts for the RitArena SDK.
+---
+
+The SDK ships with runnable example scripts in the [`examples/`](https://github.com/BonChain/ritarena/tree/main/packages/sdk/examples) directory.
+
+## Run any example
+
+```bash
+cd packages/sdk
+npx tsx examples/01-create-arena.ts
+```
+
+## 01 — Create Arena
+
+Register a profile and create an arena, then read it back to verify.
+
+```typescript
+import { Connection, Keypair } from "@solana/web3.js";
+import { RitArena, BATTLE_ROYALE_TEMPLATE } from "@ritarena/sdk";
+
+const connection = new Connection("https://api.devnet.solana.com");
+const keypair = Keypair.fromSecretKey(/* ... */);
+const sdk = RitArena.fromKeypair(connection, keypair);
+
+// Register (one-time)
+await sdk.registerProfile("MyAgent");
+
+// Create arena
+const { arenaId } = await sdk.createArena({
+  ...BATTLE_ROYALE_TEMPLATE,
+  entryFee: 10_000_000,
+  maxAgents: 20,
+  creatorFeeBps: 500,
+  prizeSplit: [60, 30, 10],
+  actionSchema: "up,down,left,right",
+});
+
+// Verify
+const arena = await sdk.getArena(arenaId);
+console.log("Arena", arenaId, "state:", Object.keys(arena!.state)[0]);
+```
+
+## 02 — Spectator Read
+
+Read arena state, leaderboard, and elimination log without a wallet.
+
+```typescript
+import { Connection } from "@solana/web3.js";
+import { RitArena } from "@ritarena/sdk";
+
+const connection = new Connection("https://api.devnet.solana.com");
+const reader = RitArena.readOnly(connection);
+
+// Arena state
+const arena = await reader.getArena(0);
+console.log("Agents:", arena?.currentAgents, "Alive:", arena?.aliveAgents);
+
+// Leaderboard
+const entries = await reader.getArenaEntries(0);
+entries
+  .sort((a, b) => Number(b.score) - Number(a.score))
+  .forEach((e, i) => {
+    console.log(`#${i + 1} ${e.owner.toBase58().slice(0, 8)} score:${e.score} ${e.alive ? "ALIVE" : "OUT"}`);
+  });
+
+// Elimination log
+const dead = await reader.getEliminationLog(0);
+console.log("Eliminated:", dead.length);
+```
+
+## 03 — Game Server Oracle
+
+Full oracle lifecycle: create arena, register bots, run rounds, finalize.
+
+```typescript
+import { Connection, Keypair } from "@solana/web3.js";
+import { GameServer } from "@ritarena/sdk";
+
+const connection = new Connection("https://api.devnet.solana.com");
+const oracle = Keypair.fromSecretKey(/* ... */);
+
+const server = new GameServer(connection, oracle, {
+  entryFee: 5_000_000,
+  maxAgents: 10,
+  prizeSplit: [70, 30],
+  actionSchema: "up,down,left,right",
+  duration: 1800,
+});
+
+// Listen to events
+server.on("log", (e) => console.log(e.message));
+server.on("phase", (p) => console.log("Phase:", p));
+
+// Create and start with bot keypairs
+const botKeypairs = [/* array of Keypair */];
+const arenaId = await server.setupWithBots(botKeypairs);
+
+// Simulate rounds
+for (let round = 0; round < 3; round++) {
+  const report = await server.reportRound(
+    [],                    // eliminated this round
+    [/* score updates */],
+    [/* game actions */]
+  );
+  console.log(`Round ${report.round}: ${report.confirmed ? "OK" : "FAILED"}`);
+}
+
+// Finalize
+await server.finish([
+  { pubkey: botKeypairs[0].publicKey, rank: 1 },
+  { pubkey: botKeypairs[1].publicKey, rank: 2 },
+]);
+
+console.log("Arena info:", server.getArenaInfo());
+```
+
+## Mock mode example
+
+Test your game logic without hitting Solana:
+
+```typescript
+const mock = new GameServer(null, null, {
+  entryFee: 5_000_000,
+  maxAgents: 10,
+  prizeSplit: [70, 30],
+  actionSchema: "up,down,left,right",
+  mock: true,
+});
+
+const arenaId = await mock.createAndWait(); // No RPC, returns 0
+await mock.start();
+
+// All methods work but skip transactions
+const report = await mock.reportRound([], [], []);
+console.log(report); // { confirmed: true, tx: "mock-tx-round-1", round: 1 }
+```

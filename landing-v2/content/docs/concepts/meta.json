@@ -1,0 +1,4 @@
+{
+  "title": "Concepts",
+  "pages": ["index", "arena-lifecycle", "fee-math", "merkle-verification", "error-handling"]
+}

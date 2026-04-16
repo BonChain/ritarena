@@ -18,10 +18,15 @@ export default function Footer() {
           {/* Logo */}
           <Link
             href="/"
-            className="text-lg sm:text-xl"
-            style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+            className="text-base sm:text-lg"
+            style={{
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+              letterSpacing: "0.15em",
+              color: "#f0f0f0",
+            }}
           >
-            Rit<span className="gradient-text">Arena</span>
+            RITARENA
           </Link>
 
           {/* Nav links */}

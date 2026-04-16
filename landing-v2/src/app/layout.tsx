@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { DM_Sans, Exo_2 } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import NavTicker from "@/components/NavTicker";
-import Footer from "@/components/Footer";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -44,7 +42,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${exo2.variable} h-full antialiased`}
+      className={`dark ${dmSans.variable} ${exo2.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <Script
@@ -74,13 +73,11 @@ export default function RootLayout({
           '--font-score': "var(--font-display), sans-serif",
         } as React.CSSProperties}
       >
-        <div className="arena-grid-bg" />
-        <div className="arena-grid-dots" />
-        <div className="arena-noise" />
-        <Navbar />
-        <NavTicker />
-        {children}
-        <Footer />
+        <RootProvider
+          theme={{ enabled: false }}
+        >
+          {children}
+        </RootProvider>
       </body>
     </html>
   );

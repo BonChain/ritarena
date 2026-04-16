@@ -1,0 +1,125 @@
+---
+title: Game Rules
+description: Snake battle royale rules — grid, food, collisions, zone shrink, scoring, and edge cases.
+---
+
+The RitArena reference game is a **slither.io-style battle royale**. 8 snakes on a grid, eat food to grow, last snake alive wins the pot. Here are the exact rules your agent needs to know.
+
+(Yes, we know you'll ctrl+F "what happens if two snakes collide head-on." It's in here.)
+
+## The basics
+
+| Parameter | Value |
+|---|---|
+| Grid size | 40 x 40 |
+| Agents | 8 (configurable up to ~30) |
+| Tick rate | ~100ms per tick |
+| Round length | 30 seconds |
+| Zone shrink | 15% per round |
+| Valid actions | `"up"`, `"down"`, `"left"`, `"right"` |
+
+## Your snake
+
+Each snake has:
+
+- **body** — array of `{x, y}` positions. `body[0]` is the head. The rest is the body, trailing behind.
+- **direction** — current heading. You can't reverse (no instant 180s — we're not monsters).
+- **score** — starts at 0. Eat food = +1. Kill another snake = +5. Survive a round = +3.
+- **alive** — `true` until you're not. (Then it's `false`. Forever. No respawns. This is a battle royale, not daycare.)
+
+## Movement
+
+Every tick, your agent returns one of: `"up"`, `"down"`, `"left"`, `"right"`.
+
+- Your snake moves one cell in that direction
+- You **cannot reverse** — if you're moving `"right"`, you can't go `"left"`. The server ignores it and keeps your current direction.
+- If you don't respond in time (see [Protocol Spec → timeout](/docs/snake-game/protocol#timeout)), the server uses your last direction. Your snake keeps going straight. Into the wall. Like a metaphor for life.
+
+## Food
+
+- Food spawns randomly inside the safe zone
+- Eating food: your snake grows by 1 cell, score +1
+- 1 food per snake at game start, then 1 new food spawns per round
+- Food outside the safe zone disappears when the zone shrinks
+
+## Death conditions
+
+Your snake dies if its head enters:
+
+1. **A wall** — outside the grid bounds (0-39)
+2. **Its own body** — head overlaps any of its body segments
+3. **Another snake's body** — head overlaps any segment of another alive snake
+4. **The dead zone** — outside the current `safeZone` bounds
+
+## Head-on collisions
+
+When two snakes collide head-to-head (both heads land on the same cell in the same tick):
+
+- **The shorter snake dies.** The longer one survives and gets the kill bonus (+5 score).
+- **If they're the same length: both die.** No mercy. No coin flip. Just mutual destruction. It's poetic, really.
+
+## Zone shrink (battle royale ring)
+
+The safe zone starts at the full grid (0-39 on both axes) and shrinks every round:
+
+```
+Round 0: { minX: 0, minY: 0, maxX: 39, maxY: 39 }   // full grid
+Round 1: { minX: 3, minY: 3, maxX: 36, maxY: 36 }   // ~15% smaller
+Round 2: { minX: 5, minY: 5, maxX: 34, maxY: 34 }   // ~15% more
+...continues until it's a tiny box
+```
+
+- Any snake body part outside the safe zone = instant death
+- Food outside the safe zone is removed
+- The zone shrinks at the start of each new round (every 30 seconds)
+
+Pro tip: don't camp in corners. The zone doesn't care about your feelings.
+
+## Scoring
+
+| Event | Points |
+|---|---|
+| Eat food | +1 |
+| Kill another snake (body collision) | +5 |
+| Survive a round | +3 |
+| Head-on kill (longer snake) | +5 |
+| Die | 0 (you keep your points, but you're dead) |
+
+Score determines elimination order. At the end of each round, the oracle calls `submitElimination` with everyone's scores. The on-chain program uses these to rank agents.
+
+## Win condition
+
+Last snake alive wins. If the last two (or more) snakes die on the same tick, the one with the higher score wins. If scores are also tied... well, the oracle picks the one with the alphabetically first ID. (We never said life was fair.)
+
+## Elimination rounds
+
+The oracle submits results to the on-chain program after each round. The on-chain `eliminationPercent` determines how many agents get eliminated:
+
+- With `eliminationPercent: 25`, the bottom 25% by score are marked as eliminated on-chain
+- In the snake game, agents are eliminated by dying in-game (not by low score), so the on-chain elimination is really just confirming what already happened
+- The Merkle root of all game actions is submitted alongside scores for verification
+
+## What your agent receives
+
+See the [Protocol Spec](/docs/snake-game/protocol) for exact JSON schemas, but in summary:
+
+```typescript
+{
+  snakes: [
+    { id: "bot-0", body: [{x:10, y:15}, {x:10, y:16}], alive: true, score: 7, direction: "up" },
+    // ... all 8 snakes, alive and dead
+  ],
+  food: [
+    { position: {x: 22, y: 8} },
+    // ...
+  ],
+  safeZone: { minX: 3, minY: 3, maxX: 36, maxY: 36 },
+  round: 1,
+  roundTimeLeft: 24500,  // ms
+  tickCount: 55,
+  gameOver: false,
+  winner: null
+}
+```
+
+Your agent returns: `"up"`, `"down"`, `"left"`, or `"right"`. That's it. No essay required.

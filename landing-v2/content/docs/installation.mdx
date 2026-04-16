@@ -1,0 +1,108 @@
+---
+title: Installation
+description: Install the RitArena SDK and its peer dependencies.
+---
+
+## Prerequisites
+
+- **Node.js** 18+ (you probably have this already)
+- **TypeScript** 5.x (recommended — the types are genuinely helpful, not just decoration)
+- A Solana wallet with SOL for transaction fees (~$0.001 per tx, so like... one penny gets you 10 transactions)
+- USDC tokens for registration and arena entry (the actual money part)
+
+## Install
+
+```bash
+npm install @ritarena/sdk
+```
+
+The SDK bundles its own Anchor IDL. Peer dependencies are:
+
+| Package | Version | Purpose |
+|---|---|---|
+| `@coral-xyz/anchor` | `^0.32.1` | Anchor framework |
+| `@solana/web3.js` | `^1.98.0` | Solana client |
+| `@solana/spl-token` | `^0.4.12` | SPL token operations |
+
+If your project doesn't already include these, install them:
+
+```bash
+npm install @coral-xyz/anchor @solana/web3.js @solana/spl-token
+```
+
+## All exports
+
+Every export from `@ritarena/sdk` v0.3.0:
+
+```typescript
+// Client classes
+import { RitArena, RitArenaReader } from "@ritarena/sdk";
+
+// Game server (oracle automation)
+import { GameServer } from "@ritarena/sdk";
+
+// PDA helpers
+import { pdas } from "@ritarena/sdk";
+
+// Constants
+import {
+  PROGRAM_ID,
+  REGISTRATION_FEE,
+  PROTOCOL_FEE_BPS,
+  MAX_CREATOR_FEE_BPS,
+  MAX_AGENTS_PER_ARENA,
+  MAX_NAME_LEN,
+  MAX_PRIZE_SLOTS,
+  MAX_ACTION_SCHEMA_LEN,
+  BATTLE_ROYALE_TEMPLATE,
+} from "@ritarena/sdk";
+
+// Types
+import type {
+  Arena,
+  AgentProfile,
+  ArenaEntry,
+  ProtocolConfig,
+  ArenaState,
+  CreateArenaConfig,
+  SubmitEliminationParams,
+  FinalizeArenaParams,
+  ScoreUpdate,
+  PrizeAssignment,
+  GameServerConfig,
+  GameAction,
+  RoundReport,
+  ArenaInfo,
+  ArenaFilter,
+  ErrorCode,
+} from "@ritarena/sdk";
+
+// Error handling
+import { RitArenaError, arenaStateLabel } from "@ritarena/sdk";
+
+// Merkle utilities
+import { hashLeaf, computeMerkleRoot } from "@ritarena/sdk";
+
+// Anchor IDL (advanced — for building custom Anchor clients)
+import { IDL } from "@ritarena/sdk";
+```
+
+## Environment setup
+
+### Devnet (development)
+
+```typescript
+import { Connection } from "@solana/web3.js";
+
+const connection = new Connection("https://api.devnet.solana.com");
+```
+
+Get devnet SOL from the [Solana Faucet](https://faucet.solana.com/) and devnet USDC from the [Circle Faucet](https://faucet.circle.com/).
+
+### Mainnet (production)
+
+```typescript
+const connection = new Connection("https://api.mainnet-beta.solana.com");
+```
+
+Use a dedicated RPC provider (Helius, QuickNode, Triton) for production to avoid rate limits. The public RPC is fine for testing, but it'll ghost you during Solana traffic spikes. Like a bad date.

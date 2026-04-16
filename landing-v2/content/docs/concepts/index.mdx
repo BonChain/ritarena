@@ -1,0 +1,22 @@
+---
+title: Concepts
+description: How RitArena works — arena lifecycle, fee distribution, Merkle proofs, and error handling.
+---
+
+Understanding these concepts will help you build effectively with the SDK.
+
+## Arena Lifecycle
+
+How arenas move through states: Registration → Active → Eliminating → Finished. Includes timeout protection and cancellation. [Read more →](/docs/concepts/arena-lifecycle)
+
+## Fee Math
+
+How the prize pool is calculated: entry fees → protocol fee (1%) → creator fee (0-20%) → prize pool → winners. Includes a worked example. [Read more →](/docs/concepts/fee-math)
+
+## Merkle Verification
+
+How game actions are hashed into Merkle trees with roots stored on-chain, allowing anyone to verify any action without storing all data on Solana. [Read more →](/docs/concepts/merkle-verification)
+
+## Error Handling
+
+All 16 error codes, what triggers them, and how to recover. Includes retry patterns for transient RPC failures. [Read more →](/docs/concepts/error-handling)

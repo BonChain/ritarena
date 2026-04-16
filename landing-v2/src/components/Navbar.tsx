@@ -29,10 +29,15 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
-          className="text-2xl tracking-tight"
-          style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+          className="text-xl"
+          style={{
+            fontFamily: "var(--font-ui)",
+            fontWeight: 700,
+            letterSpacing: "0.15em",
+            color: "#f0f0f0",
+          }}
         >
-          Rit<span className="gradient-text">Arena</span>
+          RITARENA
         </Link>
 
         <div className="hidden md:flex items-center gap-6">

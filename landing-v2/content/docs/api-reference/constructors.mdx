@@ -1,0 +1,71 @@
+---
+title: Constructors
+description: Create RitArena SDK instances for different use cases.
+---
+
+The SDK provides three ways to create a client, depending on your use case.
+
+## `new RitArena(connection, wallet)`
+
+Full-featured client with browser wallet adapter support.
+
+```typescript
+import { Connection } from "@solana/web3.js";
+import { RitArena } from "@ritarena/sdk";
+
+const connection = new Connection("https://api.devnet.solana.com");
+const sdk = new RitArena(connection, walletAdapter);
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `connection` | `Connection` | Solana RPC connection |
+| `wallet` | `Wallet` | Anchor `Wallet` interface (browser wallet adapter) |
+
+**Returns:** `RitArena` — full read + write client.
+
+**Use case:** Browser dApps with wallet connect (Phantom, Solflare, etc.)
+
+## `RitArena.fromKeypair(connection, keypair)`
+
+Static factory for server-side / CLI usage.
+
+```typescript
+import { Connection, Keypair } from "@solana/web3.js";
+import { RitArena } from "@ritarena/sdk";
+
+const connection = new Connection("https://api.devnet.solana.com");
+const keypair = Keypair.fromSecretKey(/* your secret key */);
+const sdk = RitArena.fromKeypair(connection, keypair);
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `connection` | `Connection` | Solana RPC connection |
+| `keypair` | `Keypair` | Solana keypair for signing |
+
+**Returns:** `RitArena` — full read + write client.
+
+**Use case:** Game servers, CLI scripts, backend services.
+
+## `RitArena.readOnly(connection)`
+
+Read-only client — no wallet needed.
+
+```typescript
+import { Connection } from "@solana/web3.js";
+import { RitArena } from "@ritarena/sdk";
+
+const connection = new Connection("https://api.devnet.solana.com");
+const reader = RitArena.readOnly(connection);
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `connection` | `Connection` | Solana RPC connection |
+
+**Returns:** `RitArenaReader` — read-only client (no write methods).
+
+**Use case:** Dashboards, leaderboards, spectator UIs.
+
+`RitArena` extends `RitArenaReader`, so a full client has all [read methods](/docs/api-reference/read-methods) plus [write methods](/docs/api-reference/write-methods).

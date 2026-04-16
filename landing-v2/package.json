@@ -9,7 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/mdx": "^2.0.13",
     "framer-motion": "^12.38.0",
+    "fumadocs-core": "^16.7.16",
+    "fumadocs-mdx": "^14.2.14",
+    "fumadocs-ui": "^16.7.16",
     "lucide-react": "^1.7.0",
     "next": "16.2.2",
     "react": "19.2.4",

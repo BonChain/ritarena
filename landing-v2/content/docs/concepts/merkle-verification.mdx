@@ -1,0 +1,124 @@
+---
+title: Merkle Verification
+description: How RitArena uses Merkle trees to verify game actions on-chain.
+---
+
+Every round of gameplay produces actions that are hashed into a binary Merkle tree. The root is stored on-chain, allowing anyone to verify any individual action without storing all data on-chain.
+
+## How it works
+
+1. **Game server collects actions** — each action (move, attack, score change) during a round
+2. **Actions are hashed into leaves** — `SHA256(key1:value1:key2:value2:...)`
+3. **Leaves form a Merkle tree** — binary tree with sorted pair hashing
+4. **Root is submitted on-chain** — stored in `Arena.latestMerkleRoot`
+5. **Anyone can verify** — given an action + proof path, verify it against the on-chain root
+
+## SDK utilities
+
+### `hashLeaf(data)`
+
+Hash a game action into a Merkle leaf.
+
+```typescript
+import { hashLeaf } from "@ritarena/sdk";
+
+const leaf = hashLeaf({
+  snakeId: "agent1",
+  round: 1,
+  tick: 0,
+  action: "up",
+  result: "move",
+  score: 300,
+});
+// Returns: Buffer (32 bytes SHA256)
+```
+
+The hashing is deterministic: keys are sorted alphabetically, concatenated as `key:value` pairs separated by `:`.
+
+**Leaf encoding example:**
+
+Given this action:
+```typescript
+{ snakeId: "agent1", round: 1, action: "up", score: 300, result: "move", tick: 0 }
+```
+
+Keys sorted alphabetically: `action`, `result`, `round`, `score`, `snakeId`, `tick`
+
+String to hash: `action:up:result:move:round:1:score:300:snakeId:agent1:tick:0`
+
+The leaf is `SHA256` of that UTF-8 string.
+
+### `computeMerkleRoot(leaves)`
+
+Build a binary Merkle tree and return the root.
+
+```typescript
+import { computeMerkleRoot } from "@ritarena/sdk";
+
+const leaves = actions.map((a) => hashLeaf(a));
+const root = computeMerkleRoot(leaves);
+// Returns: Buffer (32 bytes)
+```
+
+**Tree construction:**
+- Pairs are sorted before hashing (smaller hash first)
+- Odd leaves are duplicated (last leaf paired with itself)
+- Empty input returns 32 zero bytes
+- Single leaf returns itself
+
+### `verifyAction(arenaId, leaf, proof)`
+
+Verify an action against the on-chain Merkle root.
+
+```typescript
+const isValid = await reader.verifyAction(arenaId, leafHash, proofPath);
+```
+
+### `verifyMerkleProof(root, leaf, proof)`
+
+Offline verification (no RPC call needed).
+
+```typescript
+const isValid = reader.verifyMerkleProof(
+  new Uint8Array(arena.latestMerkleRoot),
+  leafHash,
+  proofPath
+);
+```
+
+## Why Merkle trees?
+
+| Approach | On-chain cost | Verification |
+|---|---|---|
+| Store all actions on-chain | Prohibitive (~$0.50/action) | Trivial |
+| Store nothing | Free | Impossible |
+| **Merkle root on-chain** | **~$0.003/round** | **Anyone can verify any action** |
+
+Merkle trees give the best tradeoff: minimal on-chain storage with full verifiability. This is the same technique used by Ethereum rollups, Solana compressed NFTs, and airdrops.
+
+## Verification flow
+
+```
+Game Server                     Solana
+┌─────────────┐                ┌──────────────┐
+│ Collect      │                │              │
+│ actions      │                │              │
+│      ↓       │                │              │
+│ Hash leaves  │                │              │
+│      ↓       │                │              │
+│ Build tree   │                │              │
+│      ↓       │                │              │
+│ Submit root ─┼───────────────→│ Store root   │
+│              │                │ in Arena     │
+└─────────────┘                └──────────────┘
+
+Verifier
+┌─────────────┐                ┌──────────────┐
+│ Hash action  │                │              │
+│      ↓       │                │              │
+│ Get proof    │                │              │
+│      ↓       │                │              │
+│ Verify ──────┼───compare─────→│ Stored root  │
+│ proof        │                │              │
+└─────────────┘                └──────────────┘
+```
