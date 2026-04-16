@@ -16,7 +16,7 @@ description: Install the RitArena SDK and its peer dependencies.
 npm install @ritarena/sdk
 ```
 
-The SDK bundles its own Anchor IDL. Peer dependencies are:
+The SDK bundles its own Anchor IDL. These dependencies are included automatically:
 
 | Package | Version | Purpose |
 |---|---|---|
@@ -24,11 +24,7 @@ The SDK bundles its own Anchor IDL. Peer dependencies are:
 | `@solana/web3.js` | `^1.98.0` | Solana client |
 | `@solana/spl-token` | `^0.4.12` | SPL token operations |
 
-If your project doesn't already include these, install them:
-
-```bash
-npm install @coral-xyz/anchor @solana/web3.js @solana/spl-token
-```
+These install automatically with `npm install @ritarena/sdk` — no separate install needed.
 
 ## All exports
 

@@ -54,10 +54,20 @@ description: Version history for @ritarena/sdk.
 - Read-only queries for arena and profile data
 - Constants and PDA seed exports
 
+## v0.3.4 (April 2026)
+
+**Security & safety:**
+- Added `abandonArena()` to SDK — permissionless after oracle timeout
+- On-chain: treasury validation on `collectProtocolFee` and `abandonArena`
+- On-chain: program ownership checks on remaining accounts
+- On-chain: time bounds — `eliminationInterval` (10s–1 day), `duration` (max 30 days)
+- On-chain: registration timeout — players can refund after 3 days if arena never starts
+- Added `INVALID_TREASURY` error code
+
 ## Roadmap
 
 **Planned for v0.4.0:**
-- `cancelArena()`, `abandonArena()`, `refundEntry()` — these exist as on-chain program instructions but are not yet wrapped by the SDK
+- `cancelArena()`, `refundEntry()` — wrap remaining on-chain instructions in SDK
 - Priority fee support for mainnet transactions
 - Address Lookup Table (ALT) support for large arenas (30+ agents)
 - Versioned transaction support

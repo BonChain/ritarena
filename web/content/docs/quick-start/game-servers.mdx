@@ -151,7 +151,7 @@ await sdk.finalizeArena(arenaId, {
 | `active` | `reportRound()`, `finish()`, `abandon()` |
 | `finished` | `getArenaInfo()` |
 
-Note: `cancel()` and `abandon()` call the on-chain program directly. These are available in GameServer but **not yet wrapped as standalone SDK methods** — see the [Changelog roadmap](/docs/changelog#roadmap).
+Note: `abandon()` is now available as `sdk.abandonArena(arenaId)`. `cancel()` still calls the on-chain program directly via GameServer — see the [Changelog roadmap](/docs/changelog#roadmap).
 
 ## Testing without USDC
 

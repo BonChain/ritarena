@@ -19,8 +19,9 @@ All write methods require a wallet (use `RitArena`, not `RitArenaReader`). Each 
 | `claimCreatorFee(arenaId)` | Creator | Withdraw creator fee |
 | `returnStakeBond(arenaId)` | Creator | Get bond back |
 | `collectProtocolFee(arenaId)` | Anyone | Send 1% fee to treasury |
+| `abandonArena(arenaId)` | Anyone (after timeout) | Abandon timed-out arena, slash bond |
 
-**Not yet in SDK:** `cancelArena`, `abandonArena`, and `refundEntry` exist as on-chain program instructions but are not yet wrapped by the SDK. They are accessible via `GameServer.cancel()` and `GameServer.abandon()`, or directly via the exported `IDL`. See [Changelog → Roadmap](/docs/changelog#roadmap).
+**Not yet in SDK:** `cancelArena` and `refundEntry` exist as on-chain program instructions but are not yet wrapped by the SDK. They are accessible via `GameServer.cancel()` or directly via the exported `IDL`.
 
 ## Profile
 
@@ -201,6 +202,28 @@ const tx = await sdk.collectProtocolFee(0);
 **Returns:** `Promise<string>` — transaction signature.
 
 **Note:** `claimPrize()` automatically attempts to collect the protocol fee after a successful claim. This method is only needed if you want to trigger it separately.
+
+### `abandonArena(arenaId)`
+
+Abandon an arena where the oracle has been inactive for longer than 2x the elimination interval. Anyone can call this after the timeout — it acts as a permissionless safety crank. The creator's stake bond (if any) is slashed to the protocol treasury.
+
+After abandonment, all participants can call `refundEntry` on-chain to get their entry fees back.
+
+```typescript
+const tx = await sdk.abandonArena(0);
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `arenaId` | `number` | Arena ID |
+
+**Returns:** `Promise<string>` — transaction signature.
+
+**Requirements:**
+- Arena must be in `Active` or `Eliminating` state
+- Oracle must have been inactive for ≥ 2x `eliminationInterval` (max 1 day, so max 2-day timeout)
+
+**Note:** Players can also get refunds from Registration-state arenas that have been stuck for more than 3 days, without needing to call `abandonArena`. See [Arena Lifecycle](/docs/concepts/arena-lifecycle).
 
 ## Limitations
 

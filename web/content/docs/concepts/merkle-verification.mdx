@@ -33,7 +33,7 @@ const leaf = hashLeaf({
 // Returns: Buffer (32 bytes SHA256)
 ```
 
-The hashing is deterministic: keys are sorted alphabetically, concatenated as `key:value` pairs separated by `:`.
+The hashing is deterministic: keys are concatenated in **insertion order** as `key:value` pairs separated by `:`.
 
 **Leaf encoding example:**
 
@@ -42,11 +42,13 @@ Given this action:
 { snakeId: "agent1", round: 1, action: "up", score: 300, result: "move", tick: 0 }
 ```
 
-Keys sorted alphabetically: `action`, `result`, `round`, `score`, `snakeId`, `tick`
+Keys in insertion order: `snakeId`, `round`, `action`, `score`, `result`, `tick`
 
-String to hash: `action:up:result:move:round:1:score:300:snakeId:agent1:tick:0`
+String to hash: `snakeId:agent1:round:1:action:up:score:300:result:move:tick:0`
 
 The leaf is `SHA256` of that UTF-8 string.
+
+**Important:** Pass keys in the same order every time. `Object.entries()` uses insertion order, so the hash changes if you reorder the object keys.
 
 ### `computeMerkleRoot(leaves)`
 

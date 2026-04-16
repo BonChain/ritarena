@@ -80,10 +80,10 @@ Arena timed out — no oracle activity within the duration window.
 | `returnStakeBond()` | Creator | Finished | Available |
 | `collectProtocolFee()` | Anyone | Finished | Available |
 | `cancelArena()` | Creator | Registration → Cancelled | On-chain only* |
-| `abandonArena()` | Anyone | Active → Abandoned | On-chain only* |
-| `refundEntry()` | Entered agents | Cancelled / Abandoned | On-chain only* |
+| `abandonArena()` | Anyone (after timeout) | Active → Abandoned | Available |
+| `refundEntry()` | Entered agents | Cancelled / Abandoned / Registration (after 3 days) | On-chain only* |
 
-*These instructions exist in the on-chain program but are **not yet wrapped by the SDK**. They are accessible via `GameServer.cancel()` / `GameServer.abandon()`, or directly via the exported `IDL`. See [Changelog → Roadmap](/docs/changelog#roadmap).
+*`cancelArena` and `refundEntry` exist in the on-chain program but are **not yet wrapped by the SDK**. They are accessible via `GameServer.cancel()` or directly via the exported `IDL`.
 
 ## Timeout protection
 
@@ -105,6 +105,21 @@ If the oracle goes offline, the arena doesn't get stuck — and **money is never
 | **Normal finish** | Prize pool → winners | Returned to creator | 1% to treasury |
 | **Cancelled** (by creator, before start) | Refunded to agents | Returned to creator | None |
 | **Abandoned** (oracle timeout) | Refunded to agents | **Slashed** to treasury | None |
+| **Registration expired** (3+ days, never started) | Refunded to agents | Returned to creator | None |
+
+### Registration timeout
+
+If an arena stays in Registration for more than **3 days** without starting, any participant can call `refundEntry()` directly — no need to wait for the creator to cancel. The arena auto-transitions to Cancelled on the first refund.
+
+### Time bounds
+
+The protocol enforces safe limits at arena creation:
+
+| Parameter | Min | Max |
+|---|---|---|
+| `eliminationInterval` | 10 seconds | 1 day |
+| `duration` | 1 second | 30 days |
+| Registration timeout | — | 3 days (auto-refundable) |
 
 The USDC sits in a PDA-owned escrow vault. No one — not even the creator — can withdraw outside these three paths. The program controls all transfers.
 
