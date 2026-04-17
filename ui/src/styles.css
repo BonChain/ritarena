@@ -1,0 +1,12 @@
+:root {
+  --ritarena-accent: #888888;
+  --ritarena-accent-glow: transparent;
+  --ritarena-bg: #0d0d14;
+  --ritarena-bg-card: #12121c;
+  --ritarena-text: #e0e0e0;
+  --ritarena-text-muted: #666666;
+  --ritarena-border: #1a1a2a;
+  --ritarena-radius: 6px;
+  --ritarena-font: system-ui, -apple-system, sans-serif;
+  --ritarena-font-mono: ui-monospace, monospace;
+}
