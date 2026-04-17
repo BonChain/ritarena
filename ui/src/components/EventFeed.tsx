@@ -1,11 +1,22 @@
+"use client";
+
 import { useRef, useEffect } from "react";
 import type { GameEvent, RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
+/**
+ * Auto-scrolling event log. Respects user scroll — only auto-scrolls if user is near the bottom.
+ * @example
+ * <EventFeed events={events} maxVisible={20} />
+ */
 export interface EventFeedProps {
+  /** Events in chronological order (oldest first). Latest shown at bottom. */
   events: GameEvent[];
+  /** Max events to render (keeps last N). Default 50 */
   maxVisible?: number;
+  /** Per-instance theme override */
   theme?: RitArenaTheme;
+  /** Additional CSS class */
   className?: string;
 }
 

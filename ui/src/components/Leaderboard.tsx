@@ -1,11 +1,23 @@
+"use client";
+
 import type { Player, RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
+/**
+ * Ranked list of players with scores. Sorted by rank, stable tiebreak via `id`.
+ * @example
+ * <Leaderboard players={players} maxVisible={10} />
+ */
 export interface LeaderboardProps {
+  /** Players to display — sorted by rank ascending */
   players: Player[];
+  /** Max players to show. Default: all */
   maxVisible?: number;
+  /** Include eliminated players (shown with strikethrough). Default: true */
   showEliminated?: boolean;
+  /** Per-instance theme override */
   theme?: RitArenaTheme;
+  /** Additional CSS class on root element */
   className?: string;
 }
 

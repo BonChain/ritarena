@@ -1,14 +1,29 @@
+"use client";
+
 import type { RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
+/**
+ * Per-agent identity card with status badge.
+ * @example
+ * <AgentCard name="ALPHA" score={42} status="alive" rank={1} color="#14F195" />
+ */
 export interface AgentCardProps {
+  /** Display name */
   name: string;
+  /** Current score (shown if status="alive") */
   score: number;
+  /** Visual state — `alive` shows score, `eliminated` shows REKT, `winner` shows WINNER + accent border */
   status: "alive" | "eliminated" | "winner";
+  /** Current rank */
   rank: number;
+  /** Avatar circle color */
   color?: string;
+  /** Avatar content (falls back to first letter of name) */
   avatar?: string;
+  /** Per-instance theme override */
   theme?: RitArenaTheme;
+  /** Additional CSS class */
   className?: string;
 }
 

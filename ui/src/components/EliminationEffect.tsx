@@ -1,13 +1,28 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import type { RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
+/**
+ * Full-screen overlay animation. Fires when `trigger` changes, auto-hides after 2s.
+ * Uses `role="alert"` and `aria-live="assertive"` for screen reader announcement.
+ * @example
+ * // Increment trigger to fire the overlay
+ * <EliminationEffect agentName={lastKill.name} trigger={lastKill.timestamp} />
+ */
 export interface EliminationEffectProps {
+  /** Name of eliminated agent (shown below "REKT") */
   agentName: string;
+  /** Monotonic counter — increment to fire overlay. Same value twice = no effect */
   trigger: number;
+  /** Visual variant. `rekt` shows "REKT", others show "ELIMINATED". Default "rekt" */
   variant?: "shatter" | "fade" | "rekt";
-  position?: "fixed" | "absolute";
+  /** CSS position strategy. `absolute` needs a positioned parent, `fixed` is viewport-wide. Default "absolute" */
+  position?: "absolute" | "fixed";
+  /** Per-instance theme override */
   theme?: RitArenaTheme;
+  /** Additional CSS class */
   className?: string;
 }
 

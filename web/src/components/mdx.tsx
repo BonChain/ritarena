@@ -13,7 +13,7 @@ import {
   PhaseTimer,
   GodPowerBar,
   EliminationEffect,
-} from "@/components/mdx/ritarena-ui-client";
+} from "@ritarena/ui";
 
 export function getMDXComponents(components?: MDXComponents) {
   return {

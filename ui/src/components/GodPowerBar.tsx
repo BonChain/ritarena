@@ -1,12 +1,26 @@
+"use client";
+
 import type { GodPower, RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
+/**
+ * Grid of spectator power buttons with cooldown indicators.
+ * Uses native `<button disabled>` — respects keyboard and a11y.
+ * @example
+ * <GodPowerBar powers={powers} onUse={(id) => handleGodPower(id)} currency="USDC" />
+ */
 export interface GodPowerBarProps {
+  /** Available powers */
   powers: GodPower[];
+  /** Called with power id on button click */
   onUse: (powerId: string) => void;
+  /** Disable all buttons (e.g., competitors can't use god powers in their own match) */
   disabled?: boolean;
+  /** Currency label for cost display. Default "USDC" */
   currency?: string;
+  /** Per-instance theme override */
   theme?: RitArenaTheme;
+  /** Additional CSS class */
   className?: string;
 }
 

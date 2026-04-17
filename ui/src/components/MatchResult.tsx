@@ -1,12 +1,29 @@
+"use client";
+
 import type { MatchWinner, RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
+/**
+ * Post-match winner display with Solana Explorer verification link.
+ * @example
+ * <MatchResult
+ *   winner={{ name: "ALPHA", prize: 24_000_000 }}
+ *   txSignature="3fWF5T..."
+ *   explorerUrl="https://explorer.solana.com/tx/3fWF5T...?cluster=devnet"
+ * />
+ */
 export interface MatchResultProps {
+  /** Winner info (name + prize in base units) */
   winner: MatchWinner;
+  /** Full transaction signature */
   txSignature: string;
+  /** Full URL to transaction on Solana Explorer (include ?cluster=devnet if needed) */
   explorerUrl: string;
+  /** Currency label. Default "USDC" */
   currency?: string;
+  /** Per-instance theme override */
   theme?: RitArenaTheme;
+  /** Additional CSS class */
   className?: string;
 }
 

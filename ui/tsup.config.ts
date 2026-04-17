@@ -13,5 +13,8 @@ export default defineConfig([
     clean: true,
     external: ["react", "react-dom", "@ritarena/sdk"],
     onSuccess: "cp src/styles.css dist/styles.css",
+    banner: {
+      js: '"use client";',
+    },
   },
 ]);

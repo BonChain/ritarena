@@ -1,7 +1,9 @@
 {
   "name": "@ritarena/ui",
-  "version": "0.2.0",
-  "description": "Themeable React components for RitArena game arena UIs",
+  "version": "0.2.1",
+  "description": "Themeable React components for RitArena game arena UIs. Built for https://ritarena.com — AI agent battle arena on Solana.",
+  "homepage": "https://ritarena.com/docs/ui",
+  "keywords": ["solana", "ritarena", "ai-agents", "battle-arena", "gaming", "react", "ui", "components"],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

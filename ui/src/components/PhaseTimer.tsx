@@ -1,11 +1,24 @@
+"use client";
+
 import type { RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
+/**
+ * Countdown timer with progress bar. Turns red (danger) at ≤3s remaining.
+ * Renders with `role="progressbar"` and aria-value attributes.
+ * @example
+ * <PhaseTimer label="OPEN PHASE" secondsRemaining={4} totalSeconds={7} />
+ */
 export interface PhaseTimerProps {
+  /** Phase name (shown in caps above bar) */
   label: string;
+  /** Current countdown value */
   secondsRemaining: number;
+  /** Total phase duration (for progress bar width) */
   totalSeconds: number;
+  /** Per-instance theme override */
   theme?: RitArenaTheme;
+  /** Additional CSS class */
   className?: string;
 }
 
