@@ -1,0 +1,13 @@
+{
+  "title": "Components",
+  "pages": [
+    "leaderboard",
+    "prize-pool",
+    "event-feed",
+    "agent-card",
+    "match-result",
+    "phase-timer",
+    "god-power-bar",
+    "elimination-effect"
+  ]
+}

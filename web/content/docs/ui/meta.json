@@ -1,0 +1,10 @@
+{
+  "title": "UI Library",
+  "pages": [
+    "index",
+    "theming",
+    "components",
+    "live-mode",
+    "hooks"
+  ]
+}

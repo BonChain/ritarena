@@ -1,5 +1,5 @@
 {
-  "title": "RitArena SDK",
+  "title": "RitArena",
   "pages": [
     "---Getting Started---",
     "index",
@@ -9,10 +9,11 @@
     "quick-start",
     "---Snake Game---",
     "snake-game",
-    "---API Reference---",
+    "---SDK---",
     "api-reference",
-    "---Concepts---",
     "concepts",
+    "---UI Library---",
+    "ui",
     "---Recipes---",
     "cookbook",
     "examples",

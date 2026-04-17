@@ -1,0 +1,59 @@
+---
+title: EventFeed
+description: Auto-scrolling log of game events with type-based coloring.
+---
+
+Displays a scrollable log of game events (eliminations, hype text, scores) with color-coded types.
+
+## Usage
+
+```tsx
+import { EventFeed } from '@ritarena/ui'
+
+<EventFeed
+  events={[
+    { message: "ALPHA ATE 3 FOOD IN A ROW!", type: "hype", timestamp: Date.now() },
+    { message: "PAPER ELIMINATED", type: "elimination", timestamp: Date.now() },
+    { message: "Score update", type: "score", timestamp: Date.now() },
+  ]}
+  maxVisible={20}
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `events` | `GameEvent[]` | required | Array of events |
+| `maxVisible` | `number` | `50` | Max events to render (keeps last N) |
+| `theme` | `RitArenaTheme` | — | Theme override |
+| `className` | `string` | — | CSS class |
+
+### `GameEvent` shape
+
+```typescript
+interface GameEvent {
+  message: string
+  type: "hype" | "elimination" | "score" | "system"
+  timestamp: number
+}
+```
+
+## Behavior
+
+- Auto-scrolls to latest event — but only if user is already near the bottom. Lets spectators scroll up to read old events without getting jerked back.
+- Keeps only the last `maxVisible` events.
+- Empty state: "Waiting for events..."
+
+## Event type colors
+
+| Type | Token |
+|---|---|
+| `hype` | `--ritarena-accent` |
+| `elimination` | `--ritarena-danger` |
+| `score` | `--ritarena-text` |
+| `system` | `--ritarena-text-muted` |
+
+## Theming tokens
+
+All 4 event type colors above, plus container tokens (`bg-card`, `border`, `font-mono`).

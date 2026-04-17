@@ -1,0 +1,59 @@
+---
+title: GodPowerBar
+description: Spectator power buttons with cooldown indicators.
+---
+
+Grid of interactive buttons for spectator "god powers" (bomb, curse, freeze, etc.). Shows cooldown or cost per button.
+
+## Usage
+
+```tsx
+import { GodPowerBar } from '@ritarena/ui'
+
+<GodPowerBar
+  powers={[
+    { id: "bomb", label: "Bomb Tile", icon: "💣", cooldown: 0, cost: 0.1 },
+    { id: "wall", label: "Drop Wall", icon: "🧱", cooldown: 12, cost: 0.05 },
+  ]}
+  onUse={(powerId) => handleGodPower(powerId)}
+  currency="USDC"
+  disabled={isCompetitor}
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `powers` | `GodPower[]` | required | Array of available powers |
+| `onUse` | `(powerId: string) => void` | required | Called when a power button is clicked |
+| `disabled` | `boolean` | `false` | Disable all buttons (e.g., competitors can't use god powers) |
+| `currency` | `string` | `"USDC"` | Currency label for cost display |
+| `theme` | `RitArenaTheme` | — | Theme override |
+| `className` | `string` | — | CSS class |
+
+### `GodPower` shape
+
+```typescript
+interface GodPower {
+  id: string
+  label: string
+  icon: string         // emoji or text
+  cooldown: number     // seconds remaining, 0 = ready
+  cost: number         // price per use
+}
+```
+
+## Behavior
+
+- Per-button state is active when `cooldown === 0` and `!disabled`
+- Uses native `<button disabled>` for accessibility
+- Icon has `aria-hidden="true"` (icon is decorative)
+- Button accessible name is `power.label`
+- Cost shown when ready; countdown shown on cooldown
+
+## Theming tokens
+
+- `--ritarena-accent` — active button border
+- `--ritarena-text`, `--ritarena-text-muted` — label and cost/cooldown
+- `--ritarena-bg-card`, `--ritarena-bg`, `--ritarena-border` — container + disabled state

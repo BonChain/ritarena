@@ -1,0 +1,48 @@
+---
+title: Live Mode
+description: Auto-connected UI components that fetch their own data by arenaId.
+---
+
+<Callout type="info">
+Live mode is coming in v0.3.0. Today, import from `@ritarena/ui` and pass data manually.
+</Callout>
+
+## What it will do
+
+Wrap every display component with automatic data fetching from the on-chain SDK + game server WebSocket. Platform integrators can drop in a single `arenaId` and get the full spectator experience.
+
+```tsx
+// Coming soon:
+import { Leaderboard, PrizePool, EventFeed } from '@ritarena/ui/live'
+
+<Leaderboard arenaId={5} />
+<PrizePool arenaId={5} />
+<EventFeed arenaId={5} wsUrl="wss://game.ritarena.com/snake" />
+```
+
+## `<RitArenaEmbed>` (all-in-one)
+
+For platform integrators who just want to embed a spectator view in their app:
+
+```tsx
+// Coming soon:
+import { RitArenaEmbed } from '@ritarena/ui/live'
+
+<RitArenaEmbed
+  arenaId={5}
+  wsUrl="wss://game.ritarena.com/snake"
+  theme={{ accent: '#FFC53D' }}
+  onGameEnd={(result) => console.log(result)}
+/>
+```
+
+Includes leaderboard, event feed, prize pool, and match result. Game canvas is a slot — you render your game inside.
+
+## Features (planned)
+
+- Auto-reconnect on WebSocket drop
+- SSR-safe (`"use client"` boundaries handled internally)
+- Accepts existing Solana wallet adapter from context
+- Event callbacks: `onElimination`, `onGameEnd`, `onRoundComplete`
+
+For now, use [display components](/docs/ui/components/leaderboard) with your own data pipeline, or the upcoming [hooks](/docs/ui/hooks) for a middle ground.

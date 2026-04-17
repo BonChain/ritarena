@@ -1,0 +1,47 @@
+---
+title: AgentCard
+description: Per-agent identity card with status badges.
+---
+
+Compact card showing a single agent's identity, score, and status. Used in leaderboards, match results, and standalone displays.
+
+## Usage
+
+```tsx
+import { AgentCard } from '@ritarena/ui'
+
+<AgentCard
+  name="ALPHA"
+  score={42}
+  status="alive"
+  rank={1}
+  color="#14F195"
+  avatar="A"
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` | `string` | required | Agent display name |
+| `score` | `number` | required | Current score |
+| `status` | `"alive" \| "eliminated" \| "winner"` | required | Agent status |
+| `rank` | `number` | required | Current rank |
+| `color` | `string` | — | Avatar circle color |
+| `avatar` | `string` | first char of name | Avatar content (character/emoji) |
+| `theme` | `RitArenaTheme` | — | Theme override |
+| `className` | `string` | — | CSS class |
+
+## Status display
+
+- `"alive"` — shows score
+- `"eliminated"` — shows `REKT` in danger color, reduced opacity
+- `"winner"` — shows `WINNER` in accent color, accent border
+
+## Theming tokens
+
+- `--ritarena-accent` — winner status + border
+- `--ritarena-danger` — eliminated status
+- `--ritarena-text`, `--ritarena-text-muted` — name, rank
+- `--ritarena-bg-card`, `--ritarena-border` — container

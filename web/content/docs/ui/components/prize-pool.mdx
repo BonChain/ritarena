@@ -1,0 +1,46 @@
+---
+title: PrizePool
+description: Display total prize amount with protocol and creator fee breakdown.
+---
+
+Shows the prize pool after fees are deducted, along with total pool and fee percentages.
+
+## Usage
+
+```tsx
+import { PrizePool } from '@ritarena/ui'
+
+<PrizePool
+  total={40_000_000}       // 40 USDC in base units (6 decimals)
+  creatorFeeBps={500}      // 5% creator fee
+  protocolFeeBps={100}     // 1% protocol fee
+  currency="USDC"
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `total` | `number` | required | Total pool in base units (6 decimals for USDC) |
+| `creatorFeeBps` | `number` | required | Creator fee in basis points (500 = 5%) |
+| `protocolFeeBps` | `number` | required | Protocol fee in basis points (100 = 1%) |
+| `currency` | `string` | `"USDC"` | Currency label |
+| `theme` | `RitArenaTheme` | — | Theme override |
+| `className` | `string` | — | CSS class |
+
+## Fee math
+
+```
+protocolFee = total * protocolFeeBps / 10_000
+creatorFee  = total * creatorFeeBps / 10_000
+prizePool   = total - protocolFee - creatorFee
+```
+
+Example: 40 USDC pool with 1% protocol + 5% creator = 37.60 USDC for winners.
+
+## Theming tokens
+
+- `--ritarena-accent` — highlighted prize amount
+- `--ritarena-text-muted` — labels, fee breakdown
+- `--ritarena-bg-card`, `--ritarena-border` — container

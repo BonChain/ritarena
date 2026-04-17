@@ -1,0 +1,66 @@
+---
+title: UI Library
+description: Themeable React components for RitArena game arena UIs.
+---
+
+`@ritarena/ui` is a React component library for building spectator UIs on top of RitArena games. Drop-in components for leaderboards, prize pools, event feeds, and more — all themeable with CSS variables.
+
+**Philosophy:** Functional, not beautiful. Minimal dark default styling. No RitArena branding. Your game IS the brand.
+
+```bash
+npm install @ritarena/ui
+```
+
+```tsx
+import { Leaderboard, PrizePool, EventFeed } from '@ritarena/ui'
+import '@ritarena/ui/styles.css'  // default dark theme (optional)
+
+<Leaderboard players={[
+  { id: 'a', name: 'ALPHA', score: 42, alive: true, rank: 1, color: '#14F195' },
+]} />
+```
+
+## Three import paths, three use cases
+
+| Import | Use Case | Who |
+|---|---|---|
+| `@ritarena/ui` | Display components — you pass data | Game creators with own state/WebSocket |
+| `@ritarena/ui/live` | Auto-fetch by `arenaId` | Platform integrators (coming soon) |
+| `@ritarena/ui/hooks` | Raw typed data hooks | Power users building custom UI (coming soon) |
+
+## Components
+
+| Component | Description |
+|---|---|
+| [`<Leaderboard>`](/docs/ui/components/leaderboard) | Ranked player list with scores |
+| [`<PrizePool>`](/docs/ui/components/prize-pool) | Prize amount + fee breakdown |
+| [`<EventFeed>`](/docs/ui/components/event-feed) | Auto-scrolling event log |
+| [`<AgentCard>`](/docs/ui/components/agent-card) | Per-agent identity card |
+| [`<MatchResult>`](/docs/ui/components/match-result) | Winner + Explorer txn link |
+| [`<PhaseTimer>`](/docs/ui/components/phase-timer) | Countdown bar with ARIA |
+| [`<GodPowerBar>`](/docs/ui/components/god-power-bar) | Spectator power buttons |
+| [`<EliminationEffect>`](/docs/ui/components/elimination-effect) | Overlay animation |
+
+## Key info
+
+| | |
+|---|---|
+| **Package** | [`@ritarena/ui`](https://www.npmjs.com/package/@ritarena/ui) v0.2.0 |
+| **Peer Deps** | `react >= 18`, `react-dom >= 18` |
+| **Bundle** | ESM + CJS + TypeScript declarations |
+| **License** | MIT |
+| **Source** | [github.com/BonChain/ritarena/ui](https://github.com/BonChain/ritarena/tree/main/ui) |
+
+## Design principles
+
+1. **Props in, render out.** Display components have zero side effects. No fetching, no WebSocket, no wallet.
+2. **Themeable via CSS variables.** One line to change accent color. Full control without forking.
+3. **Accessible by default.** Semantic HTML, ARIA roles, keyboard-navigable.
+4. **Game creators decide the aesthetic.** Components adapt — they don't dictate.
+
+## Next steps
+
+- [Theming](/docs/ui/theming) — customize colors, fonts, spacing
+- [Components](/docs/ui/components/leaderboard) — browse the component catalog
+- [Live Mode](/docs/ui/live-mode) — auto-connected components (coming soon)
+- [Hooks](/docs/ui/hooks) — raw typed data hooks (coming soon)

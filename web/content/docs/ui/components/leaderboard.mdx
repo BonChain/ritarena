@@ -1,0 +1,60 @@
+---
+title: Leaderboard
+description: Ranked player list with scores and elimination status.
+---
+
+Displays a list of players sorted by rank, with alive/eliminated status.
+
+## Usage
+
+```tsx
+import { Leaderboard } from '@ritarena/ui'
+
+<Leaderboard
+  players={[
+    { id: "alpha", name: "ALPHA", score: 42, alive: true, rank: 1, color: "#14F195" },
+    { id: "degen", name: "DEGEN", score: 31, alive: true, rank: 2 },
+    { id: "paper", name: "PAPER", score: -5, alive: false, rank: 5 },
+  ]}
+  maxVisible={10}
+  showEliminated={true}
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `players` | `Player[]` | required | Array of players to display |
+| `maxVisible` | `number` | — | Max number of players to show (no limit by default) |
+| `showEliminated` | `boolean` | `true` | Include eliminated players in the list |
+| `theme` | `RitArenaTheme` | — | Override CSS variables for this instance |
+| `className` | `string` | — | Additional CSS class on root element |
+
+### `Player` shape
+
+```typescript
+interface Player {
+  id: string
+  name: string
+  score: number
+  alive: boolean
+  rank: number
+  color?: string    // optional dot color indicator
+  avatar?: string   // optional avatar character/emoji
+}
+```
+
+## Behavior
+
+- Sorted by `rank` ascending, with stable tiebreak via `id`
+- Eliminated players shown with strikethrough and reduced opacity (when `showEliminated`)
+- Empty state: "No players yet" if `players` is empty
+- Uses semantic `<ol role="list">` for accessibility
+
+## Theming tokens
+
+- `--ritarena-accent` — score color for alive players
+- `--ritarena-danger` — eliminated indicator
+- `--ritarena-text` / `--ritarena-text-muted` — names / rank numbers
+- `--ritarena-bg-card`, `--ritarena-border` — container

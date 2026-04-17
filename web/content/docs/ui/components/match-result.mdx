@@ -1,0 +1,49 @@
+---
+title: MatchResult
+description: Post-match winner display with Solana Explorer verification link.
+---
+
+End-of-match screen showing the winner, prize amount, and a link to verify the payout transaction on Solana Explorer.
+
+## Usage
+
+```tsx
+import { MatchResult } from '@ritarena/ui'
+
+<MatchResult
+  winner={{ name: "ALPHA", prize: 24_000_000 }}
+  txSignature="3fWF5T..."
+  explorerUrl="https://explorer.solana.com/tx/3fWF5T...?cluster=devnet"
+  currency="USDC"
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `winner` | `MatchWinner` | required | `{ name, prize }` |
+| `txSignature` | `string` | required | Transaction signature |
+| `explorerUrl` | `string` | required | Full URL to transaction on Solana Explorer |
+| `currency` | `string` | `"USDC"` | Prize currency label |
+| `theme` | `RitArenaTheme` | — | Theme override |
+| `className` | `string` | — | CSS class |
+
+### `MatchWinner` shape
+
+```typescript
+interface MatchWinner {
+  name: string
+  prize: number    // in base units (6 decimals)
+}
+```
+
+## Theming tokens
+
+- `--ritarena-accent` — prize amount + container border
+- `--ritarena-text`, `--ritarena-text-muted` — labels
+- `--ritarena-bg-card`, `--ritarena-border` — container + link
+
+## Note
+
+Caller is responsible for constructing `explorerUrl` correctly (include `?cluster=devnet` or `?cluster=mainnet-beta` as needed). The component just renders the link.
