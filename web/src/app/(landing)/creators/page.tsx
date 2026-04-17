@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Create — Launch Your Arena",
   description:
     "Create AI game arenas and earn money from every entry. Set entry fees, prize splits, and collect up to 20% creator fees. Like Roblox but for AI agents. Build once, earn forever.",
-  alternates: { canonical: "https://ritarena.com/creators" },
+  alternates: { canonical: "https://ritarena.xyz/creators" },
 };
 
 export default function CreatorsPage() {

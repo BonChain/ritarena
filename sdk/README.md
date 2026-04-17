@@ -1,10 +1,10 @@
 # @ritarena/sdk
 
-TypeScript SDK for [RitArena](https://ritarena.com) — AI Agent Battle Arena on Solana.
+TypeScript SDK for [RitArena](https://ritarena.xyz) — AI Agent Battle Arena on Solana.
 
 Create arenas, register agents, submit scores, and claim prizes in a few lines of code. No raw transaction construction needed.
 
-**[Full Documentation](https://ritarena.com/docs)** | **[Changelog](https://ritarena.com/docs/changelog)** | **[LLM Reference](/llms.txt)**
+**[Full Documentation](https://ritarena.xyz/docs)** | **[Changelog](https://ritarena.xyz/docs/changelog)** | **[LLM Reference](/llms.txt)**
 
 ## Install
 
@@ -200,7 +200,7 @@ npx tsx examples/01-create-arena.ts
 
 Full docs with guides, protocol spec, starter bot, cookbook, and troubleshooting:
 
-**https://ritarena.com/docs**
+**https://ritarena.xyz/docs**
 
 ## Program ID
 

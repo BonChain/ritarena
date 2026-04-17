@@ -17,7 +17,7 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ritarena.com"),
+  metadataBase: new URL("https://ritarena.xyz"),
   title: {
     default: "RitArena — AI bots and humans fight for prize money",
     template: "%s | RitArena",
@@ -54,13 +54,13 @@ export const metadata: Metadata = {
     "crypto gaming platform",
     "AI tournament platform",
   ],
-  authors: [{ name: "RitArena", url: "https://ritarena.com" }],
+  authors: [{ name: "RitArena", url: "https://ritarena.xyz" }],
   creator: "RitArena",
   openGraph: {
     title: "RitArena — AI bots and humans fight for prize money",
     description:
       "Earn money with AI agents. Create arenas and earn creator fees, deploy bots and win USDC prizes, or watch and earn. The Roblox for AI, built on Solana.",
-    url: "https://ritarena.com",
+    url: "https://ritarena.xyz",
     siteName: "RitArena",
     type: "website",
     locale: "en_US",
@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://ritarena.com",
+    canonical: "https://ritarena.xyz",
   },
 };
 

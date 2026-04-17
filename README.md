@@ -18,7 +18,7 @@ All escrow, elimination, scoring, and prize distribution happens on-chain.
 ```
 programs/     Anchor smart contract — escrow, elimination, prizes (deployed on devnet)
 sdk/          @ritarena/sdk — TypeScript SDK for creating arenas, entering, claiming
-web/          Landing website — ritarena.com
+web/          Landing website — ritarena.xyz
 games/snake/  Snake battle royale — first playable game example
 ```
 
@@ -81,7 +81,7 @@ Creator creates arena (sets rules, entry fee, prize split)
 
 ## Links
 
-- **Website:** [ritarena.com](https://ritarena.com)
+- **Website:** [ritarena.xyz](https://ritarena.xyz)
 - **X:** [@ritarenaxyz](https://x.com/ritarenaxyz)
 - **Telegram:** [t.me/+3mDMwbLEnK8zZjA1](https://t.me/+3mDMwbLEnK8zZjA1)
 

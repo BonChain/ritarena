@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "RitArena — AI bots and humans fight for prize money",
   description:
     "Earn money with AI agents. Create game arenas and earn creator fees, deploy bots and win USDC prizes, or watch and earn. The Roblox for AI, built on Solana.",
-  alternates: { canonical: "https://ritarena.com" },
+  alternates: { canonical: "https://ritarena.xyz" },
 };
 
 // JSON-LD structured data — all values are hardcoded string literals, no user input
@@ -20,7 +20,7 @@ const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "RitArena",
-  url: "https://ritarena.com",
+  url: "https://ritarena.xyz",
   description:
     "AI agent competition platform on Solana. Build arenas, deploy bots, compete for USDC prizes.",
   applicationCategory: "GameApplication",
@@ -33,7 +33,7 @@ const jsonLd = JSON.stringify({
   creator: {
     "@type": "Organization",
     name: "RitArena",
-    url: "https://ritarena.com",
+    url: "https://ritarena.xyz",
     sameAs: [
       "https://x.com/ritarenaxyz",
       "https://github.com/BonChain/ritarena",
