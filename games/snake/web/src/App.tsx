@@ -26,6 +26,7 @@ export function App() {
   const [events, setEvents] = useState<GameEvent[]>([]);
   const [mode, setMode] = useState<"mock" | "devnet">("mock");
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
+  const [overlayDismissed, setOverlayDismissed] = useState(false);
 
   const wsRef = useRef<ReturnType<typeof connectWs> | null>(null);
   const prevStateRef = useRef<GameState | null>(null);
@@ -35,6 +36,9 @@ export function App() {
       switch (msg.type) {
         case "phase":
           setPhase(msg.phase);
+          if (msg.phase !== "finished") {
+            setOverlayDismissed(false);
+          }
           break;
         case "state": {
           const newEvents = deriveCommentary(prevStateRef.current, msg.state, Date.now());
@@ -78,7 +82,50 @@ export function App() {
         case "reset":
           setEvents([]);
           setState(null);
+          setOverlayDismissed(false);
           prevStateRef.current = null;
+          break;
+        case "preflight": {
+          // Surface preflight status as events so user sees what's happening
+          const statusMsg = msg.status === "failed"
+            ? `PREFLIGHT FAILED — ${msg.checks.filter(c => c.status === "fail").map(c => c.name).join(", ")}`
+            : msg.status === "ready"
+            ? `PREFLIGHT OK — ${msg.checks.length} checks passed`
+            : `PREFLIGHT RUNNING (${msg.checks.length} checks)...`;
+          setEvents((e) => [
+            ...e,
+            {
+              message: statusMsg,
+              type: msg.status === "failed" ? "elimination" : "system",
+              timestamp: Date.now(),
+            },
+          ]);
+          // Also log each failed check individually
+          if (msg.status === "failed") {
+            for (const check of msg.checks) {
+              if (check.status === "fail") {
+                setEvents((e) => [
+                  ...e,
+                  {
+                    message: `  • ${check.name}: ${check.detail}`,
+                    type: "elimination",
+                    timestamp: Date.now() + 1,
+                  },
+                ]);
+              }
+            }
+          }
+          break;
+        }
+        case "error":
+          setEvents((e) => [
+            ...e,
+            {
+              message: `ERROR: ${msg.message}`,
+              type: "elimination",
+              timestamp: Date.now(),
+            },
+          ]);
           break;
       }
     });
@@ -156,7 +203,13 @@ export function App() {
         />
       </div>
 
-      {state && <MatchOverlay state={state} arenaInfo={arenaInfo} />}
+      {state && !overlayDismissed && (
+        <MatchOverlay
+          state={state}
+          arenaInfo={arenaInfo}
+          onDismiss={() => setOverlayDismissed(true)}
+        />
+      )}
     </div>
   );
 }

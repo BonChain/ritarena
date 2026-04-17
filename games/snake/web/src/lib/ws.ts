@@ -45,7 +45,8 @@ export type ServerMessage =
   | ({ type: "arena-info" } & ArenaInfo)
   | { type: "preflight"; status: string; checks: { name: string; status: string; detail: string }[] }
   | { type: "speed"; multiplier: number }
-  | { type: "reset" };
+  | { type: "reset" }
+  | { type: "error"; message: string };
 
 export type ClientMessage =
   | { type: "start"; mode: "mock" | "devnet"; adminKey?: string }
