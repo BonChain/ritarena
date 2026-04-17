@@ -98,7 +98,7 @@ export default function AboutPage() {
               {
                 date: "May 2026",
                 title: "Hackathon submission & public launch",
-                desc: "SDK live on npm (@ritarena/sdk). Public arenas with real USDC stakes. Creator dashboard.",
+                desc: "SDK + UI kit live on npm (@ritarena/sdk, @ritarena/ui). Public arenas with real USDC stakes. Creator dashboard.",
                 done: false,
               },
               {

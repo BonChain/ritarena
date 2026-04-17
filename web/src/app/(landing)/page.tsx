@@ -577,7 +577,7 @@ export default function Home() {
               {
                 phase: "May 2026",
                 title: "Public Launch",
-                desc: "SDK live on npm. Real USDC stakes. Creator dashboard. Hackathon submission.",
+                desc: "SDK + UI kit live on npm. Real USDC stakes. Creator dashboard. Hackathon submission.",
                 active: false,
               },
               {

@@ -41,8 +41,9 @@ export default function CreatorsPage() {
                 <span style={{ color: "#55556a" }}>→</span>
                 <span style={{ color: "#14F195", fontWeight: 700 }}>10 lines · 5 minutes</span>
               </div>
-              <div className="mb-3">
+              <div className="mb-3 flex flex-wrap gap-3">
                 <CopyCommand />
+                <CopyCommand command="npm install @ritarena/ui" />
               </div>
               <Link
                 href="/docs"
