@@ -3,6 +3,7 @@ use anchor_lang::prelude::*;
 use crate::constants::*;
 use crate::error::RitArenaError;
 use crate::state::{Arena, ArenaEntry, ArenaState};
+use std::collections::{HashMap, HashSet};
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct ScoreUpdate {
@@ -58,6 +59,12 @@ pub fn handler(
     let arena_key = arena.key();
     let remaining = &ctx.remaining_accounts;
 
+    // Build score lookup once — O(m)
+    let score_lookup: HashMap<Pubkey, i64> = scores.iter().map(|su| (su.entry, su.score)).collect();
+
+    // Build eliminated lookup once — O(k)
+    let eliminated_set: HashSet<Pubkey> = eliminated.iter().copied().collect();
+
     for account_info in remaining.iter() {
         // Verify account is owned by this program
         if account_info.owner != &crate::ID {
@@ -90,16 +97,13 @@ pub fn handler(
 
         let entry_key = *account_info.key;
 
-        // Apply score update if present
-        for su in scores.iter() {
-            if su.entry == entry_key {
-                entry.score = su.score;
-                break;
-            }
+        // O(1) score lookup
+        if let Some(&score) = score_lookup.get(&entry_key) {
+            entry.score = score;
         }
 
         // Mark eliminated if in the list
-        if eliminated.contains(&entry_key) && entry.alive {
+        if eliminated_set.contains(&entry_key) && entry.alive {
             entry.alive = false;
             arena.alive_agents = arena.alive_agents.saturating_sub(1);
         }

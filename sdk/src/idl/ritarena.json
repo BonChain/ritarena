@@ -1675,6 +1675,11 @@
       "code": 6033,
       "name": "UnauthorizedAbandon",
       "msg": "Caller is not authorized to abandon this arena"
+    },
+    {
+      "code": 6034,
+      "name": "InsufficientVaultBalance",
+      "msg": "Vault balance insufficient for prize payout — fee claim may have preceded prize claim"
     }
   ],
   "types": [
