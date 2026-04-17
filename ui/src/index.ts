@@ -10,6 +10,9 @@ export type { EventFeedProps } from "./components/EventFeed";
 export { AgentCard } from "./components/AgentCard";
 export type { AgentCardProps } from "./components/AgentCard";
 
+export { MatchResult } from "./components/MatchResult";
+export type { MatchResultProps } from "./components/MatchResult";
+
 export type {
   Player,
   GameEvent,
