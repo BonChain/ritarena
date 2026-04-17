@@ -23,8 +23,15 @@ const PORT = 3000;
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".png": "image/png",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".map": "application/json",
 };
 
 const BOT_ROSTER: BotConfig[] = [
@@ -332,29 +339,26 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
 
 // --- HTTP + WebSocket ---
 
-const publicDir = join(__dirname, "..", "public");
-const rendererPath = join(__dirname, "game", "renderer.js");
+const webDistDir = join(__dirname, "..", "web", "dist");
 
 const server = createServer((req, res) => {
-  let filePath: string;
-  if (req.url === "/" || req.url === "/index.html") {
-    filePath = join(publicDir, "index.html");
-  } else if (req.url === "/renderer.js") {
-    filePath = rendererPath;
-  } else {
-    res.writeHead(404);
-    res.end("Not found");
-    return;
-  }
+  const url = req.url === "/" ? "/index.html" : (req.url ?? "/index.html");
+  const filePath = join(webDistDir, url);
 
   try {
     const content = readFileSync(filePath);
     const ext = extname(filePath);
-    res.writeHead(200, { "Content-Type": MIME_TYPES[ext] || "text/plain" });
+    res.writeHead(200, { "Content-Type": MIME_TYPES[ext] || "application/octet-stream" });
     res.end(content);
   } catch {
-    res.writeHead(404);
-    res.end("Not found");
+    try {
+      const content = readFileSync(join(webDistDir, "index.html"));
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(content);
+    } catch {
+      res.writeHead(404);
+      res.end("Not found. Did you run `cd web && npm run build`?");
+    }
   }
 });
 

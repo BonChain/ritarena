@@ -4,9 +4,11 @@
   "private": true,
   "description": "Slither.io-style snake game example for RitArena SDK",
   "scripts": {
-    "build": "tsc",
-    "start": "npx tsx src/server.ts",
-    "start:devnet": "npx tsx src/server.ts --devnet",
+    "build": "tsc && cd web && npm run build",
+    "build:server": "tsc",
+    "build:web": "cd web && npm run build",
+    "start": "npm run build && npx tsx src/server.ts",
+    "start:devnet": "npm run build && npx tsx src/server.ts --devnet",
     "setup:devnet": "npx tsx src/ritarena_sdk/setup-devnet.ts"
   },
   "dependencies": {
