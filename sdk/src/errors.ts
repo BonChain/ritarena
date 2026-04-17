@@ -17,7 +17,8 @@ export type ErrorCode =
   | "ROUND_IN_PROGRESS"
   | "WINNER_NOT_FOUND"
   | "WINNERS_MISMATCH"
-  | "INVALID_TREASURY";
+  | "INVALID_TREASURY"
+  | "INSUFFICIENT_VAULT_BALANCE";
 
 export class RitArenaError extends Error {
   code: ErrorCode;

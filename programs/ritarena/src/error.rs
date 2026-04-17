@@ -70,4 +70,6 @@ pub enum RitArenaError {
     RegistrationExpired,
     #[msg("Caller is not authorized to abandon this arena")]
     UnauthorizedAbandon,
+    #[msg("Vault balance insufficient for prize payout — fee claim may have preceded prize claim")]
+    InsufficientVaultBalance,
 }

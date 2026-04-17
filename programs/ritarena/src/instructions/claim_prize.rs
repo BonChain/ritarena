@@ -76,6 +76,12 @@ pub fn handler(ctx: Context<ClaimPrize>) -> Result<()> {
         .ok_or(RitArenaError::MathOverflow)?
         / 100;
 
+    // Before the transfer — verify vault has enough
+    require!(
+        ctx.accounts.arena_vault.amount >= prize_amount,
+        RitArenaError::InsufficientVaultBalance
+    );
+
     // Transfer prize from arena_vault to winner
     let arena_id_bytes = arena.id.to_le_bytes();
     let signer_seeds: &[&[&[u8]]] = &[&[ARENA_SEED, &arena_id_bytes, &[arena.bump]]];
