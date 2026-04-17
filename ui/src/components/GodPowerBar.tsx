@@ -36,6 +36,7 @@ export function GodPowerBar({
         return (
           <button
             key={power.id}
+            disabled={isDisabled}
             onClick={() => !isDisabled && onUse(power.id)}
             style={{
               flex: 1,

@@ -1,9 +1,8 @@
-import type { MatchWinner, Player, RitArenaTheme } from "../types";
+import type { MatchWinner, RitArenaTheme } from "../types";
 import { themeToStyle } from "../theme";
 
 export interface MatchResultProps {
   winner: MatchWinner;
-  players?: Player[];
   txSignature: string;
   explorerUrl: string;
   currency?: string;
