@@ -4,6 +4,9 @@ export type { LeaderboardProps } from "./components/Leaderboard";
 export { PrizePool } from "./components/PrizePool";
 export type { PrizePoolProps } from "./components/PrizePool";
 
+export { EventFeed } from "./components/EventFeed";
+export type { EventFeedProps } from "./components/EventFeed";
+
 export type {
   Player,
   GameEvent,
