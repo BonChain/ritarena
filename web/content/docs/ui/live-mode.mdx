@@ -4,12 +4,12 @@ description: Auto-connected UI components that fetch their own data by arenaId.
 ---
 
 <Callout type="info">
-Live mode is coming in v0.3.0. Today, import from `@ritarena/ui` and pass data manually.
+Live mode is v0.3.0 territory. For now you're wiring up your own SDK calls + WebSocket — but here's what's coming so you can architect around it.
 </Callout>
 
 ## What it will do
 
-Wrap every display component with automatic data fetching from the on-chain SDK + game server WebSocket. Platform integrators can drop in a single `arenaId` and get the full spectator experience.
+Every display component, wrapped with auto-fetching from the on-chain SDK + game server WebSocket. Pass an `arenaId`, get a working spectator view. That's the whole pitch.
 
 ```tsx
 // Coming soon:
@@ -22,7 +22,7 @@ import { Leaderboard, PrizePool, EventFeed } from '@ritarena/ui/live'
 
 ## `<RitArenaEmbed>` (all-in-one)
 
-For platform integrators who just want to embed a spectator view in their app:
+For platforms that just want to slap a spectator view into their app and move on:
 
 ```tsx
 // Coming soon:
@@ -36,13 +36,13 @@ import { RitArenaEmbed } from '@ritarena/ui/live'
 />
 ```
 
-Includes leaderboard, event feed, prize pool, and match result. Game canvas is a slot — you render your game inside.
+Leaderboard, event feed, prize pool, match result — all bundled. The game canvas is a slot: you render your game inside.
 
 ## Features (planned)
 
-- Auto-reconnect on WebSocket drop
+- Auto-reconnect on WebSocket drop (because they drop)
 - SSR-safe (`"use client"` boundaries handled internally)
-- Accepts existing Solana wallet adapter from context
+- Accepts your existing Solana wallet adapter from context
 - Event callbacks: `onElimination`, `onGameEnd`, `onRoundComplete`
 
-For now, use [display components](/docs/ui/components/leaderboard) with your own data pipeline, or the upcoming [hooks](/docs/ui/hooks) for a middle ground.
+Until then: use [display components](/docs/ui/components/leaderboard) with your own data pipeline, or the upcoming [hooks](/docs/ui/hooks) if you want the data layer without our visuals.

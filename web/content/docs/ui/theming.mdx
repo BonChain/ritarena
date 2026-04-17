@@ -3,7 +3,7 @@ title: Theming
 description: Customize RitArena UI components with CSS variables or theme props.
 ---
 
-All components use CSS variables with a `--ritarena-` prefix. Override them to match your game's palette.
+Every component reads from `--ritarena-*` CSS variables. Override them once, every component rehomes. No forking, no className wars.
 
 ## Default values
 
@@ -23,7 +23,7 @@ All components use CSS variables with a `--ritarena-` prefix. Override them to m
 }
 ```
 
-These are neutral dark defaults — they look acceptable out of the box without screaming "RitArena."
+Neutral dark defaults. They look fine out of the box and don't scream "RitArena" at your users.
 
 ## Option 1: Override via CSS (recommended)
 
@@ -36,7 +36,7 @@ These are neutral dark defaults — they look acceptable out of the box without 
 }
 ```
 
-Applies to all RitArena UI components in your app. Best for consistent branding.
+Applies to every RitArena component in your app. Pick this if you want consistent branding without thinking about it again.
 
 ## Option 2: Theme prop (per-component)
 
@@ -53,7 +53,7 @@ import { Leaderboard } from '@ritarena/ui'
 />
 ```
 
-Injects CSS variables as inline style. Useful for arena-specific theming (different games, different vibes).
+Injects CSS variables as inline style. Good for arena-specific looks — different games, different vibes, same components.
 
 ## Option 3: Scoped CSS
 
@@ -64,7 +64,7 @@ Injects CSS variables as inline style. Useful for arena-specific theming (differ
 </div>
 ```
 
-Scope overrides to a subtree. All components inside inherit the variables.
+Scope overrides to a subtree. Everything inside inherits. Handy when one section of the page needs its own palette.
 
 ## Available tokens
 
@@ -83,6 +83,8 @@ Scope overrides to a subtree. All components inside inherit the variables.
 | `--ritarena-font-mono` | Monospace (stats, codes) | ui-monospace |
 
 ## Theme examples
+
+Steal these. No attribution required.
 
 ### Cyberpunk (neon green on black)
 ```css

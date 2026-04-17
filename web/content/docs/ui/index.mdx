@@ -3,7 +3,7 @@ title: UI Library
 description: Themeable React components for RitArena game arena UIs.
 ---
 
-`@ritarena/ui` is a React component library for building spectator UIs on top of RitArena games. Drop-in components for leaderboards, prize pools, event feeds, and more — all themeable with CSS variables.
+Drop-in React components for the boring-but-essential parts of a spectator UI: leaderboards, prize pools, event feeds, REKT overlays. Themeable with CSS variables, zero branding out of the box. You focus on your game canvas — we handle the chrome.
 
 **Philosophy:** Functional, not beautiful. Minimal dark default styling. No RitArena branding. Your game IS the brand.
 
@@ -53,9 +53,9 @@ import '@ritarena/ui/styles.css'  // default dark theme (optional)
 
 ## Design principles
 
-1. **Props in, render out.** Display components have zero side effects. No fetching, no WebSocket, no wallet.
+1. **Props in, render out.** Display components have zero side effects. No fetching, no WebSocket, no wallet. You bring the data, we render it.
 2. **Themeable via CSS variables.** One line to change accent color. Full control without forking.
-3. **Accessible by default.** Semantic HTML, ARIA roles, keyboard-navigable.
+3. **Accessible by default.** Semantic HTML, ARIA roles, keyboard-navigable. Screen readers included, not bolted on.
 4. **Game creators decide the aesthetic.** Components adapt — they don't dictate.
 
 ## Next steps

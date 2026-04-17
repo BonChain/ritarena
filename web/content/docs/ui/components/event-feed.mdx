@@ -3,7 +3,7 @@ title: EventFeed
 description: Auto-scrolling log of game events with type-based coloring.
 ---
 
-Displays a scrollable log of game events (eliminations, hype text, scores) with color-coded types.
+The scrolling kill feed. Eliminations, hype moments, score updates — all color-coded, all timestamped. Twitch chat energy, minus the chat.
 
 ## Usage
 
@@ -41,7 +41,7 @@ interface GameEvent {
 
 ## Behavior
 
-- Auto-scrolls to latest event — but only if user is already near the bottom. Lets spectators scroll up to read old events without getting jerked back.
+- Auto-scrolls to latest event — but only if the user is already near the bottom. Lets spectators scroll up to read old events without getting yanked back mid-read.
 - Keeps only the last `maxVisible` events.
 - Empty state: "Waiting for events..."
 

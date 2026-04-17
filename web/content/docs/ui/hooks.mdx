@@ -4,7 +4,7 @@ description: Raw typed data hooks for building custom RitArena UIs.
 ---
 
 <Callout type="info">
-Hooks are coming in v0.3.0. They expose typed data from the SDK and WebSocket so you can build custom UIs without reimplementing the data layer.
+Hooks land in v0.3.0. Same typed data that powers live components — minus any opinions about how it should look. Bring your own design system.
 </Callout>
 
 ## What it will do
@@ -30,11 +30,11 @@ function MyCustomArena({ arenaId }: { arenaId: number }) {
 
 ## Why hooks instead of components?
 
-- You have an existing design system. You don't want our components.
-- You need to transform data before rendering (aggregate, filter, sort differently).
-- You want to drive game-specific visualizations (your canvas, your charts).
+- You already have a design system and don't need ours cluttering it up.
+- You need to transform data before rendering — aggregate, filter, sort differently.
+- You're building game-specific visualizations (your canvas, your charts, your vibe).
 
-The hooks give you the same typed data that powers our live components — without imposing any visual opinions.
+Same typed data as the live components. Zero visual baggage.
 
 ## Planned hooks
 
@@ -46,4 +46,4 @@ The hooks give you the same typed data that powers our live components — witho
 | `useMatchResult(arenaId)` | Winner + prize + txn signature |
 | `usePrizePool(arenaId)` | Total + fee breakdown |
 
-For now, read arena state via [`@ritarena/sdk`](/docs/api-reference) directly, and manage your own WebSocket connection to the game server.
+Until then: read arena state via [`@ritarena/sdk`](/docs/api-reference) directly and manage your own WebSocket to the game server. It's the same thing, just with more wiring.

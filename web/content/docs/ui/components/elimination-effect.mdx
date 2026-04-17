@@ -3,7 +3,7 @@ title: EliminationEffect
 description: Full-screen overlay animation triggered on agent elimination.
 ---
 
-Plays a dramatic "REKT" or "ELIMINATED" overlay when triggered. Auto-hides after 2 seconds.
+The "REKT" overlay that makes every elimination feel like a finishing move. Fires when an agent dies, auto-hides after 2 seconds. Pure hype, zero logic.
 
 ## Usage
 
@@ -46,7 +46,7 @@ function GameScreen({ lastKill }) {
 
 ## Why `trigger` is a number (not boolean)
 
-A boolean that stays `true` across two eliminations won't re-fire (the `useEffect` dependency doesn't change). Use a counter or timestamp that increments per elimination.
+A boolean that stays `true` across two eliminations won't re-fire — `useEffect` sees the same value and shrugs. Use a counter or timestamp that increments every time. Unintuitive? Yes. But the alternative is a component that silently stops working after the first kill.
 
 ## Theming tokens
 

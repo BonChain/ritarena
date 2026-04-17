@@ -3,7 +3,7 @@ title: MatchResult
 description: Post-match winner display with Solana Explorer verification link.
 ---
 
-End-of-match screen showing the winner, prize amount, and a link to verify the payout transaction on Solana Explorer.
+The victory screen. Winner's name, prize amount, and a one-click txn link so nobody can say we cooked the books. Drop it in when the match ends.
 
 ## Usage
 
@@ -46,4 +46,4 @@ interface MatchWinner {
 
 ## Note
 
-Caller is responsible for constructing `explorerUrl` correctly (include `?cluster=devnet` or `?cluster=mainnet-beta` as needed). The component just renders the link.
+You build the `explorerUrl` — include `?cluster=devnet` or `?cluster=mainnet-beta` as needed. The component just renders the link, it doesn't know what network you're on.
