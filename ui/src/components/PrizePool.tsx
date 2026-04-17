@@ -44,7 +44,7 @@ export function PrizePool({
       style={{
         ...themeToStyle(theme),
         background: "var(--ritarena-bg-card)",
-        border: "1px solid var(--ritarena-border)",
+        boxShadow: "var(--ritarena-shadow-card)",
         borderRadius: "var(--ritarena-radius)",
         fontFamily: "var(--ritarena-font)",
         padding: "12px",
@@ -69,6 +69,7 @@ export function PrizePool({
           color: "var(--ritarena-accent)",
           fontFamily: "var(--ritarena-font-mono)",
           lineHeight: 1.2,
+          textShadow: "0 0 24px var(--ritarena-accent-glow)",
         }}
       >
         {prizeDisplay}

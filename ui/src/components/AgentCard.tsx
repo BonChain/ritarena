@@ -49,8 +49,11 @@ export function AgentCard({
         gap: "10px",
         padding: "8px 12px",
         background: "var(--ritarena-bg-card)",
-        border: `1px solid ${status === "winner" ? "var(--ritarena-accent)" : "var(--ritarena-border)"}`,
+        boxShadow: status === "winner"
+          ? "0 0 0 1px var(--ritarena-accent), 0 0 16px var(--ritarena-accent-glow), var(--ritarena-shadow-card)"
+          : "var(--ritarena-shadow-card)",
         borderRadius: "var(--ritarena-radius)",
+        transition: "box-shadow 0.2s ease, opacity 0.2s ease",
         fontFamily: "var(--ritarena-font)",
         opacity: status === "eliminated" ? 0.5 : 1,
       }}

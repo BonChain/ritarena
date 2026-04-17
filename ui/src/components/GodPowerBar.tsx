@@ -41,7 +41,7 @@ export function GodPowerBar({
         gap: "8px",
         padding: "8px",
         background: "var(--ritarena-bg-card)",
-        border: "1px solid var(--ritarena-border)",
+        boxShadow: "var(--ritarena-shadow-card)",
         borderRadius: "var(--ritarena-radius)",
       }}
     >

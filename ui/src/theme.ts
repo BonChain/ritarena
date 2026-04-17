@@ -11,6 +11,8 @@ const VAR_MAP: Record<keyof RitArenaTheme, string> = {
   border: "--ritarena-border",
   danger: "--ritarena-danger",
   radius: "--ritarena-radius",
+  shadowCard: "--ritarena-shadow-card",
+  shadowElevated: "--ritarena-shadow-elevated",
   font: "--ritarena-font",
   fontMono: "--ritarena-font-mono",
 };

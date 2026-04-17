@@ -1,13 +1,15 @@
 :root {
-  --ritarena-accent: #888888;
-  --ritarena-accent-glow: transparent;
+  --ritarena-accent: #14F195;
+  --ritarena-accent-glow: rgba(20, 241, 149, 0.25);
+  --ritarena-danger: #ff5555;
   --ritarena-bg: #0d0d14;
   --ritarena-bg-card: #12121c;
-  --ritarena-text: #e0e0e0;
-  --ritarena-text-muted: #666666;
+  --ritarena-text: #f0f0f0;
+  --ritarena-text-muted: #888888;
   --ritarena-border: #1a1a2a;
-  --ritarena-danger: #ff5555;
   --ritarena-radius: 6px;
-  --ritarena-font: system-ui, -apple-system, sans-serif;
-  --ritarena-font-mono: ui-monospace, monospace;
+  --ritarena-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--ritarena-border);
+  --ritarena-shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--ritarena-border);
+  --ritarena-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ritarena-font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
 }

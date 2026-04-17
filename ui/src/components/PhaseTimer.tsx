@@ -38,7 +38,7 @@ export function PhaseTimer({
       style={{
         ...themeToStyle(theme),
         background: "var(--ritarena-bg-card)",
-        border: "1px solid var(--ritarena-border)",
+        boxShadow: "var(--ritarena-shadow-card)",
         borderRadius: "var(--ritarena-radius)",
         fontFamily: "var(--ritarena-font-mono)",
         padding: "8px 12px",
@@ -92,7 +92,7 @@ export function PhaseTimer({
             width: `${progress * 100}%`,
             background: urgent ? "var(--ritarena-danger)" : "var(--ritarena-accent)",
             borderRadius: "2px",
-            transition: "width 0.3s ease",
+            transition: "width 0.3s ease, background 0.2s ease",
           }}
         />
       </div>
