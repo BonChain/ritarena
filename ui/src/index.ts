@@ -7,6 +7,9 @@ export type { PrizePoolProps } from "./components/PrizePool";
 export { EventFeed } from "./components/EventFeed";
 export type { EventFeedProps } from "./components/EventFeed";
 
+export { AgentCard } from "./components/AgentCard";
+export type { AgentCardProps } from "./components/AgentCard";
+
 export type {
   Player,
   GameEvent,
