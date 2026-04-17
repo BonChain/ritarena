@@ -1,4 +1,5 @@
-// Component exports added in subsequent tasks
+export { Leaderboard } from "./components/Leaderboard";
+export type { LeaderboardProps } from "./components/Leaderboard";
 
 export type {
   Player,
