@@ -12,5 +12,6 @@ export default defineConfig([
     splitting: false,
     clean: true,
     external: ["react", "react-dom", "@ritarena/sdk"],
+    onSuccess: "cp src/styles.css dist/styles.css",
   },
 ]);
