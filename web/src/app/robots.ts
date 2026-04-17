@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://ritarena.com/sitemap.xml",
+    sitemap: "https://ritarena.xyz/sitemap.xml",
   };
 }

@@ -1,4 +1,9 @@
 {
   "title": "Snake Game",
-  "pages": ["index", "rules", "protocol", "starter-bot"]
+  "pages": [
+    "index",
+    "rules",
+    "protocol",
+    "starter-bot"
+  ]
 }

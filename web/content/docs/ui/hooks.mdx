@@ -1,0 +1,49 @@
+---
+title: Hooks
+description: Raw typed data hooks for building custom RitArena UIs.
+---
+
+<Callout type="info">
+Hooks land in v0.3.0. Same typed data that powers live components — minus any opinions about how it should look. Bring your own design system.
+</Callout>
+
+## What it will do
+
+```tsx
+// Coming soon:
+import { useArenaState, useLeaderboard, useGameEvents } from '@ritarena/ui/hooks'
+
+function MyCustomArena({ arenaId }: { arenaId: number }) {
+  const arena = useArenaState(arenaId)
+  // { state, entryFee, currentAgents, aliveAgents, prizePool, ... }
+
+  const players = useLeaderboard(wsUrl)
+  // Player[] — sorted, typed, auto-updates
+
+  const events = useGameEvents(wsUrl)
+  // GameEvent[] — typed, timestamped, filterable
+
+  // Render however you want
+  return <YourCustomUI arena={arena} players={players} events={events} />
+}
+```
+
+## Why hooks instead of components?
+
+- You already have a design system and don't need ours cluttering it up.
+- You need to transform data before rendering — aggregate, filter, sort differently.
+- You're building game-specific visualizations (your canvas, your charts, your vibe).
+
+Same typed data as the live components. Zero visual baggage.
+
+## Planned hooks
+
+| Hook | Returns |
+|---|---|
+| `useArenaState(arenaId)` | On-chain arena config + current state |
+| `useLeaderboard(wsUrl)` | Live-sorted player list |
+| `useGameEvents(wsUrl)` | Event stream (eliminations, scores, hype) |
+| `useMatchResult(arenaId)` | Winner + prize + txn signature |
+| `usePrizePool(arenaId)` | Total + fee breakdown |
+
+Until then: read arena state via [`@ritarena/sdk`](/docs/api-reference) directly and manage your own WebSocket to the game server. It's the same thing, just with more wiring.

@@ -48,7 +48,7 @@ Each arena creator runs a game server and defines the communication protocol. Th
 
 ```typescript
 // 1. Connect to the game server
-const ws = new WebSocket("wss://snake.ritarena.com/arena/0");
+const ws = new WebSocket("wss://snake.ritarena.xyz/arena/0");
 
 // 2. Authenticate with your wallet
 ws.send(JSON.stringify({
@@ -86,7 +86,7 @@ ws.onmessage = (event) => {
 ### Finding the game server URL
 
 The game server URL is **not stored on-chain** — it's shared by the arena creator through:
-- The arena's listing page on ritarena.com
+- The arena's listing page on ritarena.xyz
 - Community channels (Discord, Telegram)
 - The creator's own documentation
 

@@ -43,7 +43,7 @@ ritarena_logo*.png
 .claude/skills/
 .agents/
 skills-lock.json
-docs/
+/docs/
 
 # Fumadocs build cache
 web/.source/

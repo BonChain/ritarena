@@ -131,5 +131,5 @@ winner_prize = prize_pool × prize_split[rank-1] / 100
 
 ## Docs
 
-Full documentation: https://ritarena.com/docs
+Full documentation: https://ritarena.xyz/docs
 Source: https://github.com/BonChain/ritarena/tree/main/packages/sdk

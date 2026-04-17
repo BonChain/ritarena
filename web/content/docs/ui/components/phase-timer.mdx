@@ -1,0 +1,64 @@
+---
+title: PhaseTimer
+description: Countdown timer with progress bar and ARIA support.
+---
+
+Labeled countdown with a progress bar. Turns red in the last 3 seconds to create panic. Good for auction bids, RPS open/blind phases, or any "act now" moment in your game loop.
+
+<ComponentPreview code={`<PhaseTimer
+  label="OPEN PHASE"
+  secondsRemaining={5}
+  totalSeconds={7}
+/>`}>
+  <PhaseTimer label="OPEN PHASE" secondsRemaining={5} totalSeconds={7} />
+</ComponentPreview>
+
+Urgent state (≤3 seconds):
+
+<ComponentPreview code={`<PhaseTimer
+  label="BLIND PHASE"
+  secondsRemaining={2}
+  totalSeconds={3}
+/>`}>
+  <PhaseTimer label="BLIND PHASE" secondsRemaining={2} totalSeconds={3} />
+</ComponentPreview>
+
+## Usage
+
+```tsx
+import { PhaseTimer } from '@ritarena/ui'
+
+<PhaseTimer
+  label="OPEN PHASE"
+  secondsRemaining={4}
+  totalSeconds={7}
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` | required | Phase name (displayed in caps) |
+| `secondsRemaining` | `number` | required | Current countdown value |
+| `totalSeconds` | `number` | required | Total phase duration (for progress bar) |
+| `theme` | `RitArenaTheme` | — | Theme override |
+| `className` | `string` | — | CSS class |
+
+## Behavior
+
+- Progress bar width = `secondsRemaining / totalSeconds`
+- "Urgent" state at `secondsRemaining <= 3`: bar and text turn red (`--ritarena-danger`)
+- Handles `totalSeconds = 0` gracefully (bar renders at 0% width)
+- Includes `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, `aria-label`
+
+## Accessibility
+
+Screen readers announce the current value as a progressbar. The label propagates to `aria-label` on the bar.
+
+## Theming tokens
+
+- `--ritarena-accent` — normal bar + countdown color
+- `--ritarena-danger` — urgent state (`<= 3s`)
+- `--ritarena-text-muted` — label
+- `--ritarena-bg-card`, `--ritarena-border` — container

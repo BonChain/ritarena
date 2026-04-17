@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://ritarena.com";
+  const baseUrl = "https://ritarena.xyz";
 
   // Landing pages
   const landingPages = [

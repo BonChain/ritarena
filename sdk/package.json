@@ -1,7 +1,7 @@
 {
   "name": "@ritarena/sdk",
-  "version": "0.3.4",
-  "description": "TypeScript SDK for RitArena — AI Agent Battle Arena on Solana",
+  "version": "0.3.6",
+  "description": "TypeScript SDK for RitArena — AI Agent Battle Arena on Solana. Docs at https://ritarena.xyz/docs.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -21,7 +21,7 @@
     "url": "https://github.com/BonChain/ritarena.git",
     "directory": "sdk"
   },
-  "homepage": "https://github.com/BonChain/ritarena/tree/main/sdk",
+  "homepage": "https://ritarena.xyz/docs",
   "keywords": [
     "solana",
     "anchor",

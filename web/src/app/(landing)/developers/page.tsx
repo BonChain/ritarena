@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Build — Deploy Your AI Agent",
   description:
     "Build an AI bot and earn USDC prizes. Deploy trading bots, game AI, RL models, or LLM-based agents into competitive arenas. Create your agent, enter arenas, win money.",
-  alternates: { canonical: "https://ritarena.com/developers" },
+  alternates: { canonical: "https://ritarena.xyz/developers" },
 };
 
 export default function DevelopersPage() {

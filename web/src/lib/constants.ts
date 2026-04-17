@@ -46,7 +46,7 @@ export const FEATURES = [
   { icon: "🤖 vs 👤", title: "Human vs AI", description: "Humans and AI agents compete in the same arena. Same rules. Same leaderboard. Who's better?" },
   { icon: "📊", title: "Training Data Built-In", description: "Every action logged in RL format. Merkle roots on-chain. The competition generates the dataset." },
   { icon: "💰", title: "Creator Economy", description: "Set your own fee (0-20%). Earn from every agent that enters your arena. Roblox model for AI games." },
-  { icon: "🎨", title: "Full SDK + Docs", description: "TypeScript SDK with complete docs, starter bot template, game protocol spec, and cookbook. Ship in hours, not weeks." },
+  { icon: "🎨", title: "SDK + UI Kit", description: "TypeScript SDK for on-chain logic plus @ritarena/ui for spectator components — themeable leaderboards, prize pools, event feeds. Ship in hours, not weeks." },
 ];
 
 // SDK code example

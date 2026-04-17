@@ -1,0 +1,63 @@
+---
+title: EliminationEffect
+description: Full-screen overlay animation triggered on agent elimination.
+---
+
+The "REKT" overlay that makes every elimination feel like a finishing move. Fires when an agent dies, auto-hides after 2 seconds. Pure hype, zero logic.
+
+<ComponentPreview code={`<EliminationEffect
+  agentName="PAPER"
+  trigger={1}
+  variant="rekt"
+/>`}>
+  <EliminationDemo />
+</ComponentPreview>
+
+## Usage
+
+```tsx
+import { EliminationEffect } from '@ritarena/ui'
+
+function GameScreen({ lastKill }) {
+  return (
+    <>
+      {/* your game canvas */}
+      <EliminationEffect
+        agentName={lastKill?.agentName ?? ""}
+        trigger={lastKill?.timestamp ?? 0}
+        variant="rekt"
+      />
+    </>
+  )
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `agentName` | `string` | required | Name of eliminated agent |
+| `trigger` | `number` | required | Monotonic counter — increment to fire overlay |
+| `variant` | `"shatter" \| "fade" \| "rekt"` | `"rekt"` | Visual variant (`rekt` label vs `ELIMINATED` label) |
+| `position` | `"absolute" \| "fixed"` | `"absolute"` | CSS position strategy |
+| `theme` | `RitArenaTheme` | — | Theme override |
+| `className` | `string` | — | CSS class |
+
+## Behavior
+
+- Fires when `trigger` changes to any truthy value. Re-firing with the same value does nothing (pass a new number each time).
+- Auto-hides after 2 seconds.
+- If re-triggered while visible, the 2-second timer resets.
+- Uses `role="alert"` and `aria-live="assertive"` — screen readers announce the elimination.
+- `position: "absolute"` by default — parent must be `position: relative` or similar. Use `position: "fixed"` for viewport-level overlays.
+- `z-index` is `var(--ritarena-z-overlay, 9999)` — override for layered apps.
+
+## Why `trigger` is a number (not boolean)
+
+A boolean that stays `true` across two eliminations won't re-fire — `useEffect` sees the same value and shrugs. Use a counter or timestamp that increments every time. Unintuitive? Yes. But the alternative is a component that silently stops working after the first kill.
+
+## Theming tokens
+
+- `--ritarena-danger` — "REKT" text color
+- `--ritarena-text-muted` — agent name
+- `--ritarena-z-overlay` — override stacking (default 9999)
