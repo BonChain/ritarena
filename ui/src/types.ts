@@ -83,6 +83,10 @@ export interface RitArenaTheme {
   textMuted?: string;
   /** Border / divider color. Default `#1a1a2a` */
   border?: string;
+  /** Card shadow. Default includes border ring. Set to `none` to disable depth. */
+  shadowCard?: string;
+  /** Stronger shadow for elevated cards (winners, match results). */
+  shadowElevated?: string;
   /** Border radius. Default `6px` */
   radius?: string;
   /** Primary font stack. Default system-ui */

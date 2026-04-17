@@ -38,7 +38,7 @@ export function Leaderboard({
       style={{
         ...themeToStyle(theme),
         background: "var(--ritarena-bg-card)",
-        border: "1px solid var(--ritarena-border)",
+        boxShadow: "var(--ritarena-shadow-card)",
         borderRadius: "var(--ritarena-radius)",
         fontFamily: "var(--ritarena-font)",
         padding: "12px",

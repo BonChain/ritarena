@@ -43,7 +43,7 @@ export function MatchResult({
       style={{
         ...themeToStyle(theme),
         background: "var(--ritarena-bg-card)",
-        border: "1px solid var(--ritarena-accent)",
+        boxShadow: "0 0 0 1px var(--ritarena-accent), 0 0 32px var(--ritarena-accent-glow), var(--ritarena-shadow-elevated)",
         borderRadius: "var(--ritarena-radius)",
         fontFamily: "var(--ritarena-font)",
         padding: "24px",
@@ -77,6 +77,7 @@ export function MatchResult({
           fontWeight: 700,
           color: "var(--ritarena-accent)",
           fontFamily: "var(--ritarena-font-mono)",
+          textShadow: "0 0 24px var(--ritarena-accent-glow)",
         }}
       >
         {prizeDisplay}
@@ -96,13 +97,24 @@ export function MatchResult({
         rel="noopener noreferrer"
         style={{
           display: "inline-block",
-          padding: "8px 16px",
+          padding: "10px 20px",
           borderRadius: "var(--ritarena-radius)",
-          border: "1px solid var(--ritarena-border)",
-          color: "var(--ritarena-text-muted)",
+          background: "var(--ritarena-accent)",
+          color: "var(--ritarena-bg)",
           fontFamily: "var(--ritarena-font-mono)",
           fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.05em",
           textDecoration: "none",
+          transition: "transform 0.15s ease, box-shadow 0.15s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "translateY(-1px)";
+          e.currentTarget.style.boxShadow = "0 4px 12px var(--ritarena-accent-glow)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "";
+          e.currentTarget.style.boxShadow = "";
         }}
       >
         Verify on Explorer &rarr;
