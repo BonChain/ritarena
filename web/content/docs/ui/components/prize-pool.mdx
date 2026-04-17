@@ -5,6 +5,20 @@ description: Display total prize amount with protocol and creator fee breakdown.
 
 How much the winner actually takes home. Total pool minus protocol fee minus creator fee. The number that matters, with the math visible so nobody thinks you're skimming.
 
+<ComponentPreview code={`<PrizePool
+  total={40_000_000}
+  creatorFeeBps={500}
+  protocolFeeBps={100}
+  currency="USDC"
+/>`}>
+  <PrizePool
+    total={40_000_000}
+    creatorFeeBps={500}
+    protocolFeeBps={100}
+    currency="USDC"
+  />
+</ComponentPreview>
+
 ## Usage
 
 ```tsx

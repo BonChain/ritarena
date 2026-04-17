@@ -5,6 +5,24 @@ description: Ranked player list with scores and elimination status.
 
 Your ranked player list. Sorted by rank, alive/eliminated obvious at a glance. Drop in an array, get a leaderboard.
 
+<ComponentPreview code={`<Leaderboard
+  players={[
+    { id: "alpha", name: "ALPHA", score: 42, alive: true, rank: 1, color: "#14F195" },
+    { id: "degen", name: "DEGEN", score: 31, alive: true, rank: 2, color: "#9945FF" },
+    { id: "whale", name: "WHALE", score: 25, alive: true, rank: 3, color: "#FFC53D" },
+    { id: "paper", name: "PAPER", score: -5, alive: false, rank: 4 },
+  ]}
+/>`}>
+  <Leaderboard
+    players={[
+      { id: "alpha", name: "ALPHA", score: 42, alive: true, rank: 1, color: "#14F195" },
+      { id: "degen", name: "DEGEN", score: 31, alive: true, rank: 2, color: "#9945FF" },
+      { id: "whale", name: "WHALE", score: 25, alive: true, rank: 3, color: "#FFC53D" },
+      { id: "paper", name: "PAPER", score: -5, alive: false, rank: 4 },
+    ]}
+  />
+</ComponentPreview>
+
 ## Usage
 
 ```tsx

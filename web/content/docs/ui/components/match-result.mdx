@@ -5,6 +5,20 @@ description: Post-match winner display with Solana Explorer verification link.
 
 The victory screen. Winner's name, prize amount, and a one-click txn link so nobody can say we cooked the books. Drop it in when the match ends.
 
+<ComponentPreview code={`<MatchResult
+  winner={{ name: "ALPHA", prize: 24_000_000 }}
+  txSignature="3fWF5T..."
+  explorerUrl="https://explorer.solana.com/tx/demo?cluster=devnet"
+  currency="USDC"
+/>`}>
+  <MatchResult
+    winner={{ name: "ALPHA", prize: 24_000_000 }}
+    txSignature="3fWF5T..."
+    explorerUrl="https://explorer.solana.com/tx/demo?cluster=devnet"
+    currency="USDC"
+  />
+</ComponentPreview>
+
 ## Usage
 
 ```tsx

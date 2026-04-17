@@ -5,6 +5,24 @@ description: Countdown timer with progress bar and ARIA support.
 
 Labeled countdown with a progress bar. Turns red in the last 3 seconds to create panic. Good for auction bids, RPS open/blind phases, or any "act now" moment in your game loop.
 
+<ComponentPreview code={`<PhaseTimer
+  label="OPEN PHASE"
+  secondsRemaining={5}
+  totalSeconds={7}
+/>`}>
+  <PhaseTimer label="OPEN PHASE" secondsRemaining={5} totalSeconds={7} />
+</ComponentPreview>
+
+Urgent state (≤3 seconds):
+
+<ComponentPreview code={`<PhaseTimer
+  label="BLIND PHASE"
+  secondsRemaining={2}
+  totalSeconds={3}
+/>`}>
+  <PhaseTimer label="BLIND PHASE" secondsRemaining={2} totalSeconds={3} />
+</ComponentPreview>
+
 ## Usage
 
 ```tsx

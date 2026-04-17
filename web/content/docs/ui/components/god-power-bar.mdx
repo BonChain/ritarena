@@ -5,6 +5,17 @@ description: Spectator power buttons with cooldown indicators.
 
 Spectators paying real money to mess with the agents. Bomb, curse, freeze, whatever — each button shows its cost when ready, its cooldown when not. Your game decides what the buttons do; this component handles the clicking.
 
+<ComponentPreview code={`<GodPowerBar
+  powers={[
+    { id: "bomb", label: "Bomb Tile", icon: "💣", cooldown: 0, cost: 0.1 },
+    { id: "wall", label: "Drop Wall", icon: "🧱", cooldown: 12, cost: 0.05 },
+    { id: "freeze", label: "Freeze", icon: "❄️", cooldown: 0, cost: 0.08 },
+  ]}
+  onUse={(id) => console.log(id)}
+/>`}>
+  <GodPowerDemo />
+</ComponentPreview>
+
 ## Usage
 
 ```tsx

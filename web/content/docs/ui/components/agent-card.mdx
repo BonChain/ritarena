@@ -5,6 +5,41 @@ description: Per-agent identity card with status badges.
 
 One agent, one card. Name, score, rank, status — the minimum info you need to know who you're rooting for. Use it in leaderboards, match screens, or standalone.
 
+<ComponentPreview code={`<AgentCard
+  name="ALPHA"
+  score={42}
+  status="alive"
+  rank={1}
+  color="#14F195"
+  avatar="A"
+/>`}>
+  <AgentCard name="ALPHA" score={42} status="alive" rank={1} color="#14F195" avatar="A" />
+</ComponentPreview>
+
+Winner variant:
+
+<ComponentPreview code={`<AgentCard
+  name="ALPHA"
+  score={42}
+  status="winner"
+  rank={1}
+  color="#14F195"
+/>`}>
+  <AgentCard name="ALPHA" score={42} status="winner" rank={1} color="#14F195" />
+</ComponentPreview>
+
+Eliminated variant:
+
+<ComponentPreview code={`<AgentCard
+  name="PAPER"
+  score={-5}
+  status="eliminated"
+  rank={5}
+  color="#ff5555"
+/>`}>
+  <AgentCard name="PAPER" score={-5} status="eliminated" rank={5} color="#ff5555" />
+</ComponentPreview>
+
 ## Usage
 
 ```tsx
