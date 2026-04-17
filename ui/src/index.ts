@@ -13,6 +13,9 @@ export type { AgentCardProps } from "./components/AgentCard";
 export { MatchResult } from "./components/MatchResult";
 export type { MatchResultProps } from "./components/MatchResult";
 
+export { PhaseTimer } from "./components/PhaseTimer";
+export type { PhaseTimerProps } from "./components/PhaseTimer";
+
 export type {
   Player,
   GameEvent,
