@@ -16,7 +16,7 @@ export function Leaderboard({
   theme,
   className,
 }: LeaderboardProps) {
-  const sorted = [...players].sort((a, b) => a.rank - b.rank);
+  const sorted = [...players].sort((a, b) => (a.rank - b.rank) || a.id.localeCompare(b.id));
   const filtered = showEliminated ? sorted : sorted.filter((p) => p.alive);
   const visible = maxVisible ? filtered.slice(0, maxVisible) : filtered;
 
@@ -44,7 +44,7 @@ export function Leaderboard({
       >
         Leaderboard
       </div>
-      <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
+      <ol role="list" style={{ listStyle: "none", margin: 0, padding: 0 }}>
         {visible.map((player) => (
           <li
             key={player.id}
