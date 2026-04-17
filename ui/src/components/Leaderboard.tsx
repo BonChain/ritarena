@@ -45,57 +45,71 @@ export function Leaderboard({
         Leaderboard
       </div>
       <ol role="list" style={{ listStyle: "none", margin: 0, padding: 0 }}>
-        {visible.map((player) => (
+        {visible.length === 0 ? (
           <li
-            key={player.id}
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "6px 8px",
-              borderBottom: "1px solid var(--ritarena-border)",
-              opacity: player.alive ? 1 : 0.4,
-              textDecoration: player.alive ? "none" : "line-through",
-              color: "var(--ritarena-text)",
-              fontSize: "14px",
+              padding: "12px 8px",
+              color: "var(--ritarena-text-muted)",
+              textAlign: "center",
+              fontSize: "13px",
+              listStyle: "none",
             }}
           >
-            <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            No players yet
+          </li>
+        ) : (
+          visible.map((player) => (
+            <li
+              key={player.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "6px 8px",
+                borderBottom: "1px solid var(--ritarena-border)",
+                opacity: player.alive ? 1 : 0.4,
+                textDecoration: player.alive ? "none" : "line-through",
+                color: "var(--ritarena-text)",
+                fontSize: "14px",
+              }}
+            >
+              <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--ritarena-font-mono)",
+                    color: "var(--ritarena-text-muted)",
+                    width: "20px",
+                    textAlign: "right",
+                  }}
+                >
+                  {player.rank}
+                </span>
+                {player.color && (
+                  <span
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      background: player.color,
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+                <span>{player.name}</span>
+              </span>
               <span
                 style={{
                   fontFamily: "var(--ritarena-font-mono)",
-                  color: "var(--ritarena-text-muted)",
-                  width: "20px",
-                  textAlign: "right",
+                  color: player.alive
+                    ? "var(--ritarena-accent)"
+                    : "var(--ritarena-text-muted)",
                 }}
               >
-                {player.rank}
+                {player.alive ? player.score : "REKT"}
               </span>
-              {player.color && (
-                <span
-                  style={{
-                    width: "8px",
-                    height: "8px",
-                    borderRadius: "50%",
-                    background: player.color,
-                    flexShrink: 0,
-                  }}
-                />
-              )}
-              <span>{player.name}</span>
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--ritarena-font-mono)",
-                color: player.alive
-                  ? "var(--ritarena-accent)"
-                  : "var(--ritarena-text-muted)",
-              }}
-            >
-              {player.alive ? player.score : "REKT"}
-            </span>
-          </li>
-        ))}
+            </li>
+          ))
+        )}
       </ol>
     </div>
   );

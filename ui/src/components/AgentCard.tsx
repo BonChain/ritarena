@@ -86,7 +86,7 @@ export function AgentCard({
             status === "winner"
               ? "var(--ritarena-accent)"
               : status === "eliminated"
-                ? "#ff5555"
+                ? "var(--ritarena-danger)"
                 : "var(--ritarena-text)",
         }}
       >

@@ -4,8 +4,9 @@ import { themeToStyle } from "../theme";
 
 export interface EliminationEffectProps {
   agentName: string;
-  trigger: number | boolean;
+  trigger: number;
   variant?: "shatter" | "fade" | "rekt";
+  position?: "fixed" | "absolute";
   theme?: RitArenaTheme;
   className?: string;
 }
@@ -14,6 +15,7 @@ export function EliminationEffect({
   agentName,
   trigger,
   variant = "rekt",
+  position = "absolute",
   theme,
   className,
 }: EliminationEffectProps) {
@@ -32,13 +34,16 @@ export function EliminationEffect({
   return (
     <div
       className={className}
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
       style={{
         ...themeToStyle(theme),
-        position: "fixed",
+        position,
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        zIndex: 9999,
+        zIndex: "var(--ritarena-z-overlay, 9999)" as any,
         textAlign: "center",
         fontFamily: "var(--ritarena-font)",
         animation: "ritarena-fade-in 0.2s ease-out",
@@ -49,7 +54,7 @@ export function EliminationEffect({
         style={{
           fontSize: "48px",
           fontWeight: 900,
-          color: "#ff5555",
+          color: "var(--ritarena-danger)",
           textShadow: "0 0 40px rgba(255,85,85,0.6)",
           letterSpacing: "-0.02em",
         }}

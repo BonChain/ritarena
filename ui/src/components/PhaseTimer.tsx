@@ -53,7 +53,7 @@ export function PhaseTimer({
           style={{
             fontSize: "16px",
             fontWeight: 700,
-            color: urgent ? "#ff5555" : "var(--ritarena-accent)",
+            color: urgent ? "var(--ritarena-danger)" : "var(--ritarena-accent)",
           }}
         >
           {secondsRemaining}s
@@ -69,10 +69,15 @@ export function PhaseTimer({
       >
         <div
           data-testid="progress-bar"
+          role="progressbar"
+          aria-valuenow={secondsRemaining}
+          aria-valuemin={0}
+          aria-valuemax={totalSeconds}
+          aria-label={label}
           style={{
             height: "100%",
             width: `${progress * 100}%`,
-            background: urgent ? "#ff5555" : "var(--ritarena-accent)",
+            background: urgent ? "var(--ritarena-danger)" : "var(--ritarena-accent)",
             borderRadius: "2px",
             transition: "width 0.3s ease",
           }}

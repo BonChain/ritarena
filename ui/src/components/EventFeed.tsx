@@ -11,7 +11,7 @@ export interface EventFeedProps {
 
 const TYPE_COLORS: Record<GameEvent["type"], string> = {
   hype: "var(--ritarena-accent)",
-  elimination: "#ff5555",
+  elimination: "var(--ritarena-danger)",
   score: "var(--ritarena-text)",
   system: "var(--ritarena-text-muted)",
 };
@@ -26,9 +26,10 @@ export function EventFeed({
   const visible = events.slice(-maxVisible);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    const el = scrollRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+    if (atBottom) el.scrollTop = el.scrollHeight;
   }, [events.length]);
 
   return (
@@ -47,18 +48,42 @@ export function EventFeed({
         fontSize: "13px",
       }}
     >
-      {visible.map((event, i) => (
+      <div
+        style={{
+          fontSize: "11px",
+          textTransform: "uppercase",
+          letterSpacing: "0.1em",
+          color: "var(--ritarena-text-muted)",
+          marginBottom: "4px",
+        }}
+      >
+        Events
+      </div>
+      {visible.length === 0 ? (
         <div
-          key={`${event.timestamp}-${i}`}
           style={{
-            padding: "3px 0",
-            color: TYPE_COLORS[event.type],
-            borderBottom: "1px solid var(--ritarena-border)",
+            padding: "12px 0",
+            color: "var(--ritarena-text-muted)",
+            textAlign: "center",
+            fontSize: "12px",
           }}
         >
-          {event.message}
+          Waiting for events...
         </div>
-      ))}
+      ) : (
+        visible.map((event) => (
+          <div
+            key={event.timestamp}
+            style={{
+              padding: "3px 0",
+              color: TYPE_COLORS[event.type],
+              borderBottom: "1px solid var(--ritarena-border)",
+            }}
+          >
+            {event.message}
+          </div>
+        ))
+      )}
     </div>
   );
 }

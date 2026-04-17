@@ -17,8 +17,8 @@ describe("EliminationEffect", () => {
     expect(screen.getByText("PAPER")).toBeDefined();
   });
 
-  it("does not show overlay when trigger is falsy", () => {
-    render(<EliminationEffect agentName="PAPER" trigger={false} />);
+  it("does not show overlay when trigger is 0", () => {
+    render(<EliminationEffect agentName="PAPER" trigger={0} />);
     expect(screen.queryByText("REKT")).toBeNull();
   });
 
@@ -34,5 +34,15 @@ describe("EliminationEffect", () => {
   it("variant fade/shatter shows ELIMINATED instead of REKT", () => {
     render(<EliminationEffect agentName="PAPER" trigger={1} variant="fade" />);
     expect(screen.getByText("ELIMINATED")).toBeDefined();
+  });
+
+  it("resets auto-hide timer on re-trigger", () => {
+    const { rerender } = render(<EliminationEffect agentName="X" trigger={1} />);
+    act(() => { vi.advanceTimersByTime(1500); });
+    rerender(<EliminationEffect agentName="X" trigger={2} />);
+    act(() => { vi.advanceTimersByTime(1500); });
+    expect(screen.getByText("REKT")).toBeDefined();
+    act(() => { vi.advanceTimersByTime(600); });
+    expect(screen.queryByText("REKT")).toBeNull();
   });
 });

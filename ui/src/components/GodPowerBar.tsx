@@ -5,6 +5,7 @@ export interface GodPowerBarProps {
   powers: GodPower[];
   onUse: (powerId: string) => void;
   disabled?: boolean;
+  currency?: string;
   theme?: RitArenaTheme;
   className?: string;
 }
@@ -13,6 +14,7 @@ export function GodPowerBar({
   powers,
   onUse,
   disabled = false,
+  currency = "USDC",
   theme,
   className,
 }: GodPowerBarProps) {
@@ -37,7 +39,8 @@ export function GodPowerBar({
           <button
             key={power.id}
             disabled={isDisabled}
-            onClick={() => !isDisabled && onUse(power.id)}
+            onClick={() => onUse(power.id)}
+            aria-label={power.label}
             style={{
               flex: 1,
               display: "flex",
@@ -54,7 +57,7 @@ export function GodPowerBar({
               fontFamily: "var(--ritarena-font)",
             }}
           >
-            <span style={{ fontSize: "20px" }}>{power.icon}</span>
+            <span style={{ fontSize: "20px" }} aria-hidden="true">{power.icon}</span>
             <span style={{ fontSize: "11px", fontWeight: 600 }}>{power.label}</span>
             <span
               style={{
@@ -63,7 +66,7 @@ export function GodPowerBar({
                 color: "var(--ritarena-text-muted)",
               }}
             >
-              {onCooldown ? `${power.cooldown}s` : `${power.cost} USDC`}
+              {onCooldown ? `${power.cooldown}s` : `${power.cost} ${currency}`}
             </span>
           </button>
         );

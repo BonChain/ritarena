@@ -35,6 +35,7 @@ export interface RitArenaTheme {
   text?: string;
   textMuted?: string;
   border?: string;
+  danger?: string;
   radius?: string;
   font?: string;
   fontMono?: string;

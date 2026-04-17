@@ -9,6 +9,7 @@ const VAR_MAP: Record<keyof RitArenaTheme, string> = {
   text: "--ritarena-text",
   textMuted: "--ritarena-text-muted",
   border: "--ritarena-border",
+  danger: "--ritarena-danger",
   radius: "--ritarena-radius",
   font: "--ritarena-font",
   fontMono: "--ritarena-font-mono",
