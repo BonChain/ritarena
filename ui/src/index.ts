@@ -16,6 +16,9 @@ export type { MatchResultProps } from "./components/MatchResult";
 export { PhaseTimer } from "./components/PhaseTimer";
 export type { PhaseTimerProps } from "./components/PhaseTimer";
 
+export { GodPowerBar } from "./components/GodPowerBar";
+export type { GodPowerBarProps } from "./components/GodPowerBar";
+
 export type {
   Player,
   GameEvent,
