@@ -19,6 +19,9 @@ export type { PhaseTimerProps } from "./components/PhaseTimer";
 export { GodPowerBar } from "./components/GodPowerBar";
 export type { GodPowerBarProps } from "./components/GodPowerBar";
 
+export { EliminationEffect } from "./components/EliminationEffect";
+export type { EliminationEffectProps } from "./components/EliminationEffect";
+
 export type {
   Player,
   GameEvent,
