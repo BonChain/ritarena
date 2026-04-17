@@ -1,0 +1,44 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ritarena-bg);
+  color: var(--ritarena-text);
+  font-family: var(--ritarena-font);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.snake-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  padding: 12px;
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.snake-header {
+  grid-column: 1 / -1;
+}
+
+.snake-canvas-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.snake-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.snake-controls {
+  grid-column: 1 / -1;
+}
