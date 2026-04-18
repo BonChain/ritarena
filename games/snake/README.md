@@ -69,20 +69,12 @@ Need at least **0.5 SOL**.
 
 ### 3. Protocol initialized on devnet
 
-The RitArena protocol must be initialized (this happens once per network). If it isn't, do:
+The protocol is already deployed and initialized on devnet — no setup needed.
+The test-USDC mint authority is a program-controlled PDA, so anyone can mint
+test USDC by calling `npm run setup:devnet` (next step).
 
-```bash
-cd /home/tenny/src/solana/2026_frontier/ritarena/sdk
-npx tsx scripts/test-devnet.ts
-```
-
-This script:
-- Initializes the protocol if it isn't already
-- Creates a test USDC mint (if needed)
-- Creates a fresh arena
-- Prints the arena PDA and Explorer URL
-
-**If the script says "Protocol already initialized"** — you're good.
+If you're curious, the protocol's PDA is `Gw55VeCuX9t4KkWup6tXQaK3sacWFBkVW3tbwaxweYCN`
+on devnet, owned by program `5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH`.
 
 ### 4. Fund the 8 bot wallets with SOL + USDC
 
@@ -100,9 +92,9 @@ npm run setup:devnet
 This script:
 - Derives 8 bot keypairs deterministically from your master wallet
 - Transfers 0.05 SOL to each bot
-- Mints 15 test USDC to each bot's ATA (your master wallet is the USDC mint authority)
+- Mints 15 test USDC to each bot's ATA via the protocol's public faucet (anyone can call it)
 
-Total cost to your master wallet: **~0.5 SOL + 120 test USDC** (test USDC is minted, not purchased).
+Total cost to your master wallet: **~0.5 SOL** (test USDC is free — minted on demand by the public faucet).
 
 ---
 
@@ -136,7 +128,15 @@ A full match takes **~2-3 minutes** on devnet (RPC latency + confirmation waits)
 Run `solana airdrop 2` or use the web faucet.
 
 **"Preflight failed — Protocol initialized"**
-Run `cd sdk && npx tsx scripts/test-devnet.ts` to initialize.
+This shouldn't normally happen — the protocol is already deployed on devnet. If
+devnet RPC is flaky, retry in a minute. If it persists, verify the program is
+still live: `solana program show 5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH --url devnet`.
+If that fails too, file an issue at https://github.com/BonChain/ritarena/issues.
+
+**"Owner does not match" / `custom program error: 0x4`**
+This used to mean your wallet wasn't the test-USDC mint authority. After the
+public-faucet migration, this should no longer happen. If you still see it,
+make sure your `@ritarena/sdk` is up to date: `cd sdk && git pull && npm run build`.
 
 **"Preflight failed — Bot N SOL"**
 Run `npm run setup:devnet` again to top up bot wallets.
