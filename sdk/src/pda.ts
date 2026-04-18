@@ -8,6 +8,7 @@ import {
   ARENA_ENTRY_SEED,
   ARENA_VAULT_SEED,
   BOND_VAULT_SEED,
+  TEST_USDC_MINT_AUTHORITY_SEED,
 } from "./constants";
 
 function arenaIdToBuffer(arenaId: number): Buffer {
@@ -62,6 +63,13 @@ export const pdas = {
   bondVault(arena: PublicKey): PublicKey {
     return PublicKey.findProgramAddressSync(
       [BOND_VAULT_SEED, arena.toBuffer()],
+      PROGRAM_ID
+    )[0];
+  },
+
+  testUsdcMintAuthority(): PublicKey {
+    return PublicKey.findProgramAddressSync(
+      [TEST_USDC_MINT_AUTHORITY_SEED],
       PROGRAM_ID
     )[0];
   },
