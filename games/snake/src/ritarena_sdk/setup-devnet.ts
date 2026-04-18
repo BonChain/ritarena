@@ -5,8 +5,8 @@ import {
   SystemProgram, Transaction, sendAndConfirmTransaction,
 } from "@solana/web3.js";
 // @ts-expect-error — spl-token is ESM-only but tsx handles CJS/ESM interop at runtime
-import { getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
-import { RitArena } from "@ritarena/sdk";
+import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
+import { RitArena, MAX_TEST_USDC_PER_CALL } from "@ritarena/sdk";
 import { createHash } from "crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -54,7 +54,7 @@ async function main() {
   }
 
   // Get USDC mint from protocol config
-  const sdk = RitArena.readOnly(connection);
+  const sdk = RitArena.fromKeypair(connection, master);
   const protocol = await sdk.getProtocol();
   if (!protocol) {
     console.log("\nProtocol not initialized. Run the SDK test-devnet.ts first:");
@@ -73,14 +73,15 @@ async function main() {
   const totalUsdcNeeded = BOT_COUNT * USDC_PER_BOT;
 
   if (masterUsdcBalance < totalUsdcNeeded) {
-    console.log(`\nMinting test USDC to master wallet...`);
-    const mintAmount = totalUsdcNeeded - masterUsdcBalance + 50_000_000; // extra buffer
-    await mintTo(
-      connection, master, usdcMint, masterAta.address,
-      master.publicKey, // mint authority
-      mintAmount
-    );
-    console.log(`  Minted ${(mintAmount / 1_000_000).toFixed(0)} USDC`);
+    console.log(`\nMinting test USDC to master wallet via faucet...`);
+    const totalToMint = totalUsdcNeeded - masterUsdcBalance + 50_000_000; // extra buffer
+    let remaining = totalToMint;
+    while (remaining > 0) {
+      const amount = Math.min(remaining, MAX_TEST_USDC_PER_CALL);
+      await sdk.mintTestUsdc(amount, master.publicKey);
+      remaining -= amount;
+    }
+    console.log(`  Minted ${(totalToMint / 1_000_000).toFixed(0)} USDC`);
   }
 
   console.log(`\nSetting up ${BOT_COUNT} bot keypairs...\n`);
@@ -113,11 +114,7 @@ async function main() {
     const botUsdcBalance = Number(botAta.amount);
     if (botUsdcBalance < USDC_PER_BOT) {
       const mintAmount = USDC_PER_BOT - botUsdcBalance;
-      await mintTo(
-        connection, master, usdcMint, botAta.address,
-        master.publicKey,
-        mintAmount
-      );
+      await sdk.mintTestUsdc(mintAmount, botKp.publicKey);
       console.log(`  USDC: minted ${(mintAmount / 1_000_000).toFixed(0)} USDC`);
     } else {
       console.log(`  USDC: ${(botUsdcBalance / 1_000_000).toFixed(0)} (ok)`);
