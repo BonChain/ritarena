@@ -1,6 +1,9 @@
 import { Connection, PublicKey, Keypair } from "@solana/web3.js";
 import { Program, AnchorProvider, Wallet, Idl, BN } from "@coral-xyz/anchor";
-import { getAssociatedTokenAddress } from "@solana/spl-token";
+import {
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountIdempotentInstruction,
+} from "@solana/spl-token";
 import { pdas } from "./pda";
 import { IDL } from "./idl";
 import { RitArenaReader } from "./reader";
@@ -103,6 +106,55 @@ export class RitArena extends RitArenaReader {
         treasuryUsdc,
         treasury: treasuryPda,
       })
+      .rpc();
+  }
+
+  // --- Devnet Faucet ---
+
+  /**
+   * Mint test USDC to a recipient. Devnet faucet — anyone can call. Capped at 1,000 USDC per call.
+   * Only works for the protocol's registered test mint (mainnet real-USDC will reject).
+   * Recipient ATA is created automatically if it doesn't exist (idempotent).
+   * @param amount Amount in USDC micro-units (6 decimals). Max 1_000_000_000 (1,000 USDC).
+   * @param recipient Optional recipient wallet. Defaults to the connected wallet.
+   * @returns Transaction signature
+   */
+  async mintTestUsdc(amount: number, recipient?: PublicKey): Promise<string> {
+    const caller = this.wallet.publicKey;
+    const recipientOwner = recipient ?? caller;
+    const protocolPda = pdas.protocol();
+    const mintAuthority = pdas.testUsdcMintAuthority();
+
+    const protocol = await this.getProtocol();
+    if (!protocol) {
+      throw new RitArenaError("PROTOCOL_NOT_INITIALIZED",
+        "RitArena protocol not initialized on this network",
+        "Run sdk/scripts/test-devnet.ts first.");
+    }
+
+    const recipientUsdc = await getAssociatedTokenAddress(
+      protocol.usdcMint,
+      recipientOwner
+    );
+
+    // Idempotently create the recipient ATA in the same tx — no-op if it already exists.
+    const createAtaIx = createAssociatedTokenAccountIdempotentInstruction(
+      caller,                // payer
+      recipientUsdc,
+      recipientOwner,        // owner of the ATA
+      protocol.usdcMint
+    );
+
+    return await (this.program.methods as any)
+      .mintTestUsdc(new BN(amount))
+      .accounts({
+        caller,
+        protocol: protocolPda,
+        usdcMint: protocol.usdcMint,
+        recipientUsdc,
+        mintAuthority,
+      })
+      .preInstructions([createAtaIx])
       .rpc();
   }
 
