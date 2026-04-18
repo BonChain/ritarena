@@ -57,6 +57,10 @@ const keypair = Keypair.generate();
 1. **SOL** — use the [Solana Faucet](https://faucet.solana.com/). Paste your public key, select devnet, request 2 SOL.
 2. **USDC** — use the [Circle Faucet](https://faucet.circle.com/). Select Solana devnet, paste your address.
 
+### "Owner does not match" / `custom program error: 0x4`
+
+This used to fire for non-deployer wallets running `npm run setup:devnet` because the test-USDC mint authority was the original deployer's wallet. As of v0.4.0 (2026-04-18 devnet upgrade), the mint authority is a program-controlled PDA and anyone can mint test USDC via `RitArena.mintTestUsdc()` or by running `setup:devnet`. If you still hit this error, verify your `@ritarena/sdk` is up to date and you've rebuilt: `cd sdk && git pull && npm run build`.
+
 ### `NO_USDC_ACCOUNT` error
 
 Your wallet doesn't have a USDC token account yet. This is created automatically when you receive USDC for the first time. Get devnet USDC from the Circle Faucet above, or create the account manually:

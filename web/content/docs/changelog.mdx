@@ -3,6 +3,22 @@ title: Changelog
 description: Version history for @ritarena/sdk.
 ---
 
+## v0.4.0 (April 2026)
+
+**New features:**
+- `mintTestUsdc(amount, recipient?)` — devnet-only public faucet. Anyone can mint up to 1,000 test USDC per call. Recipient ATA is auto-created via an idempotent pre-instruction.
+- `pdas.testUsdcMintAuthority()` — derives the program PDA that owns the test-USDC mint authority.
+
+**Exports added:**
+- `TEST_USDC_MINT_AUTHORITY_SEED` (Buffer)
+- `MAX_TEST_USDC_PER_CALL` (number = 1_000_000_000)
+
+**On-chain (devnet upgrade 2026-04-18):**
+- New instruction `mint_test_usdc(amount: u64)` — cap-checked, CPIs SPL `mint_to` signed by `[b"test_usdc_mint_authority"]` PDA.
+- Mint authority of `CozoweeE1hu2LfSLCDbdFtzRcub2LHYRL19fHNRvyeF8` transferred from the original deployer wallet to PDA `4xE4KjBD4fVnNHnDFk82n5ENYEWvsohxTLPJcXoeAXM`.
+
+**Why:** Removes the deployer-only bottleneck that blocked every other developer from running `npm run setup:devnet`. Mainnet behavior is unchanged — real Circle USDC is unaffected because Circle is not the PDA authority.
+
 ## v0.3.3 (April 2026)
 
 **Documentation:**

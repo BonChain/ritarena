@@ -140,6 +140,10 @@ pub fn agent_profile_pda(owner: &Pubkey) -> (Pubkey, u8) {
     Pubkey::find_program_address(&[b"agent_profile", owner.as_ref()], &PROGRAM_ID)
 }
 
+pub fn test_usdc_mint_authority_pda() -> (Pubkey, u8) {
+    Pubkey::find_program_address(&[b"test_usdc_mint_authority"], &PROGRAM_ID)
+}
+
 pub fn initialize_protocol(svm: &mut LiteSVM, authority: &Keypair, usdc_mint: &Pubkey) {
     let (protocol_pda, _) = protocol_pda();
     let (treasury_pda, _) = treasury_pda();

@@ -111,6 +111,19 @@ const bondPda = pdas.bondVault(arenaPda);
 
 **Returns:** `PublicKey`
 
+### `pdas.testUsdcMintAuthority()`
+
+PDA that owns the test-USDC mint authority on devnet. Used internally by `RitArena.mintTestUsdc()` to sign the SPL `mint_to` CPI.
+
+```ts
+const mintAuthorityPda = pdas.testUsdcMintAuthority();
+console.log(mintAuthorityPda.toBase58()); // 4xE4KjBD4fVnNHnDFk82n5ENYEWvsohxTLPJcXoeAXM
+```
+
+**Seeds:** `[b"test_usdc_mint_authority"]`
+
+You typically don't need to call this directly — it's resolved automatically by `mintTestUsdc()`. Useful for advanced cases like building raw `mint_to` CPI instructions outside the SDK.
+
 ## Account relationships
 
 <Mermaid chart="graph TD

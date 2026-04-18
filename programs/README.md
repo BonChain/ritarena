@@ -34,6 +34,7 @@ Handles money and proofs. Game logic runs off-chain.
 | `abandon_arena` | Anyone | Trigger timeout -> refund + slash bond |
 | `cancel_arena` | Creator | Cancel during registration |
 | `collect_protocol_fee` | Anyone | Send 1% to treasury |
+| `mint_test_usdc` | Anyone (devnet) | Mint up to 1,000 test USDC to a recipient ATA — public faucet, mint authority is a program PDA |
 
 ## Accounts (PDAs)
 
@@ -78,7 +79,7 @@ winner_prize   = prize_pool * prize_split[rank - 1] / 100
 anchor build
 ```
 
-### Test (48 tests)
+### Test (52 tests)
 
 ```bash
 cargo test --package ritarena -- --nocapture

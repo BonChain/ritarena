@@ -21,6 +21,10 @@ pub mod ritarena {
         instructions::initialize_protocol::handler(ctx)
     }
 
+    pub fn mint_test_usdc(ctx: Context<MintTestUsdc>, amount: u64) -> Result<()> {
+        instructions::mint_test_usdc::handler(ctx, amount)
+    }
+
     pub fn register_profile(ctx: Context<RegisterProfile>, name: String) -> Result<()> {
         instructions::register_profile::handler(ctx, name)
     }

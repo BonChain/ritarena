@@ -15,6 +15,7 @@ export {
   MAX_NAME_LEN,
   MAX_PRIZE_SLOTS,
   MAX_ACTION_SCHEMA_LEN,
+  MAX_TEST_USDC_PER_CALL,
 } from "./constants";
 
 // Types

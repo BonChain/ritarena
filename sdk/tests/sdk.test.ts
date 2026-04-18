@@ -73,6 +73,13 @@ describe("PDA derivation", () => {
     );
     expect(pda.equals(expected)).toBe(true);
   });
+
+  it("testUsdcMintAuthority PDA is deterministic", () => {
+    const pda1 = pdas.testUsdcMintAuthority();
+    const pda2 = pdas.testUsdcMintAuthority();
+    expect(pda1.toBase58()).toBe(pda2.toBase58());
+    expect(pda1.toBase58()).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+  });
 });
 
 describe("BATTLE_ROYALE_TEMPLATE", () => {

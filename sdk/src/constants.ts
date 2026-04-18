@@ -12,6 +12,10 @@ export const ARENA_SEED = Buffer.from("arena");
 export const ARENA_ENTRY_SEED = Buffer.from("arena_entry");
 export const ARENA_VAULT_SEED = Buffer.from("arena_vault");
 export const BOND_VAULT_SEED = Buffer.from("bond_vault");
+export const TEST_USDC_MINT_AUTHORITY_SEED = Buffer.from("test_usdc_mint_authority");
+
+/** Per-call cap for `mintTestUsdc`. Must equal `MAX_TEST_USDC_PER_CALL` in the on-chain program. */
+export const MAX_TEST_USDC_PER_CALL = 1_000_000_000; // 1,000 USDC (6 decimals)
 
 // Fee constants
 export const REGISTRATION_FEE = 5_000_000; // 5 USDC (6 decimals)
