@@ -72,4 +72,6 @@ pub enum RitArenaError {
     UnauthorizedAbandon,
     #[msg("Vault balance insufficient for prize payout — fee claim may have preceded prize claim")]
     InsufficientVaultBalance,
+    #[msg("Mint amount exceeds per-call cap (1,000 USDC)")]
+    MintAmountTooLarge,
 }
