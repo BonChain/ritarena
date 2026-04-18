@@ -56,15 +56,22 @@ fn transfer_mint_authority_to_pda(
     send_tx(svm, &[ix], current_authority, &[current_authority]).unwrap();
 }
 
-#[test]
-fn test_mint_test_usdc_success() {
+/// Boots an SVM, creates a test USDC mint, initializes the protocol, and transfers
+/// the mint authority to the program PDA — leaving the mint ready for `mint_test_usdc`.
+/// Returns (svm, mint_authority_keypair, usdc_mint_pubkey).
+fn setup_faucet_ready() -> (litesvm::LiteSVM, Keypair, Pubkey) {
     let mut svm = setup();
     let authority = Keypair::new();
     svm.airdrop(&authority.pubkey(), 10_000_000_000).unwrap();
-
     let usdc_mint = create_usdc_mint(&mut svm, &authority);
     initialize_protocol(&mut svm, &authority, &usdc_mint);
     transfer_mint_authority_to_pda(&mut svm, &authority, &usdc_mint);
+    (svm, authority, usdc_mint)
+}
+
+#[test]
+fn test_mint_test_usdc_success() {
+    let (mut svm, _authority, usdc_mint) = setup_faucet_ready();
 
     // A totally unrelated wallet calls the faucet
     let stranger = Keypair::new();
@@ -83,12 +90,7 @@ fn test_mint_test_usdc_success() {
 
 #[test]
 fn test_mint_test_usdc_amount_too_large_rejected() {
-    let mut svm = setup();
-    let authority = Keypair::new();
-    svm.airdrop(&authority.pubkey(), 10_000_000_000).unwrap();
-    let usdc_mint = create_usdc_mint(&mut svm, &authority);
-    initialize_protocol(&mut svm, &authority, &usdc_mint);
-    transfer_mint_authority_to_pda(&mut svm, &authority, &usdc_mint);
+    let (mut svm, _authority, usdc_mint) = setup_faucet_ready();
 
     let stranger = Keypair::new();
     svm.airdrop(&stranger.pubkey(), 1_000_000_000).unwrap();
@@ -102,12 +104,7 @@ fn test_mint_test_usdc_amount_too_large_rejected() {
 
 #[test]
 fn test_mint_test_usdc_wrong_mint_rejected() {
-    let mut svm = setup();
-    let authority = Keypair::new();
-    svm.airdrop(&authority.pubkey(), 10_000_000_000).unwrap();
-    let usdc_mint = create_usdc_mint(&mut svm, &authority);
-    initialize_protocol(&mut svm, &authority, &usdc_mint);
-    transfer_mint_authority_to_pda(&mut svm, &authority, &usdc_mint);
+    let (mut svm, authority, usdc_mint) = setup_faucet_ready();
 
     // A second mint that is NOT the protocol's USDC mint
     let other_mint = create_usdc_mint(&mut svm, &authority);
@@ -123,12 +120,7 @@ fn test_mint_test_usdc_wrong_mint_rejected() {
 
 #[test]
 fn test_mint_test_usdc_wrong_mint_authority_rejected() {
-    let mut svm = setup();
-    let authority = Keypair::new();
-    svm.airdrop(&authority.pubkey(), 10_000_000_000).unwrap();
-    let usdc_mint = create_usdc_mint(&mut svm, &authority);
-    initialize_protocol(&mut svm, &authority, &usdc_mint);
-    transfer_mint_authority_to_pda(&mut svm, &authority, &usdc_mint);
+    let (mut svm, _authority, usdc_mint) = setup_faucet_ready();
 
     let stranger = Keypair::new();
     svm.airdrop(&stranger.pubkey(), 1_000_000_000).unwrap();
