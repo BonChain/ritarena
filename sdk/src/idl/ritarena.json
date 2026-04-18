@@ -934,6 +934,100 @@
       "args": []
     },
     {
+      "name": "mint_test_usdc",
+      "discriminator": [
+        118,
+        144,
+        78,
+        118,
+        155,
+        214,
+        185,
+        186
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocol",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "usdc_mint",
+          "writable": true
+        },
+        {
+          "name": "recipient_usdc",
+          "writable": true
+        },
+        {
+          "name": "mint_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  115,
+                  116,
+                  95,
+                  117,
+                  115,
+                  100,
+                  99,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "refund_entry",
       "discriminator": [
         214,
@@ -1680,6 +1774,11 @@
       "code": 6034,
       "name": "InsufficientVaultBalance",
       "msg": "Vault balance insufficient for prize payout — fee claim may have preceded prize claim"
+    },
+    {
+      "code": 6035,
+      "name": "MintAmountTooLarge",
+      "msg": "Mint amount exceeds per-call cap (1,000 USDC)"
     }
   ],
   "types": [
