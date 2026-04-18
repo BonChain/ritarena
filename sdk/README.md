@@ -100,6 +100,7 @@ await server.finish(winners);
 | `claimCreatorFee(arenaId)` | Creator | Withdraw creator fee |
 | `returnStakeBond(arenaId)` | Creator | Get bond back |
 | `collectProtocolFee(arenaId)` | Anyone | Send 1% fee to treasury |
+| `mintTestUsdc(amount, recipient?)` | Anyone (devnet) | Mint up to 1,000 test USDC, auto-creates recipient ATA |
 
 ### Read Methods
 

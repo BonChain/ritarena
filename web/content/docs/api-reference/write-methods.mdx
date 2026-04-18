@@ -20,6 +20,7 @@ All write methods require a wallet (use `RitArena`, not `RitArenaReader`). Each 
 | `returnStakeBond(arenaId)` | Creator | Get bond back |
 | `collectProtocolFee(arenaId)` | Anyone | Send 1% fee to treasury |
 | `abandonArena(arenaId)` | Anyone (after timeout) | Abandon timed-out arena, slash bond |
+| `mintTestUsdc(amount, recipient?)` | Anyone (devnet) | Mint up to 1,000 test USDC to a recipient — auto-creates ATA |
 
 **Not yet in SDK:** `cancelArena` and `refundEntry` exist as on-chain program instructions but are not yet wrapped by the SDK. They are accessible via `GameServer.cancel()` or directly via the exported `IDL`.
 
@@ -224,6 +225,27 @@ const tx = await sdk.abandonArena(0);
 - Oracle must have been inactive for ≥ 2x `eliminationInterval` (max 1 day, so max 2-day timeout)
 
 **Note:** Players can also get refunds from Registration-state arenas that have been stuck for more than 3 days, without needing to call `abandonArena`. See [Arena Lifecycle](/docs/concepts/arena-lifecycle).
+
+---
+
+### `mintTestUsdc(amount, recipient?)`
+
+Mint up to 1,000 test USDC. **Devnet-only** — works because the test-USDC mint authority is a program-controlled PDA. On mainnet (real Circle USDC), this method is a no-op that the SPL Token program rejects.
+
+```ts
+const tx = await sdk.mintTestUsdc(50_000_000); // 50 USDC to your wallet
+const tx2 = await sdk.mintTestUsdc(15_000_000, otherWallet.publicKey); // 15 USDC to someone else
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `amount` | `number` | Amount in USDC micro-units (6 decimals). Max `MAX_TEST_USDC_PER_CALL` = `1_000_000_000` (1,000 USDC). |
+| `recipient` | `PublicKey?` | Optional recipient wallet. Defaults to the connected wallet. |
+
+**Notes:**
+- The recipient's USDC ATA is created automatically via an idempotent pre-instruction. A fresh wallet that has never held USDC will work.
+- The cap is **per call**, not per transaction. Bundling multiple calls in one tx multiplies the effective limit (~5,000 USDC max per tx).
+- Throws `RitArenaError("PROTOCOL_NOT_INITIALIZED", ...)` if `getProtocol()` returns null on the connected network.
 
 ## Limitations
 

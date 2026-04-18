@@ -31,6 +31,7 @@ RitArena extends RitArenaReader (read + write). RitArenaReader has read-only met
 - `claimCreatorFee(arenaId: number): Promise<string>` — withdraw creator fee
 - `returnStakeBond(arenaId: number): Promise<string>` — reclaim bond
 - `collectProtocolFee(arenaId: number): Promise<string>` — 1% to treasury
+- `mintTestUsdc(amount: number, recipient?: PublicKey): Promise<string>` — devnet faucet, mint up to 1000 test USDC, auto-creates ATA
 
 Not yet in SDK: cancelArena, abandonArena, refundEntry (on-chain only, accessible via IDL)
 
@@ -60,6 +61,7 @@ pdas.arena(arenaId)                          // ["arena", id (u64 LE)]
 pdas.arenaEntry(arenaPubkey, profilePubkey)  // ["arena_entry", arena, profile]
 pdas.arenaVault(arenaPubkey)                 // ["arena_vault", arena]
 pdas.bondVault(arenaPubkey)                  // ["bond_vault", arena]
+pdas.testUsdcMintAuthority()                 // ["test_usdc_mint_authority"]
 ```
 
 Program ID: 5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH
@@ -104,6 +106,8 @@ Mock mode: new GameServer(null, null, { ...config, mock: true })
 - MAX_PRIZE_SLOTS: 10
 - MAX_ACTION_SCHEMA_LEN: 256
 - BATTLE_ROYALE_TEMPLATE: sensible CreateArenaConfig defaults
+- TEST_USDC_MINT_AUTHORITY_SEED: Buffer — seed for the test-USDC mint authority PDA
+- MAX_TEST_USDC_PER_CALL: 1_000_000_000 (1,000 USDC at 6 decimals) — per-call cap for mintTestUsdc
 
 ## Error Handling
 

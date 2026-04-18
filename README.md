@@ -49,7 +49,7 @@ await sdk.enterArena(arenaId);
 
 ## On-Chain Program
 
-14 instructions covering the full arena lifecycle:
+15 instructions covering the full arena lifecycle (plus a devnet-only public USDC faucet):
 
 | Phase | Instructions |
 |---|---|
@@ -58,6 +58,7 @@ await sdk.enterArena(arenaId);
 | Game | `submit_elimination`, `finalize_arena` |
 | Payouts | `claim_prize`, `claim_creator_fee`, `collect_protocol_fee`, `return_stake_bond` |
 | Cancel | `cancel_arena`, `abandon_arena`, `refund_entry` |
+| Devnet | `mint_test_usdc` — mint up to 1,000 test USDC (devnet only — anyone can call) |
 
 Program ID: `5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH`
 
