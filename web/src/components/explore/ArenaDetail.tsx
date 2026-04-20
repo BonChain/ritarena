@@ -14,6 +14,7 @@ import {
   timeAgo,
 } from "@/lib/explorer/format";
 import { computeTrustTier } from "@/lib/explorer/trust-tier";
+import { getGameMeta } from "@/lib/explorer/games-registry";
 import TrustBadge from "./TrustBadge";
 import StateChip from "./StateChip";
 import CreatorMini from "./CreatorMini";
@@ -29,6 +30,7 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
     "loading"
   );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [createdByCreator, setCreatedByCreator] = useState<number | null>(null);
 
   // Initial load + entries fetch
   useEffect(() => {
@@ -50,6 +52,13 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
           setEntries(
             [...e].sort((a, b) => Number(b.score) - Number(a.score))
           );
+        }
+        // Background: how many arenas has this creator launched?
+        try {
+          const all = await reader.listArenas({ creator: initial.arena.creator });
+          if (!cancelled) setCreatedByCreator(all.length);
+        } catch {
+          if (!cancelled) setCreatedByCreator(null);
         }
       } catch (e) {
         if (cancelled) return;
@@ -123,6 +132,7 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
   const tier = computeTrustTier(arena, creatorProfile);
   const state = arenaStateKey(arena);
   const prizePool = arenaPrizePool(arena);
+  const game = getGameMeta(arena.actionSchema);
 
   return (
     <section className="pt-32 pb-16 px-6">
@@ -147,6 +157,32 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
           </h1>
           <StateChip state={state} />
           <TrustBadge tier={tier} />
+        </div>
+        <div
+          className="flex items-center gap-2 mt-1"
+          title={game.description}
+        >
+          <span style={{ fontSize: "1.4rem", lineHeight: 1 }}>{game.icon}</span>
+          <span
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 700,
+              fontSize: "1.25rem",
+              color: game.color,
+            }}
+          >
+            {game.name}
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-data)",
+              color: "#55556a",
+              fontSize: "0.75rem",
+              marginLeft: "0.5rem",
+            }}
+          >
+            {game.description}
+          </span>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mt-8">
@@ -248,6 +284,19 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
             <div className="mt-2">
               <CreatorMini creator={arena.creator} profile={creatorProfile} />
             </div>
+            {createdByCreator !== null && (
+              <div
+                className="mt-1"
+                style={{
+                  fontFamily: "var(--font-data)",
+                  fontSize: "0.68rem",
+                  color: "#55556a",
+                }}
+              >
+                Created {createdByCreator} arena
+                {createdByCreator === 1 ? "" : "s"} total
+              </div>
+            )}
           </div>
         </div>
 

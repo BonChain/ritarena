@@ -8,6 +8,7 @@ import {
   formatUsdc,
 } from "@/lib/explorer/format";
 import { computeTrustTier } from "@/lib/explorer/trust-tier";
+import { getGameMeta } from "@/lib/explorer/games-registry";
 import TrustBadge from "./TrustBadge";
 import StateChip from "./StateChip";
 import CreatorMini from "./CreatorMini";
@@ -23,6 +24,7 @@ export default function ArenaCard({
   const state = arenaStateKey(arena);
   const id = Number(arena.id);
   const prizePool = arenaPrizePool(arena);
+  const game = getGameMeta(arena.actionSchema);
 
   return (
     <Link
@@ -44,6 +46,23 @@ export default function ArenaCard({
           <StateChip state={state} />
         </div>
         <TrustBadge tier={tier} size="sm" />
+      </div>
+
+      <div
+        className="flex items-center gap-2 mb-3"
+        title={game.description}
+      >
+        <span style={{ fontSize: "1.1rem", lineHeight: 1 }}>{game.icon}</span>
+        <span
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 700,
+            fontSize: "1rem",
+            color: game.color,
+          }}
+        >
+          {game.name}
+        </span>
       </div>
 
       <div className="flex items-baseline gap-3 mb-3">
