@@ -38,14 +38,23 @@ const GAMES: Record<string, GameMeta> = {
   },
 };
 
-const FALLBACK: GameMeta = {
-  name: "Custom Game",
-  icon: "🎮",
-  color: "#888888",
-  description: "Custom action schema — game logic defined off-chain by the creator.",
-};
-
 /** Look up a game's friendly metadata by its on-chain `actionSchema` string. */
 export function getGameMeta(actionSchema: string): GameMeta {
-  return GAMES[actionSchema] ?? FALLBACK;
+  const known = GAMES[actionSchema];
+  if (known) return known;
+  // Unknown schema — surface what we DO know so a third-party dev can identify
+  // their own arena and so the explorer never has to lie about a game's name.
+  return {
+    name: "Custom Game",
+    icon: "🎮",
+    color: "#888888",
+    description: actionSchema
+      ? `Custom action schema: "${actionSchema}". Game logic defined off-chain by the creator.`
+      : "No action schema declared. Game logic defined off-chain by the creator.",
+  };
+}
+
+/** True when this arena's action schema isn't in the known-games registry. */
+export function isCustomGame(actionSchema: string): boolean {
+  return !(actionSchema in GAMES);
 }

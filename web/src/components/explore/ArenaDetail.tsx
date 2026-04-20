@@ -349,6 +349,20 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
                 {timeAgo(arena.lastSubmissionAt)}
               </dd>
             </div>
+            <div className="col-span-2 md:col-span-4">
+              <dt style={{ color: "#55556a" }}>Rules hash</dt>
+              <dd
+                style={{
+                  color: "#c0c0c0",
+                  fontSize: "0.7rem",
+                  wordBreak: "break-all",
+                }}
+              >
+                {Array.from(arena.rulesHash as ArrayLike<number>)
+                  .map((b) => b.toString(16).padStart(2, "0"))
+                  .join("")}
+              </dd>
+            </div>
           </dl>
         </div>
 
