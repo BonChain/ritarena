@@ -5,7 +5,7 @@
 // Nav links (page routes for multi-page site)
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "Arena", href: "/arena" },
+  { label: "Watch", href: "/arena" },
   { label: "Build Games", href: "/creators" },
   { label: "Build Bots", href: "/developers" },
   { label: "Docs", href: "/docs" },

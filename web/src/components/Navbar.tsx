@@ -77,6 +77,30 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
+            href="/explore"
+            className="text-sm px-4 py-2 rounded-lg transition-all"
+            style={{
+              background: pathname.startsWith("/explore")
+                ? "rgba(20, 241, 149, 0.12)"
+                : "transparent",
+              border: "1px solid rgba(20, 241, 149, 0.5)",
+              color: "#14F195",
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(20, 241, 149, 0.18)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = pathname.startsWith("/explore")
+                ? "rgba(20, 241, 149, 0.12)"
+                : "transparent";
+            }}
+          >
+            Explore Arenas
+          </Link>
+          <Link
             href={ctaHref}
             className="cta-shimmer text-sm px-4 py-2 rounded-lg transition-all hover:brightness-110"
             style={{
@@ -150,8 +174,24 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
+            href="/explore"
+            className="text-base px-4 py-3 rounded-lg text-center mt-3"
+            style={{
+              background: pathname.startsWith("/explore")
+                ? "rgba(20, 241, 149, 0.12)"
+                : "transparent",
+              border: "1px solid rgba(20, 241, 149, 0.5)",
+              color: "#14F195",
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+            }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Explore Arenas
+          </Link>
+          <Link
             href={ctaHref}
-            className="cta-shimmer text-sm px-4 py-3 rounded-lg text-center mt-3"
+            className="cta-shimmer text-sm px-4 py-3 rounded-lg text-center mt-2"
             style={{
               background: "#14F195",
               color: "#050508",
