@@ -21,7 +21,7 @@ export function computeTrustTier(
   creatorProfile: AgentProfile | null
 ): TrustTier {
   const bond = BigInt(arena.stakeBondAmount.toString());
-  if (bond === 0n) return "red";
+  if (bond === BigInt(0)) return "red";
   if (creatorProfile == null) return "yellow";
   const completed = Number(creatorProfile.arenasCompleted);
   return completed >= 3 ? "green" : "yellow";
