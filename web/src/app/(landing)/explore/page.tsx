@@ -14,12 +14,20 @@ import ExploreEmpty from "@/components/explore/ExploreEmpty";
 import { arenaPrizePool, arenaStateKey, formatUsdc } from "@/lib/explorer/format";
 
 const POLL_MS = 10_000;
+const PAGE_SIZE = 12;
 
 export default function ExplorePage() {
   const [items, setItems] = useState<ArenaWithCreator[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<StateFilterValue>("all");
+  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
   const inFlight = useRef(false);
+
+  // Reset pagination when the user changes the filter so they always see
+  // the freshest top-of-list rather than scroll-position deep in stale data.
+  useEffect(() => {
+    setDisplayLimit(PAGE_SIZE);
+  }, [filter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -156,15 +164,52 @@ export default function ExplorePage() {
         )}
 
         {visible !== null && visible.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {visible.map((x) => (
-              <ArenaCard
-                key={Number(x.arena.id)}
-                arena={x.arena}
-                creatorProfile={x.creatorProfile}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {visible.slice(0, displayLimit).map((x) => (
+                <ArenaCard
+                  key={Number(x.arena.id)}
+                  arena={x.arena}
+                  creatorProfile={x.creatorProfile}
+                />
+              ))}
+            </div>
+            <div
+              className="mt-8 flex flex-col items-center gap-3"
+              style={{ fontFamily: "var(--font-data)" }}
+            >
+              <div style={{ color: "#a0a0a0", fontSize: "0.9rem" }}>
+                Showing {Math.min(displayLimit, visible.length)} of{" "}
+                {visible.length}
+              </div>
+              {displayLimit < visible.length && (
+                <button
+                  type="button"
+                  onClick={() => setDisplayLimit((n) => n + PAGE_SIZE)}
+                  className="px-6 py-3 rounded-lg transition-all"
+                  style={{
+                    background: "rgba(20, 241, 149, 0.08)",
+                    border: "1px solid rgba(20, 241, 149, 0.4)",
+                    color: "#14F195",
+                    fontFamily: "var(--font-ui)",
+                    fontWeight: 700,
+                    fontSize: "0.95rem",
+                    letterSpacing: "0.04em",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background =
+                      "rgba(20, 241, 149, 0.16)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background =
+                      "rgba(20, 241, 149, 0.08)")
+                  }
+                >
+                  Load {Math.min(PAGE_SIZE, visible.length - displayLimit)} more
+                </button>
+              )}
+            </div>
+          </>
         )}
 
         {error && (

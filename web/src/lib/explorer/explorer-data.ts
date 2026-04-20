@@ -2,7 +2,11 @@ import type { Arena, AgentProfile, ArenaFilter } from "@ritarena/sdk";
 import { PublicKey } from "@solana/web3.js";
 import { getReader } from "./sdk-client";
 
-const HARD_LIMIT = 50;
+// Upper bound on how many arenas the data layer will hand back at once.
+// `getProgramAccounts` returns full account data for every match — at ~600
+// bytes per Arena, 500 records is ~300 KB which Helius streams in <1s.
+// Beyond ~500-1000 we should switch to a real indexer (see explorer plan).
+const HARD_LIMIT = 500;
 
 export interface ArenaWithCreator {
   arena: Arena;
