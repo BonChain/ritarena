@@ -25,6 +25,19 @@ The SDK peer-depends on Anchor and Solana web3. Install them:
 npm install @coral-xyz/anchor @solana/web3.js @solana/spl-token
 ```
 
+### "TypeError: buf.writeBigUInt64LE is not a function" (Next.js 16 / browser)
+
+Affects SDK versions ≤ 0.4.0 when imported from a Next.js 16 client bundle.
+The polyfilled browser `Buffer` doesn't ship `writeBigUInt64LE`, so any call
+that derives an arena PDA throws this error.
+
+Fix: upgrade to `@ritarena/sdk` ≥ 0.4.1, which uses manual little-endian
+byte writes that work in both Node and browser.
+
+```bash
+npm install @ritarena/sdk@latest
+```
+
 ## Wallet & keypair issues
 
 ### How do I load a keypair from a file?
