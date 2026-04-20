@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Arena, AgentProfile, ArenaEntry } from "@ritarena/sdk";
+import { pdas } from "@ritarena/sdk";
 import { getReader } from "@/lib/explorer/sdk-client";
 import { getArenaWithCreator } from "@/lib/explorer/explorer-data";
 import {
@@ -137,20 +138,37 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
   return (
     <section className="pt-32 pb-16 px-6">
       <div className="max-w-5xl mx-auto">
-        <Link
-          href="/explore"
-          className="text-sm"
-          style={{
-            color: "#888888",
-            fontFamily: "var(--font-ui)",
-          }}
-        >
-          &larr; Back to Explorer
-        </Link>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <Link
+            href="/explore"
+            className="text-base"
+            style={{
+              color: "#a0a0a0",
+              fontFamily: "var(--font-ui)",
+            }}
+          >
+            &larr; Back to Explorer
+          </Link>
+          <a
+            href={`https://explorer.solana.com/address/${pdas
+              .arena(arenaId)
+              .toBase58()}?cluster=devnet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-base"
+            style={{
+              color: "#14F195",
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+            }}
+          >
+            View on Solana Explorer ↗
+          </a>
+        </div>
 
-        <div className="flex flex-wrap items-center gap-3 mt-4 mb-2">
+        <div className="flex flex-wrap items-center gap-3 mt-6 mb-3">
           <h1
-            className="text-3xl md:text-4xl tracking-tight"
+            className="text-4xl md:text-5xl tracking-tight"
             style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
           >
             <span className="gradient-text">Arena #{Number(arena.id)}</span>
@@ -159,15 +177,15 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
           <TrustBadge tier={tier} />
         </div>
         <div
-          className="flex items-center gap-2 mt-1"
+          className="flex flex-wrap items-baseline gap-3 mt-2"
           title={game.description}
         >
-          <span style={{ fontSize: "1.4rem", lineHeight: 1 }}>{game.icon}</span>
+          <span style={{ fontSize: "1.8rem", lineHeight: 1 }}>{game.icon}</span>
           <span
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 700,
-              fontSize: "1.25rem",
+              fontSize: "1.6rem",
               color: game.color,
             }}
           >
@@ -175,10 +193,9 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
           </span>
           <span
             style={{
-              fontFamily: "var(--font-data)",
-              color: "#55556a",
-              fontSize: "0.75rem",
-              marginLeft: "0.5rem",
+              fontFamily: "var(--font-body)",
+              color: "#a0a0a0",
+              fontSize: "0.95rem",
             }}
           >
             {game.description}
@@ -190,8 +207,8 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
             <div
               style={{
                 fontFamily: "var(--font-data)",
-                fontSize: "0.65rem",
-                color: "#55556a",
+                fontSize: "0.85rem",
+                color: "#a0a0a0",
                 letterSpacing: "0.1em",
               }}
             >
@@ -201,7 +218,7 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
               style={{
                 fontFamily: "var(--font-score)",
                 fontWeight: 700,
-                fontSize: "1.75rem",
+                fontSize: "2.25rem",
                 color: "#14F195",
               }}
             >
@@ -211,8 +228,8 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
               className="mt-2"
               style={{
                 fontFamily: "var(--font-data)",
-                fontSize: "0.7rem",
-                color: "#888888",
+                fontSize: "0.95rem",
+                color: "#c0c0c0",
               }}
             >
               Entry: {formatUsdc(arena.entryFee)}
@@ -223,8 +240,8 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
             <div
               style={{
                 fontFamily: "var(--font-data)",
-                fontSize: "0.65rem",
-                color: "#55556a",
+                fontSize: "0.85rem",
+                color: "#a0a0a0",
                 letterSpacing: "0.1em",
               }}
             >
@@ -234,15 +251,15 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
               style={{
                 fontFamily: "var(--font-score)",
                 fontWeight: 700,
-                fontSize: "1.75rem",
+                fontSize: "2.25rem",
                 color: "#f0f0f0",
               }}
             >
               {arena.aliveAgents}
-              <span style={{ color: "#55556a", fontWeight: 400 }}>
+              <span style={{ color: "#a0a0a0", fontWeight: 400 }}>
                 {" / "}
                 {arena.currentAgents}
-                <span style={{ fontSize: "0.9rem" }}>
+                <span style={{ fontSize: "1.1rem" }}>
                   {" "}
                   (max {arena.maxAgents})
                 </span>
@@ -252,8 +269,8 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
               className="mt-2"
               style={{
                 fontFamily: "var(--font-data)",
-                fontSize: "0.7rem",
-                color: "#888888",
+                fontSize: "0.95rem",
+                color: "#c0c0c0",
               }}
             >
               Round {arena.currentRound}
@@ -264,8 +281,8 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
             <div
               style={{
                 fontFamily: "var(--font-data)",
-                fontSize: "0.65rem",
-                color: "#55556a",
+                fontSize: "0.85rem",
+                color: "#a0a0a0",
                 letterSpacing: "0.1em",
               }}
             >
@@ -275,7 +292,7 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
               style={{
                 fontFamily: "var(--font-score)",
                 fontWeight: 700,
-                fontSize: "1.75rem",
+                fontSize: "2.25rem",
                 color: "#f0f0f0",
               }}
             >
@@ -289,8 +306,8 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
                 className="mt-1"
                 style={{
                   fontFamily: "var(--font-data)",
-                  fontSize: "0.68rem",
-                  color: "#55556a",
+                  fontSize: "0.85rem",
+                  color: "#a0a0a0",
                 }}
               >
                 Created {createdByCreator} arena
@@ -302,59 +319,59 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
 
         <div className="glass-card p-5 mt-6">
           <div
-            className="mb-3"
+            className="mb-4"
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 700,
-              fontSize: "1.1rem",
+              fontSize: "1.4rem",
             }}
           >
             Arena rules
           </div>
           <dl
-            className="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-6"
-            style={{ fontFamily: "var(--font-data)", fontSize: "0.78rem" }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-6"
+            style={{ fontFamily: "var(--font-data)", fontSize: "0.95rem" }}
           >
             <div>
-              <dt style={{ color: "#55556a" }}>Action schema</dt>
+              <dt style={{ color: "#a0a0a0", fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.25rem" }}>Action schema</dt>
               <dd style={{ color: "#f0f0f0", wordBreak: "break-all" }}>
                 {arena.actionSchema || "—"}
               </dd>
             </div>
             <div>
-              <dt style={{ color: "#55556a" }}>Prize split</dt>
+              <dt style={{ color: "#a0a0a0", fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.25rem" }}>Prize split</dt>
               <dd style={{ color: "#f0f0f0" }}>
                 {arena.prizeSplit.join(" / ")}
               </dd>
             </div>
             <div>
-              <dt style={{ color: "#55556a" }}>Creator fee</dt>
+              <dt style={{ color: "#a0a0a0", fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.25rem" }}>Creator fee</dt>
               <dd style={{ color: "#f0f0f0" }}>
                 {(arena.creatorFeeBps / 100).toFixed(2)}%
               </dd>
             </div>
             <div>
-              <dt style={{ color: "#55556a" }}>Elimination</dt>
+              <dt style={{ color: "#a0a0a0", fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.25rem" }}>Elimination</dt>
               <dd style={{ color: "#f0f0f0" }}>
                 {arena.eliminationPercent}% / round
               </dd>
             </div>
             <div>
-              <dt style={{ color: "#55556a" }}>Started</dt>
+              <dt style={{ color: "#a0a0a0", fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.25rem" }}>Started</dt>
               <dd style={{ color: "#f0f0f0" }}>{timeAgo(arena.startedAt)}</dd>
             </div>
             <div>
-              <dt style={{ color: "#55556a" }}>Last submission</dt>
+              <dt style={{ color: "#a0a0a0", fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.25rem" }}>Last submission</dt>
               <dd style={{ color: "#f0f0f0" }}>
                 {timeAgo(arena.lastSubmissionAt)}
               </dd>
             </div>
             <div className="col-span-2 md:col-span-4">
-              <dt style={{ color: "#55556a" }}>Rules hash</dt>
+              <dt style={{ color: "#a0a0a0", fontSize: "0.8rem", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.25rem" }}>Rules hash</dt>
               <dd
                 style={{
                   color: "#c0c0c0",
-                  fontSize: "0.7rem",
+                  fontSize: "0.85rem",
                   wordBreak: "break-all",
                 }}
               >
@@ -368,11 +385,11 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
 
         <div className="mt-8">
           <h2
-            className="mb-3"
+            className="mb-4"
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 700,
-              fontSize: "1.25rem",
+              fontSize: "1.6rem",
             }}
           >
             Entries
@@ -392,17 +409,24 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
                 className="w-full"
                 style={{
                   fontFamily: "var(--font-data)",
-                  fontSize: "0.78rem",
+                  fontSize: "0.95rem",
                   color: "#f0f0f0",
                 }}
               >
                 <thead>
-                  <tr style={{ color: "#55556a" }}>
-                    <th className="text-left px-4 py-3">#</th>
-                    <th className="text-left px-4 py-3">Owner</th>
-                    <th className="text-right px-4 py-3">Score</th>
-                    <th className="text-right px-4 py-3">Status</th>
-                    <th className="text-right px-4 py-3">Prize rank</th>
+                  <tr
+                    style={{
+                      color: "#a0a0a0",
+                      fontSize: "0.8rem",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    <th className="text-left px-4 py-4">#</th>
+                    <th className="text-left px-4 py-4">Owner</th>
+                    <th className="text-right px-4 py-4">Score</th>
+                    <th className="text-right px-4 py-4">Status</th>
+                    <th className="text-right px-4 py-4">Prize rank</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -411,20 +435,35 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
                       key={e.owner.toBase58()}
                       style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
                     >
-                      <td className="px-4 py-3" style={{ color: "#55556a" }}>
+                      <td className="px-4 py-4" style={{ color: "#a0a0a0" }}>
                         {i + 1}
                       </td>
-                      <td className="px-4 py-3">{shortPubkey(e.owner)}</td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-4">
+                        <a
+                          href={`https://explorer.solana.com/address/${e.owner.toBase58()}?cluster=devnet`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "#f0f0f0" }}
+                          onMouseEnter={(ev) =>
+                            (ev.currentTarget.style.color = "#14F195")
+                          }
+                          onMouseLeave={(ev) =>
+                            (ev.currentTarget.style.color = "#f0f0f0")
+                          }
+                        >
+                          {shortPubkey(e.owner)} ↗
+                        </a>
+                      </td>
+                      <td className="px-4 py-4 text-right">
                         {Number(e.score)}
                       </td>
                       <td
-                        className="px-4 py-3 text-right"
+                        className="px-4 py-4 text-right"
                         style={{ color: e.alive ? "#14F195" : "#ff5577" }}
                       >
                         {e.alive ? "alive" : "out"}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-4 text-right">
                         {e.prizeRank > 0 ? `#${e.prizeRank}` : "—"}
                       </td>
                     </tr>

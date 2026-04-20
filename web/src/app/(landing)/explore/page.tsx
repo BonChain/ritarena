@@ -11,7 +11,7 @@ import StateFilter, {
   type StateFilterValue,
 } from "@/components/explore/StateFilter";
 import ExploreEmpty from "@/components/explore/ExploreEmpty";
-import { arenaStateKey } from "@/lib/explorer/format";
+import { arenaPrizePool, arenaStateKey, formatUsdc } from "@/lib/explorer/format";
 
 const POLL_MS = 10_000;
 
@@ -59,10 +59,26 @@ export default function ExplorePage() {
     return items.filter((x) => arenaStateKey(x.arena) === filter);
   }, [items, filter]);
 
+  const stats = useMemo(() => {
+    if (!items) return null;
+    let live = 0;
+    let totalPaid = BigInt(0);
+    for (const { arena } of items) {
+      const state = arenaStateKey(arena);
+      if (state === "registration" || state === "active" || state === "eliminating") {
+        live += 1;
+      }
+      if (state === "finished") {
+        totalPaid += arenaPrizePool(arena);
+      }
+    }
+    return { live, total: items.length, totalPaid };
+  }, [items]);
+
   return (
     <section className="pt-32 pb-16 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6">
           <div>
             <h1
               className="text-4xl md:text-5xl tracking-tight mb-2"
@@ -75,6 +91,48 @@ export default function ExplorePage() {
               10 seconds.
             </p>
           </div>
+        </div>
+
+        {stats && (
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {[
+              { label: "Live now", value: String(stats.live), color: "#14F195" },
+              { label: "Total arenas", value: String(stats.total), color: "#f0f0f0" },
+              {
+                label: "Prize paid",
+                value: formatUsdc(stats.totalPaid),
+                color: "#9945FF",
+              },
+            ].map((s) => (
+              <div key={s.label} className="glass-card p-5">
+                <div
+                  style={{
+                    fontFamily: "var(--font-data)",
+                    fontSize: "0.85rem",
+                    color: "#a0a0a0",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {s.label}
+                </div>
+                <div
+                  className="mt-1"
+                  style={{
+                    fontFamily: "var(--font-score)",
+                    fontWeight: 700,
+                    fontSize: "2rem",
+                    color: s.color,
+                  }}
+                >
+                  {s.value}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex justify-end mb-6">
           <StateFilter value={filter} onChange={setFilter} />
         </div>
 
