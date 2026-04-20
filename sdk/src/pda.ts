@@ -12,8 +12,15 @@ import {
 } from "./constants";
 
 function arenaIdToBuffer(arenaId: number): Buffer {
+  // Manual little-endian write — avoids `writeBigUInt64LE` which isn't on
+  // browser Buffer polyfills (e.g. Next.js 16 client bundle).
   const buf = Buffer.alloc(8);
-  buf.writeBigUInt64LE(BigInt(arenaId));
+  let n = BigInt(arenaId);
+  const mask = BigInt(0xff);
+  for (let i = 0; i < 8; i++) {
+    buf[i] = Number(n & mask);
+    n >>= BigInt(8);
+  }
   return buf;
 }
 
