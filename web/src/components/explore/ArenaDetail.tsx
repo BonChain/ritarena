@@ -20,7 +20,7 @@ import TrustBadge from "./TrustBadge";
 import StateChip from "./StateChip";
 import CreatorMini from "./CreatorMini";
 import ExploreEmpty from "./ExploreEmpty";
-import { getArenaReplay } from "@/lib/explore/arena-replays";
+import { getArenaReplay } from "@/lib/explorer/arena-replays";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 
 export default function ArenaDetail({ arenaId }: { arenaId: number }) {
