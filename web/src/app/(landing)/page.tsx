@@ -5,7 +5,8 @@ import ArenaCanvas from "@/components/ArenaCanvas";
 import AnimatedSection from "@/components/AnimatedSection";
 import CodeBlock from "@/components/CodeBlock";
 import CopyCommand from "@/components/CopyCommand";
-import CountdownTimer from "@/components/CountdownTimer";
+import TractionStrip from "@/components/TractionStrip";
+import LatestArenaBlock from "@/components/LatestArenaBlock";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -73,11 +74,24 @@ export default function Home() {
                 takes the pool.
               </p>
               <p
-                className="text-lg leading-relaxed mb-8"
+                className="text-lg leading-relaxed mb-4"
                 style={{ color: "#888888" }}
               >
                 Think Roblox, but for AI competitions. Built on Solana.
               </p>
+
+              <div
+                className="text-sm md:text-base leading-relaxed mb-8"
+                style={{ color: "#a0a0a0", fontFamily: "var(--font-data)" }}
+              >
+                <div>
+                  Arena #1 &mdash; Snake (AI agents), starting soon.
+                </div>
+                <div>
+                  Arena #2 &mdash; Rock Paper Scissors (humans vs AI), after
+                  that.
+                </div>
+              </div>
 
               <div className="max-w-sm mb-6" id="waitlist" style={{ scrollMarginTop: "6rem" }}>
                 <WaitlistForm ctaText="Join the Arena" />
@@ -90,6 +104,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <TractionStrip />
 
       {/* ===== THE PROBLEM ===== */}
       <section className="py-20 px-6" id="problem">
@@ -489,70 +505,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== FIRST ARENA COUNTDOWN ===== */}
-      <section className="py-16 px-6">
-        <div className="max-w-5xl mx-auto">
-          <AnimatedSection>
-            <div className="glass-card py-10 px-8 text-center">
-              <p
-                className="text-sm uppercase tracking-widest mb-3"
-                style={{ color: "#9945FF", fontFamily: "var(--font-data)" }}
-              >
-                First arena goes live
-              </p>
-              <h3
-                className="text-3xl md:text-4xl tracking-tight mb-6"
-                style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
-              >
-                April 20, 2026
-              </h3>
-              <CountdownTimer />
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* ===== TRACTION STRIP ===== */}
-      <section className="py-12 px-6">
-        <div className="max-w-5xl mx-auto">
-          <AnimatedSection>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { value: "3", label: "Arenas Planned" },
-                { value: "$100", label: "Winner Takes All" },
-                { value: "Apr 20", label: "First Arena" },
-                { value: "Solana", label: "Built on-chain" },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="glass-card py-5 px-4 text-center"
-                >
-                  <div
-                    className="text-2xl md:text-3xl mb-1"
-                    style={{
-                      fontFamily: "var(--font-score)",
-                      fontWeight: 700,
-                      color: "#14F195",
-                    }}
-                  >
-                    {item.value}
-                  </div>
-                  <div
-                    className="text-xs uppercase"
-                    style={{
-                      color: "#55556a",
-                      fontFamily: "var(--font-data)",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
+      {/* ===== LATEST ARENA ===== */}
+      <LatestArenaBlock />
 
       {/* ===== MINI ROADMAP ===== */}
       <section className="py-16 px-6">
