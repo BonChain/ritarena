@@ -523,25 +523,29 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               {
-                phase: "✅ Apr 2026",
+                emoji: "✅",
+                phase: "Apr 2026",
                 title: "Shipped",
                 desc: "SDK + UI Kit on npm. Snake Arena on Solana devnet.",
                 active: true,
               },
               {
-                phase: "🔄 Apr–May 2026",
+                emoji: "🔄",
+                phase: "Apr–May 2026",
                 title: "Live arenas",
                 desc: "Arena #1 (Snake, agent-only). Arena #2 (Rock Paper Scissors, humans vs AI).",
                 active: false,
               },
               {
-                phase: "🎯 May 11, 2026",
+                emoji: "🎯",
+                phase: "May 11, 2026",
                 title: "Hackathon",
                 desc: "Colosseum Frontier submission.",
                 active: false,
               },
               {
-                phase: "🚀 Q3–Q4 2026",
+                emoji: "🚀",
+                phase: "Q3–Q4 2026",
                 title: "Scale",
                 desc: "Mainnet. Training data API.",
                 active: false,
@@ -552,52 +556,50 @@ export default function Home() {
                   className="glass-card p-6 h-full"
                   style={
                     item.active
-                      ? { borderColor: "rgba(20,241,149,0.25)" }
+                      ? { borderColor: "rgba(20,241,149,0.35)" }
                       : undefined
                   }
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{
-                        background: item.active ? "#14F195" : "#55556a",
-                        boxShadow: item.active
-                          ? "0 0 8px rgba(20,241,149,0.4)"
-                          : "none",
-                      }}
-                    />
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-2xl leading-none">{item.emoji}</span>
                     <span
-                      className="text-xs uppercase"
+                      className="text-base"
                       style={{
-                        color: item.active ? "#14F195" : "#55556a",
+                        color: item.active ? "#14F195" : "#c0c0c0",
                         fontFamily: "var(--font-data)",
-                        letterSpacing: "0.1em",
+                        fontWeight: 600,
                       }}
                     >
                       {item.phase}
                     </span>
                     {item.active && (
                       <span
-                        className="text-[10px] uppercase px-2 py-0.5 rounded-full"
+                        className="text-[10px] uppercase px-2 py-0.5 rounded-full ml-auto"
                         style={{
                           background: "rgba(20,241,149,0.15)",
                           color: "#14F195",
                           fontFamily: "var(--font-data)",
+                          fontWeight: 700,
+                          letterSpacing: "0.1em",
                         }}
                       >
-                        current
+                        now
                       </span>
                     )}
                   </div>
                   <h3
-                    className="text-xl mb-2"
-                    style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+                    className="text-2xl mb-3"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontWeight: 700,
+                      color: "#f0f0f0",
+                    }}
                   >
                     {item.title}
                   </h3>
                   <p
                     className="text-base leading-relaxed"
-                    style={{ color: "#a0a0a0" }}
+                    style={{ color: "#c0c0c0" }}
                   >
                     {item.desc}
                   </p>
