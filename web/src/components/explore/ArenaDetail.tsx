@@ -20,6 +20,8 @@ import TrustBadge from "./TrustBadge";
 import StateChip from "./StateChip";
 import CreatorMini from "./CreatorMini";
 import ExploreEmpty from "./ExploreEmpty";
+import { getArenaReplay } from "@/lib/explore/arena-replays";
+import YouTubeEmbed from "@/components/YouTubeEmbed";
 
 export default function ArenaDetail({ arenaId }: { arenaId: number }) {
   const [arena, setArena] = useState<Arena | null>(null);
@@ -134,6 +136,7 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
   const state = arenaStateKey(arena);
   const prizePool = arenaPrizePool(arena);
   const game = getGameMeta(arena.actionSchema);
+  const replayVideoId = getArenaReplay(arenaId);
 
   return (
     <section className="pt-32 pb-16 px-6">
@@ -316,6 +319,39 @@ export default function ArenaDetail({ arenaId }: { arenaId: number }) {
             )}
           </div>
         </div>
+
+        {replayVideoId && (
+          <div className="glass-card p-5 mt-6">
+            <div
+              className="mb-4"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: "1.4rem",
+              }}
+            >
+              Replay
+            </div>
+            <YouTubeEmbed
+              videoId={replayVideoId}
+              title={`Arena #${arenaId} replay`}
+            />
+            <a
+              href="https://github.com/BonChain/ritarena/tree/main/games/snake"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 text-sm transition-colors"
+              style={{
+                color: "#a0a0a0",
+                fontFamily: "var(--font-data)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#14F195")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#a0a0a0")}
+            >
+              Source code: BonChain/ritarena/games/snake &#8599;
+            </a>
+          </div>
+        )}
 
         <div className="glass-card p-5 mt-6">
           <div
