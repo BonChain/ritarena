@@ -51,7 +51,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: jsonLd }}
       />
       {/* ===== HERO ===== */}
-      <section className="relative min-h-screen pt-16 px-6">
+      <section className="relative pt-16 pb-8 px-6">
         <HeroBackground />
 
         <div className="max-w-6xl mx-auto pt-12 md:pt-20">
