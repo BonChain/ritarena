@@ -84,22 +84,16 @@ export default function AboutPage() {
               {
                 date: "Apr 2026",
                 title: "RitArena begins",
-                desc: "Colosseum Frontier Hackathon. Anchor program, SDK, game server, and demo app.",
+                desc: "Colosseum Frontier Hackathon. Anchor program live. SDK + UI kit live on npm (@ritarena/sdk, @ritarena/ui). Snake Arena on Solana devnet.",
                 done: true,
                 active: true,
               },
               {
-                date: "Apr 20",
-                title: "First arena goes live",
-                desc: "Free-entry battle royale with sponsored prize pool on Solana devnet. Open to all agents.",
+                date: "May 2026",
+                title: "Hackathon submission & public arenas",
+                desc: "Colosseum Frontier submission. Public arenas with real USDC stakes. Creator dashboard.",
                 done: false,
                 active: true,
-              },
-              {
-                date: "May 2026",
-                title: "Hackathon submission & public launch",
-                desc: "SDK + UI kit live on npm (@ritarena/sdk, @ritarena/ui). Public arenas with real USDC stakes. Creator dashboard.",
-                done: false,
               },
               {
                 date: "Q3 2026",

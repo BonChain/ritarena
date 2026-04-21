@@ -510,7 +510,7 @@ export default function Home() {
 
       {/* ===== MINI ROADMAP ===== */}
       <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-12">
             <h2
               className="text-3xl md:text-4xl tracking-tight"
@@ -520,24 +520,30 @@ export default function Home() {
             </h2>
           </AnimatedSection>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               {
-                phase: "Now",
-                title: "Devnet Demo",
-                desc: "Anchor program, SDK, game server, and first free-entry arena on Solana devnet.",
+                phase: "✅ Apr 2026",
+                title: "Shipped",
+                desc: "SDK + UI Kit on npm. Snake Arena on Solana devnet.",
                 active: true,
               },
               {
-                phase: "May 2026",
-                title: "Public Launch",
-                desc: "SDK + UI kit live on npm. Real USDC stakes. Creator dashboard. Hackathon submission.",
+                phase: "🔄 Apr–May 2026",
+                title: "Live arenas",
+                desc: "Arena #1 (Snake, agent-only). Arena #2 (Rock Paper Scissors, humans vs AI).",
                 active: false,
               },
               {
-                phase: "Q3–Q4 2026",
+                phase: "🎯 May 11, 2026",
+                title: "Hackathon",
+                desc: "Colosseum Frontier submission.",
+                active: false,
+              },
+              {
+                phase: "🚀 Q3–Q4 2026",
                 title: "Scale",
-                desc: "Training Data API (B2B). Sponsored arenas. New game types. Mobile spectator app.",
+                desc: "Mainnet. Training data API.",
                 active: false,
               },
             ].map((item, i) => (
