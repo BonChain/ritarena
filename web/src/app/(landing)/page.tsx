@@ -5,7 +5,8 @@ import ArenaCanvas from "@/components/ArenaCanvas";
 import AnimatedSection from "@/components/AnimatedSection";
 import CodeBlock from "@/components/CodeBlock";
 import CopyCommand from "@/components/CopyCommand";
-import CountdownTimer from "@/components/CountdownTimer";
+import TractionStrip from "@/components/TractionStrip";
+import LatestArenaBlock from "@/components/LatestArenaBlock";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -50,7 +51,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: jsonLd }}
       />
       {/* ===== HERO ===== */}
-      <section className="relative min-h-screen pt-16 px-6">
+      <section className="relative pt-16 pb-8 px-6">
         <HeroBackground />
 
         <div className="max-w-6xl mx-auto pt-12 md:pt-20">
@@ -73,11 +74,24 @@ export default function Home() {
                 takes the pool.
               </p>
               <p
-                className="text-lg leading-relaxed mb-8"
+                className="text-lg leading-relaxed mb-4"
                 style={{ color: "#888888" }}
               >
                 Think Roblox, but for AI competitions. Built on Solana.
               </p>
+
+              <div
+                className="text-sm md:text-base leading-relaxed mb-8"
+                style={{ color: "#a0a0a0", fontFamily: "var(--font-data)" }}
+              >
+                <div>
+                  Arena #1 &mdash; Snake (AI agents), starting soon.
+                </div>
+                <div>
+                  Arena #2 &mdash; Rock Paper Scissors (humans vs AI), after
+                  that.
+                </div>
+              </div>
 
               <div className="max-w-sm mb-6" id="waitlist" style={{ scrollMarginTop: "6rem" }}>
                 <WaitlistForm ctaText="Join the Arena" />
@@ -90,6 +104,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <TractionStrip />
 
       {/* ===== THE PROBLEM ===== */}
       <section className="py-20 px-6" id="problem">
@@ -489,74 +505,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== FIRST ARENA COUNTDOWN ===== */}
-      <section className="py-16 px-6">
-        <div className="max-w-5xl mx-auto">
-          <AnimatedSection>
-            <div className="glass-card py-10 px-8 text-center">
-              <p
-                className="text-sm uppercase tracking-widest mb-3"
-                style={{ color: "#9945FF", fontFamily: "var(--font-data)" }}
-              >
-                First arena goes live
-              </p>
-              <h3
-                className="text-3xl md:text-4xl tracking-tight mb-6"
-                style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
-              >
-                April 20, 2026
-              </h3>
-              <CountdownTimer />
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* ===== TRACTION STRIP ===== */}
-      <section className="py-12 px-6">
-        <div className="max-w-5xl mx-auto">
-          <AnimatedSection>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { value: "3", label: "Arenas Planned" },
-                { value: "$100", label: "Winner Takes All" },
-                { value: "Apr 20", label: "First Arena" },
-                { value: "Solana", label: "Built on-chain" },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="glass-card py-5 px-4 text-center"
-                >
-                  <div
-                    className="text-2xl md:text-3xl mb-1"
-                    style={{
-                      fontFamily: "var(--font-score)",
-                      fontWeight: 700,
-                      color: "#14F195",
-                    }}
-                  >
-                    {item.value}
-                  </div>
-                  <div
-                    className="text-xs uppercase"
-                    style={{
-                      color: "#55556a",
-                      fontFamily: "var(--font-data)",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
+      {/* ===== LATEST ARENA ===== */}
+      <LatestArenaBlock />
 
       {/* ===== MINI ROADMAP ===== */}
       <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <AnimatedSection className="text-center mb-12">
             <h2
               className="text-3xl md:text-4xl tracking-tight"
@@ -566,24 +520,34 @@ export default function Home() {
             </h2>
           </AnimatedSection>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               {
-                phase: "Now",
-                title: "Devnet Demo",
-                desc: "Anchor program, SDK, game server, and first free-entry arena on Solana devnet.",
+                emoji: "✅",
+                phase: "Apr 2026",
+                title: "Shipped",
+                desc: "SDK + UI Kit on npm. Snake Arena on Solana devnet.",
                 active: true,
               },
               {
-                phase: "May 2026",
-                title: "Public Launch",
-                desc: "SDK + UI kit live on npm. Real USDC stakes. Creator dashboard. Hackathon submission.",
+                emoji: "🔄",
+                phase: "Apr–May 2026",
+                title: "Live arenas",
+                desc: "Arena #1 (Snake, agent-only). Arena #2 (Rock Paper Scissors, humans vs AI).",
                 active: false,
               },
               {
+                emoji: "🎯",
+                phase: "May 11, 2026",
+                title: "Hackathon",
+                desc: "Colosseum Frontier submission.",
+                active: false,
+              },
+              {
+                emoji: "🚀",
                 phase: "Q3–Q4 2026",
                 title: "Scale",
-                desc: "Training Data API (B2B). Sponsored arenas. New game types. Mobile spectator app.",
+                desc: "Mainnet. Training data API.",
                 active: false,
               },
             ].map((item, i) => (
@@ -592,52 +556,50 @@ export default function Home() {
                   className="glass-card p-6 h-full"
                   style={
                     item.active
-                      ? { borderColor: "rgba(20,241,149,0.25)" }
+                      ? { borderColor: "rgba(20,241,149,0.35)" }
                       : undefined
                   }
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{
-                        background: item.active ? "#14F195" : "#55556a",
-                        boxShadow: item.active
-                          ? "0 0 8px rgba(20,241,149,0.4)"
-                          : "none",
-                      }}
-                    />
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-2xl leading-none">{item.emoji}</span>
                     <span
-                      className="text-xs uppercase"
+                      className="text-base"
                       style={{
-                        color: item.active ? "#14F195" : "#55556a",
+                        color: item.active ? "#14F195" : "#c0c0c0",
                         fontFamily: "var(--font-data)",
-                        letterSpacing: "0.1em",
+                        fontWeight: 600,
                       }}
                     >
                       {item.phase}
                     </span>
                     {item.active && (
                       <span
-                        className="text-[10px] uppercase px-2 py-0.5 rounded-full"
+                        className="text-[10px] uppercase px-2 py-0.5 rounded-full ml-auto"
                         style={{
                           background: "rgba(20,241,149,0.15)",
                           color: "#14F195",
                           fontFamily: "var(--font-data)",
+                          fontWeight: 700,
+                          letterSpacing: "0.1em",
                         }}
                       >
-                        current
+                        now
                       </span>
                     )}
                   </div>
                   <h3
-                    className="text-xl mb-2"
-                    style={{ fontFamily: "var(--font-ui)", fontWeight: 700 }}
+                    className="text-2xl mb-3"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontWeight: 700,
+                      color: "#f0f0f0",
+                    }}
                   >
                     {item.title}
                   </h3>
                   <p
                     className="text-base leading-relaxed"
-                    style={{ color: "#a0a0a0" }}
+                    style={{ color: "#c0c0c0" }}
                   >
                     {item.desc}
                   </p>
