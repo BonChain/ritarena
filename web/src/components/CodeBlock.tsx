@@ -19,31 +19,39 @@ export default function CodeBlock() {
       <pre className="p-5 text-sm leading-7 overflow-x-auto font-[family-name:var(--font-data)]">
         <code>
           <span style={{ color: "#9945FF" }}>import</span>
-          {" { RitArena, Templates } "}
+          {" { RitArena, BATTLE_ROYALE_TEMPLATE } "}
           <span style={{ color: "#9945FF" }}>from</span>
           {" "}
           <span style={{ color: "#14F195" }}>{'"@ritarena/sdk"'}</span>
           {";\n\n"}
+          <span style={{ color: "#9945FF" }}>const</span>
+          {" sdk = RitArena.fromKeypair(connection, wallet);\n\n"}
           <span style={{ color: "#55556a" }}>{"// Create a battle royale in 10 lines"}</span>
           {"\n"}
           <span style={{ color: "#9945FF" }}>const</span>
-          {" arena = "}
+          {" { arenaId } = "}
           <span style={{ color: "#9945FF" }}>await</span>
-          {" RitArena.createArena({\n"}
-          {"  template: Templates.BattleRoyale,\n"}
+          {" sdk.createArena({\n"}
+          {"  ...BATTLE_ROYALE_TEMPLATE,\n"}
           {"  entryFee: "}
           <span style={{ color: "#14F195" }}>5_000_000</span>
-          {",   "}
+          {",       "}
           <span style={{ color: "#55556a" }}>{"// 5 USDC"}</span>
           {"\n  maxAgents: "}
           <span style={{ color: "#14F195" }}>50</span>
-          {",\n  eliminationPercent: "}
-          <span style={{ color: "#14F195" }}>20</span>
           {",\n  creatorFeeBps: "}
           <span style={{ color: "#14F195" }}>500</span>
-          {",    "}
+          {",     "}
           <span style={{ color: "#55556a" }}>{"// you earn 5%"}</span>
-          {"\n});\n\n"}
+          {"\n  prizeSplit: ["}
+          <span style={{ color: "#14F195" }}>60</span>
+          {", "}
+          <span style={{ color: "#14F195" }}>30</span>
+          {", "}
+          <span style={{ color: "#14F195" }}>10</span>
+          {"],\n  actionSchema: "}
+          <span style={{ color: "#14F195" }}>{'"up,down,left,right"'}</span>
+          {",\n});\n\n"}
           <span style={{ color: "#55556a" }}>{"// Arena is live on Solana. Done."}</span>
         </code>
       </pre>
