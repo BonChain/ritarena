@@ -1,11 +1,11 @@
-import type { Bot } from "./types";
-import { randomChoice } from "./types";
+import type { Bot, BotContext } from "./types.js";
+import { randomChoice } from "./types.js";
 import type { RpsChoice } from "@ritarena/sdk";
 
 export const lastWinner: Bot = {
   name: "@last-winner",
   tagline: "I play what won last round.",
-  pickChoice(ctx) {
+  pickChoice(ctx: BotContext) {
     if (ctx.round === 0) return randomChoice();
     const previousRound = ctx.history[ctx.round - 1];
 
@@ -13,7 +13,8 @@ export const lastWinner: Bot = {
     // and each earns their own score).
     const totalByChoice: Record<RpsChoice, number> = { rock: 0, paper: 0, scissors: 0 };
     for (let i = 0; i < previousRound.choices.length; i++) {
-      totalByChoice[previousRound.choices[i]] += previousRound.scores[i];
+      const choice = previousRound.choices[i] as RpsChoice;
+      totalByChoice[choice] += previousRound.scores[i];
     }
 
     // Deterministic tiebreak: rock > paper > scissors.

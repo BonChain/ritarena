@@ -1,4 +1,4 @@
-import type { Bot } from "./types";
+import type { Bot } from "./types.js";
 
 export const rockHead: Bot = {
   name: "@rock-head",

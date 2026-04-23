@@ -1,5 +1,5 @@
-import type { Bot } from "./types";
-import { randomChoice } from "./types";
+import type { Bot } from "./types.js";
+import { randomChoice } from "./types.js";
 
 export const chaos: Bot = {
   name: "@chaos",

@@ -1,16 +1,17 @@
-import type { Bot } from "./types";
-import { randomChoice, counter } from "./types";
+import type { Bot, BotContext } from "./types.js";
+import { randomChoice, counter } from "./types.js";
 import type { RpsChoice } from "@ritarena/sdk";
 
 export const counterPredictor: Bot = {
   name: "@counter-predictor",
   tagline: "I counter whatever you play most.",
-  pickChoice(ctx) {
+  pickChoice(ctx: BotContext) {
     if (ctx.humanIndex === null || ctx.round === 0) return randomChoice();
 
     const counts: Record<RpsChoice, number> = { rock: 0, paper: 0, scissors: 0 };
     for (const past of ctx.history) {
-      counts[past.choices[ctx.humanIndex]] += 1;
+      const humanChoice = past.choices[ctx.humanIndex] as RpsChoice;
+      counts[humanChoice] += 1;
     }
     // Pick the choice that counters the most-frequent one. Ties: rock > paper > scissors
     // (deterministic order).
