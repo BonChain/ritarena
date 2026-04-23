@@ -81,6 +81,8 @@ const tx = await sdk.enterArena(0);
 
 **Returns:** `Promise<string>` — transaction signature.
 
+**v0.5.3+:** auto-creates the caller's `agent_usdc` ATA if it doesn't exist (one tx, one signature). New wallets don't need a separate ATA-creation step.
+
 **Errors:**
 - `ARENA_NOT_FOUND` — arena doesn't exist
 - `ARENA_NOT_REGISTRATION` — arena is not in Registration phase

@@ -3,6 +3,11 @@ title: Changelog
 description: Version history for @ritarena/sdk.
 ---
 
+## v0.5.3 (April 2026)
+
+**New features:**
+- `enterArena(arenaId)` now auto-creates the caller's `agent_usdc` ATA if it doesn't exist. One tx, one signature — new wallets (e.g. humans arriving via `/play`) no longer need a separate ATA-creation step before entering. Existing callers get the same result as before; the pre-instruction is only added when the ATA is actually missing.
+
 ## v0.5.2 (April 2026)
 
 **New features:**
