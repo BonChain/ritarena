@@ -231,6 +231,26 @@ export class RitArena extends RitArenaReader {
       agentOwner
     );
 
+    // Pre-instruction: idempotently create the caller's USDC ATA if missing.
+    // Required because the on-chain enter_arena handler expects agent_usdc to
+    // exist, and new wallets (including humans arriving via /play on web)
+    // have never held USDC.
+    const preInstructions: import("@solana/web3.js").TransactionInstruction[] = [];
+    const ataInfo = await this.connection.getAccountInfo(agentUsdc);
+    if (ataInfo === null) {
+      const { createAssociatedTokenAccountIdempotentInstruction } = await import(
+        "@solana/spl-token"
+      );
+      preInstructions.push(
+        createAssociatedTokenAccountIdempotentInstruction(
+          agentOwner,
+          agentUsdc,
+          agentOwner,
+          arena.usdcMint
+        )
+      );
+    }
+
     return await (this.program.methods as any)
       .enterArena()
       .accounts({
@@ -242,6 +262,7 @@ export class RitArena extends RitArenaReader {
         arenaVault,
         usdcMint: arena.usdcMint,
       })
+      .preInstructions(preInstructions)
       .rpc();
   }
 
