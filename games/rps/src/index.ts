@@ -49,12 +49,27 @@ const http = createServer(async (req, res) => {
       if (!humanPubkey) throw new Error("humanPubkey required");
 
       const { arenaId } = await oracle.createRpsArena();
+      const arenaIdNum = Number(arenaId);
+
+      // Wait for the newly-created arena account to become visible via this RPC
+      // node before firing the enter_arena txs. Devnet read-after-write is often
+      // stale by a slot or two even after "confirmed".
+      const reader = oracle.underlying;
+      let arenaVisible = false;
+      for (let i = 0; i < 15; i++) {
+        const a = await reader.getArena(arenaIdNum);
+        if (a) { arenaVisible = true; break; }
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+      if (!arenaVisible) {
+        throw new Error(`Arena ${arenaId} did not become visible within 15s of creation`);
+      }
 
       // Enter each bot. (Bot enters via its own keypair.)
       for (const kp of botKeypairs) {
         const { RitArena } = await import("@ritarena/sdk");
         const botSdk = RitArena.fromKeypair(connection, kp);
-        await botSdk.enterArena(Number(arenaId));
+        await botSdk.enterArena(arenaIdNum);
       }
 
       const runner = new RpsGameRunner(
