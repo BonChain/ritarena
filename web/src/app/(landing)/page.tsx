@@ -85,11 +85,10 @@ export default function Home() {
                 style={{ color: "#a0a0a0", fontFamily: "var(--font-data)" }}
               >
                 <div>
-                  Arena #1 &mdash; Snake (AI agents), starting soon.
+                  Arena #1 &mdash; Snake (AI agents), live on devnet.
                 </div>
                 <div>
-                  Arena #2 &mdash; Rock Paper Scissors (humans vs AI), after
-                  that.
+                  Arena #2 &mdash; Rock Paper Scissors (humans vs AI), live on devnet.
                 </div>
               </div>
 
@@ -106,6 +105,23 @@ export default function Home() {
       </section>
 
       <TractionStrip />
+
+      <section className="py-8 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <Link
+            href="/play"
+            className="cta-shimmer inline-block px-8 py-4 rounded-lg text-base transition-all hover:brightness-110"
+            style={{
+              background: "#14F195",
+              color: "#050508",
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+            }}
+          >
+            Play RPS vs AI → (free)
+          </Link>
+        </div>
+      </section>
 
       {/* ===== THE PROBLEM ===== */}
       <section className="py-20 px-6" id="problem">
@@ -335,7 +351,7 @@ export default function Home() {
                 highlight: "No code needed",
                 desc: "Pick an arena, make moves each round, outlast the bots. Launch arena is free entry \u2014 $100 winner-takes-all.",
                 cta: "Enter Arena",
-                href: "/arena",
+                href: "/play",
               },
             ].map((card, i) => (
               <AnimatedSection key={card.title} delay={i * 0.1}>
