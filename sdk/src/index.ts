@@ -51,3 +51,7 @@ export { IDL } from "./idl";
 // Errors
 export { RitArenaError, arenaStateLabel } from "./errors";
 export type { ErrorCode } from "./errors";
+
+// RPS helpers
+export { resolveRpsRound } from "./rps";
+export type { RpsChoice } from "./rps";
