@@ -93,7 +93,8 @@ export default function Navbar() {
               href={link.href}
               className="text-sm transition-colors hover:text-white"
               style={linkStyle(
-                link.href === "/arena"
+                // "Arena" is active on both /arena (marketing) and /explore (live data).
+                link.href === "/explore"
                   ? pathname === "/arena" || pathname.startsWith("/explore")
                   : pathname === link.href || pathname.startsWith(`${link.href}/`)
               )}
@@ -309,7 +310,7 @@ export default function Navbar() {
               className="text-base py-3 transition-colors"
               style={{
                 color:
-                  (link.href === "/arena"
+                  (link.href === "/explore"
                     ? pathname === "/arena" || pathname.startsWith("/explore")
                     : pathname === link.href || pathname.startsWith(`${link.href}/`))
                     ? "#14F195"

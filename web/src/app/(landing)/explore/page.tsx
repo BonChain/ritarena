@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ArenaFilter } from "@ritarena/sdk";
 import {
@@ -98,6 +99,17 @@ export default function ExplorePage() {
               Browse live and finished arenas on devnet. Auto-refreshes every
               10 seconds.
             </p>
+            <Link
+              href="/arena"
+              className="inline-block mt-2 text-sm transition-colors hover:text-white"
+              style={{
+                color: "#9945FF",
+                fontFamily: "var(--font-ui)",
+                fontWeight: 600,
+              }}
+            >
+              New here? Read the concept &rarr;
+            </Link>
           </div>
         </div>
 

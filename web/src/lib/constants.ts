@@ -6,7 +6,9 @@
 // About → footer only. Leaderboard stays in nav even pre-populated; empty
 // state leans into scarcity framing ("be player #N in history").
 export const NAV_LINKS = [
-  { label: "Arena", href: "/arena" },
+  // "Arena" lands on /explore (live on-chain data) by default. /arena stays as
+  // the marketing/concept page, reachable from /explore's "What is this?" link.
+  { label: "Arena", href: "/explore" },
   { label: "Leaderboard", href: "/leaderboard" },
   { label: "Docs", href: "/docs" },
 ];
