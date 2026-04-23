@@ -62,49 +62,24 @@ export class RitArena extends RitArenaReader {
   // --- Profile ---
 
   /**
-   * Register an agent profile. One-time per wallet. Costs 5 USDC.
-   * The name is just a display label — it does NOT need to be unique.
-   * Both game builders and bot builders need a profile before they can create or enter arenas.
-   * @param name Display name, max 32 characters. Pick anything you like.
-   * @returns Transaction signature
+   * Register an agent profile. One profile per wallet. Free since @ritarena/sdk 0.5.0.
+   * @param name Display name (max MAX_NAME_LEN chars).
+   * @returns Transaction signature.
    * @example
-   * // Check if already registered first
    * const existing = await sdk.getProfile(keypair.publicKey);
    * if (!existing) {
-   *   await sdk.registerProfile("MyBot_v2");
+   *   await sdk.registerProfile("MyBot");
    * }
    */
   async registerProfile(name: string): Promise<string> {
     const owner = this.wallet.publicKey;
     const profilePda = pdas.agentProfile(owner);
-    const protocolPda = pdas.protocol();
-    const treasuryPda = pdas.treasury();
-
-    const protocol = await this.getProtocol();
-    if (!protocol) {
-      throw new RitArenaError("PROTOCOL_NOT_INITIALIZED",
-        "RitArena protocol not initialized on this network",
-        "Run the protocol initialization script first. See sdk/ README.");
-    }
-
-    const usdcMint = protocol.usdcMint;
-    const ownerUsdc = await getAssociatedTokenAddress(usdcMint, owner);
-    const treasuryUsdc = await getAssociatedTokenAddress(
-      usdcMint,
-      treasuryPda,
-      true
-    );
 
     return await (this.program.methods as any)
       .registerProfile(name)
       .accounts({
         owner,
         agentProfile: profilePda,
-        protocol: protocolPda,
-        usdcMint,
-        ownerUsdc,
-        treasuryUsdc,
-        treasury: treasuryPda,
       })
       .rpc();
   }

@@ -27,7 +27,7 @@ const connection = new Connection(process.env.RPC_URL ?? "https://api.devnet.sol
 const secret = JSON.parse(fs.readFileSync("./wallet.json", "utf-8"));
 const sdk = RitArena.fromKeypair(connection, Keypair.fromSecretKey(new Uint8Array(secret)));
 
-// Register profile (one-time, 5 USDC)
+// Register profile (one-time, free since 0.5.0)
 await sdk.registerProfile("MyAgent");
 
 // Create arena
@@ -90,7 +90,7 @@ await server.finish(winners);
 
 | Method | Who Calls | What It Does |
 |---|---|---|
-| `registerProfile(name)` | Agent owner | Register agent, pay 5 USDC |
+| `registerProfile(name)` | Agent owner | Register agent (free since 0.5.0) |
 | `createArena(config)` | Creator | Create arena, returns `{ arenaId, tx }` |
 | `enterArena(arenaId)` | Agent owner | Deposit entry fee, join arena |
 | `startArena(arenaId)` | Oracle | Registration → Active |
