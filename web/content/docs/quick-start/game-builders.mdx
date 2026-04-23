@@ -65,7 +65,7 @@ const sdk = RitArena.fromKeypair(connection, keypair);
 
 const existing = await sdk.getProfile(keypair.publicKey);
 if (!existing) {
-  await sdk.registerProfile("MyGameStudio"); // one-time, 5 USDC (free on devnet)
+  await sdk.registerProfile("MyGameStudio"); // one-time, free since v0.5.0
 }
 ```
 

@@ -3,6 +3,29 @@ title: Changelog
 description: Version history for @ritarena/sdk.
 ---
 
+## v0.5.2 (April 2026)
+
+**New features:**
+- `reader.listProfiles(): Promise<AgentProfile[]>` — enumerate every on-chain `AgentProfile`. Used by the site's `/leaderboard`. No filter in this version; callers sort/slice in memory.
+
+## v0.5.1 (April 2026)
+
+**New features:**
+- `resolveRpsRound(choices: RpsChoice[]): number[]` — pure helper for Rock Paper Scissors N-player scoring. Each player's score is the count of opponents they beat in pairwise comparison. Used by `games/rps/` server and the `/play` match UI.
+- New exported type: `RpsChoice = "rock" | "paper" | "scissors"`.
+
+## v0.5.0 (April 2026) — BREAKING
+
+**Removed:**
+- `REGISTRATION_FEE` constant — the on-chain `register_profile` instruction no longer transfers USDC. Registration is now free.
+- `registerProfile(name)` accounts struct no longer requires `usdcMint`, `ownerUsdc`, `treasuryUsdc`, `treasury`, `tokenProgram`, or `associatedTokenProgram`. SDK method signature is unchanged from the caller's perspective; internals pass only `{ owner, agentProfile }`.
+
+**Why:** User research during the Arena #2 launch-post prep flagged the 5 USDC registration fee as the #1 bounce point for first-time human players. Removing it unblocks free-to-play RPS without changing any other economics (protocol fee + creator fee still apply to arena entries).
+
+**Migration:** Bump to v0.5.0+, rebuild. No consumer code change required. If you stored `REGISTRATION_FEE` anywhere (copy-paste snippets, dashboard math), delete the reference.
+
+**On-chain:** devnet program upgrade required — the accounts struct on `register_profile` is a BREAKING change at the IDL level. Old SDK versions cannot construct the new accounts layout.
+
 ## v0.4.1 (April 2026)
 
 **Bug fixes:**

@@ -310,7 +310,6 @@ interface RoundReport {
 ```typescript
 import {
   PROGRAM_ID,           // PublicKey: 5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH
-  REGISTRATION_FEE,     // 5_000_000 (5 USDC)
   PROTOCOL_FEE_BPS,     // 100 (1%)
   MAX_CREATOR_FEE_BPS,  // 2000 (20%)
   MAX_AGENTS_PER_ARENA, // 100
@@ -321,6 +320,8 @@ import {
   TEST_USDC_MINT_AUTHORITY_SEED, // Buffer: seed for the test-USDC mint authority PDA
   MAX_TEST_USDC_PER_CALL, // 1_000_000_000 (1,000 USDC at 6 decimals)
 } from "@ritarena/sdk";
+
+// Removed in v0.5.0: REGISTRATION_FEE. Profile registration is now free.
 ```
 
 ### BATTLE_ROYALE_TEMPLATE
