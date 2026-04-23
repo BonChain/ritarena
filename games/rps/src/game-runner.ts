@@ -28,6 +28,10 @@ export class RpsGameRunner extends EventEmitter {
   /** entry PDA for each participant, indexed same as allPubkeys(). */
   private entryPdas: PublicKey[] = [];
   private currentRound = 0;
+  /** One-shot guard: run() may be called multiple times (React StrictMode
+   *  double-mount reopens the WS → game-server dispatches run() again).
+   *  Only the first caller drives the match; subsequent calls no-op. */
+  private started = false;
 
   constructor(
     private readonly connection: Connection,
@@ -54,6 +58,9 @@ export class RpsGameRunner extends EventEmitter {
    * the participant pubkeys at run-time.
    */
   async run(): Promise<void> {
+    if (this.started) return;
+    this.started = true;
+
     // Resolve entry PDAs for all participants (bots + human).
     // Must be called after all participants have entered the arena on-chain.
     const arenaPda = pdas.arena(this.arenaIdNum);
