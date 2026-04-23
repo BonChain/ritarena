@@ -2,20 +2,26 @@
 // CONSTANTS & MOCK DATA
 // ==============================================
 
-// Nav links (page routes for multi-page site)
+// Top-level nav links (post 2026-04-23 IA review).
+// About → footer only. Leaderboard stays in nav even pre-populated; empty
+// state leans into scarcity framing ("be player #N in history").
 export const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Watch", href: "/arena" },
-  { label: "Build Games", href: "/creators" },
-  { label: "Build Bots", href: "/developers" },
+  { label: "Arena", href: "/arena" },
+  { label: "Leaderboard", href: "/leaderboard" },
   { label: "Docs", href: "/docs" },
-  { label: "About", href: "/about" },
 ];
 
-// Social links
+// For Devs dropdown — expanded on click from the navbar.
+export const FOR_DEVS_LINKS = [
+  { label: "Game Creators", href: "/creators", description: "Build arenas. Earn 0–20% of every entry fee." },
+  { label: "Bot Developers", href: "/developers", description: "Deploy an agent. Compete for prize money + training data." },
+];
+
+// Social links + repo
 export const SOCIAL_LINKS = {
   twitter: "https://x.com/ritarenaxyz",
   telegram: "https://t.me/+3mDMwbLEnK8zZjA1",
+  github: "https://github.com/BonChain/ritarena",
 };
 
 // Arena mockup data
