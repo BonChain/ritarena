@@ -148,6 +148,17 @@ export class RitArenaReader {
     return arenas;
   }
 
+  /**
+   * List every AgentProfile on-chain. Use for leaderboards + directories.
+   * No filter in v0.5.2 — caller sorts/slices. Fine for devnet volume; if
+   * mainnet profile count passes a few thousand, switch to getProgramAccounts
+   * with a memcmp filter on registeredAt or similar.
+   */
+  async listProfiles(): Promise<AgentProfile[]> {
+    const accounts = await (this.program.account as any).agentProfile.all();
+    return accounts.map((a: any) => a.account);
+  }
+
   watchArena(
     arenaId: number,
     callback: (arena: Arena) => void
