@@ -24,6 +24,10 @@ import {
   Transaction,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
+import {
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountIdempotentInstruction,
+} from "@solana/spl-token";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import * as path from "path";
 import { RitArena } from "../src/index";
@@ -87,6 +91,17 @@ async function main() {
   );
   console.log();
 
+  // Resolve the USDC mint once (same for all wallets).
+  const reader = RitArena.readOnly(connection);
+  const protocol = await reader.getProtocol();
+  if (!protocol) {
+    console.error("Protocol not initialized. Aborting.");
+    process.exit(1);
+  }
+  const usdcMint = protocol.usdcMint;
+  console.log("USDC mint: ", usdcMint.toBase58());
+  console.log();
+
   const summary: Array<{ role: string; pubkey: string; notes: string[] }> = [];
 
   for (const role of ROLES) {
@@ -126,6 +141,32 @@ async function main() {
     } else {
       notes.push(`already funded (${balance / LAMPORTS_PER_SOL} SOL)`);
       console.log(`  ✓ already funded (${balance / LAMPORTS_PER_SOL} SOL)`);
+    }
+
+    // Ensure USDC ATA exists (needed for create_arena by oracle, enter_arena by bots).
+    const usdcAta = await getAssociatedTokenAddress(usdcMint, kp.publicKey);
+    const ataInfo = await connection.getAccountInfo(usdcAta);
+    if (ataInfo === null) {
+      console.log(`  creating USDC ATA ${usdcAta.toBase58().slice(0, 8)}...`);
+      try {
+        const ataTx = new Transaction().add(
+          createAssociatedTokenAccountIdempotentInstruction(
+            payer.publicKey, // payer pays rent
+            usdcAta,
+            kp.publicKey,
+            usdcMint
+          )
+        );
+        await sendAndConfirmTransaction(connection, ataTx, [payer]);
+        notes.push("USDC ATA created");
+        console.log(`  ✓ USDC ATA created`);
+      } catch (err) {
+        notes.push("USDC ATA FAILED");
+        console.error(`  ✗ USDC ATA create failed:`, err);
+      }
+    } else {
+      notes.push("USDC ATA exists");
+      console.log(`  ✓ USDC ATA exists`);
     }
 
     // Register profile if this role needs one.
