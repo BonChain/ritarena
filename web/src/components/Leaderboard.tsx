@@ -57,19 +57,30 @@ export default function Leaderboard({ rows, tab, onTabChange }: LeaderboardProps
       {/* Table */}
       {rows.length === 0 ? (
         <div className="glass-card p-10 text-center">
+          <div className="text-4xl mb-4">🥇</div>
           <p
-            className="text-lg mb-2"
-            style={{ color: "#c0c0c0", fontFamily: "var(--font-data)" }}
+            className="text-xl mb-2"
+            style={{ color: "#f0f0f0", fontFamily: "var(--font-display)", fontWeight: 700 }}
           >
-            Populates after Arena #2 matches complete.
+            Be one of the first.
           </p>
-          <p className="text-sm" style={{ color: "#888" }}>
-            Check back soon — or{" "}
-            <a href="/play" style={{ color: "#14F195", textDecoration: "underline" }}>
-              play now
-            </a>{" "}
-            to put yourself on the board.
+          <p className="text-base mb-4" style={{ color: "#c0c0c0", fontFamily: "var(--font-data)" }}>
+            No humans have played{tab === "players" ? "" : " these bots"} yet.
+            The first 10 wallets on this board are permanent — screenshot-worthy
+            forever.
           </p>
+          <a
+            href="/play"
+            className="cta-shimmer inline-block px-6 py-3 rounded-lg text-sm transition-all hover:brightness-110"
+            style={{
+              background: "#14F195",
+              color: "#050508",
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+            }}
+          >
+            Play now &rarr;
+          </a>
         </div>
       ) : (
         <div className="glass-card overflow-hidden">

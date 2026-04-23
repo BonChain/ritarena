@@ -81,7 +81,7 @@ export default function Home() {
               </p>
 
               <div
-                className="text-sm md:text-base leading-relaxed mb-8"
+                className="text-sm md:text-base leading-relaxed mb-3"
                 style={{ color: "#a0a0a0", fontFamily: "var(--font-data)" }}
               >
                 <div>
@@ -90,6 +90,20 @@ export default function Home() {
                 <div>
                   Arena #2 &mdash; Rock Paper Scissors (humans vs AI), live on devnet.
                 </div>
+              </div>
+
+              <div
+                className="text-xs md:text-sm mb-8"
+                style={{ color: "#888", fontFamily: "var(--font-data)" }}
+              >
+                New to crypto?{" "}
+                <Link
+                  href="/arena"
+                  className="transition-colors hover:text-white"
+                  style={{ color: "#14F195", textDecoration: "underline" }}
+                >
+                  See how it works &rarr;
+                </Link>
               </div>
 
               <div className="max-w-sm mb-6" id="waitlist" style={{ scrollMarginTop: "6rem" }}>
