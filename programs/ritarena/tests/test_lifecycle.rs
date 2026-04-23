@@ -101,17 +101,8 @@ fn build_create_arena_ix(
     }
 }
 
-fn build_register_profile_ix(
-    owner: &Pubkey,
-    usdc_mint: &Pubkey,
-    owner_usdc: &Pubkey,
-    name: &str,
-) -> Instruction {
-    let (protocol_pda, _) = protocol_pda();
-    let (treasury_pda, _) = treasury_pda();
+fn build_register_profile_ix(owner: &Pubkey, name: &str) -> Instruction {
     let (agent_profile, _) = agent_profile_pda(owner);
-    let treasury_usdc =
-        spl_associated_token_account::get_associated_token_address(&treasury_pda, usdc_mint);
 
     let disc = anchor_discriminator("register_profile");
     let name_bytes = name.as_bytes();
@@ -125,13 +116,6 @@ fn build_register_profile_ix(
         accounts: vec![
             AccountMeta::new(*owner, true),
             AccountMeta::new(agent_profile, false),
-            AccountMeta::new_readonly(protocol_pda, false),
-            AccountMeta::new_readonly(*usdc_mint, false),
-            AccountMeta::new(*owner_usdc, false),
-            AccountMeta::new(treasury_usdc, false),
-            AccountMeta::new_readonly(treasury_pda, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-            AccountMeta::new_readonly(spl_associated_token_account::id(), false),
             AccountMeta::new_readonly(
                 solana_pubkey::pubkey!("11111111111111111111111111111111"),
                 false,
@@ -386,12 +370,7 @@ fn test_full_lifecycle() {
     mint_to(&mut svm, &creator, &usdc_mint, &creator_usdc, 1_000_000_000);
 
     // Register creator profile (needed since creator is also oracle)
-    let reg_creator = build_register_profile_ix(
-        &creator.pubkey(),
-        &usdc_mint,
-        &creator_usdc,
-        "Creator",
-    );
+    let reg_creator = build_register_profile_ix(&creator.pubkey(), "Creator");
     send_tx(&mut svm, &[reg_creator], &creator, &[&creator]).unwrap();
 
     // 2. Register 3 agents
@@ -403,7 +382,7 @@ fn test_full_lifecycle() {
         svm.airdrop(&agent.pubkey(), 10_000_000_000).unwrap();
         let agent_usdc_acc = create_token_account(&mut svm, &creator, &usdc_mint, &agent.pubkey());
         mint_to(&mut svm, &creator, &usdc_mint, &agent_usdc_acc, 500_000_000);
-        let reg = build_register_profile_ix(&agent.pubkey(), &usdc_mint, &agent_usdc_acc, name);
+        let reg = build_register_profile_ix(&agent.pubkey(), name);
         send_tx(&mut svm, &[reg], agent, &[agent]).unwrap();
     }
 
@@ -622,11 +601,7 @@ fn test_full_lifecycle() {
 
     // 12. Collect protocol fee
     let (treasury_pda_key, _) = treasury_pda();
-    let treasury_usdc_key = spl_associated_token_account::get_associated_token_address(
-        &treasury_pda_key,
-        &usdc_mint,
-    );
-    // Treasury USDC account was created during register_profile (registration fees go there)
+    let treasury_usdc_key = create_token_account(&mut svm, &creator, &usdc_mint, &treasury_pda_key);
     let treasury_balance_before = get_token_balance(&svm, &treasury_usdc_key);
 
     let collect_ix = build_collect_protocol_fee_ix(
