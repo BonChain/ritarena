@@ -1,0 +1,8 @@
+**/node_modules/
+**/*.log
+**/*.pid
+**/.env
+.git/
+**/keypair.json
+**/keypair.json/
+server/dist/
