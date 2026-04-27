@@ -8,7 +8,6 @@ export { pdas } from "./pda";
 // Constants
 export {
   PROGRAM_ID,
-  REGISTRATION_FEE,
   PROTOCOL_FEE_BPS,
   MAX_CREATOR_FEE_BPS,
   MAX_AGENTS_PER_ARENA,
@@ -41,6 +40,15 @@ export { BATTLE_ROYALE_TEMPLATE } from "./types";
 
 // GameServer
 export { GameServer } from "./game-server";
+export type { LogEntry } from "./game-server";
+
+// Explorer URL helpers
+export { txExplorerUrl, addressExplorerUrl } from "./explorer";
+export type { SolanaCluster } from "./explorer";
+
+// On-chain tx audit log
+export { TxLog } from "./tx-log";
+export type { TxKind, TxLogEntry, TxLogAppendInput } from "./tx-log";
 
 // Merkle helpers
 export { hashLeaf, computeMerkleRoot } from "./merkle";

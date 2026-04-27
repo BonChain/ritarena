@@ -151,11 +151,11 @@ pdas.bondVault(arenaPubkey)                  // USDC vault for creator bond
 
 ```typescript
 import {
-  PROGRAM_ID,           // 5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH
-  REGISTRATION_FEE,     // 5_000_000 (5 USDC)
-  PROTOCOL_FEE_BPS,     // 100 (1%)
-  MAX_CREATOR_FEE_BPS,  // 2000 (20%)
-  MAX_AGENTS_PER_ARENA, // 100
+  PROGRAM_ID,             // 5fYaY6696pCJfPQvxC3GwHEDS91hXs1JZNpEK4ZmhCfH
+  PROTOCOL_FEE_BPS,       // 100 (1%)
+  MAX_CREATOR_FEE_BPS,    // 2000 (20%)
+  MAX_AGENTS_PER_ARENA,   // 100
+  MAX_TEST_USDC_PER_CALL, // 1_000_000_000 (1,000 USDC)
   BATTLE_ROYALE_TEMPLATE,
 } from "@ritarena/sdk";
 ```
