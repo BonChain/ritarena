@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import type { RpsChoice } from "@ritarena/sdk";
+import { txExplorerUrl, type RpsChoice } from "@ritarena/sdk";
 import { useArenaSocket } from "@/lib/rps/use-arena-socket";
 import RpsChoiceButtons from "@/components/rps/RpsChoiceButtons";
 import RpsArenaLobby from "@/components/rps/RpsArenaLobby";
@@ -117,6 +117,15 @@ export default function MatchPage({
                 );
               })}
             </div>
+            <a
+              href={txExplorerUrl(phase.tx)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 text-xs underline opacity-70 hover:opacity-100 transition-opacity"
+              style={{ color: "#9945FF", fontFamily: "var(--font-data)" }}
+            >
+              View round on Solana Explorer ↗
+            </a>
           </div>
         )}
 
@@ -128,6 +137,7 @@ export default function MatchPage({
               arenaId={arenaId}
               humanRank={me.rank}
               humanScore={me.score}
+              finalizeTx={phase.tx}
               onRematch={() => {
                 window.location.href = "/play";
               }}

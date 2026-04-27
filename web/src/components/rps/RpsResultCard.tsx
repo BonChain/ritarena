@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { txExplorerUrl } from "@ritarena/sdk";
 
 type Props = {
   arenaId: string;
   humanRank: number;
   humanScore: number;
+  finalizeTx: string;
   onRematch: () => void;
 };
 
-export default function RpsResultCard({ arenaId, humanRank, humanScore, onRematch }: Props) {
+export default function RpsResultCard({ arenaId, humanRank, humanScore, finalizeTx, onRematch }: Props) {
   const medal = humanRank === 1 ? "🥇" : humanRank === 2 ? "🥈" : humanRank === 3 ? "🥉" : "";
   const shareText = `I ranked #${humanRank} on RitArena Arena #${arenaId} vs 5 AI agents. ${medal}`;
   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(`https://ritarena.xyz/explore/${arenaId}`)}`;
@@ -63,6 +65,16 @@ export default function RpsResultCard({ arenaId, humanRank, humanScore, onRematc
           View on-chain
         </Link>
       </div>
+
+      <a
+        href={txExplorerUrl(finalizeTx)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block mt-6 text-xs underline opacity-70 hover:opacity-100 transition-opacity"
+        style={{ color: "#9945FF", fontFamily: "var(--font-data)" }}
+      >
+        View finalize tx on Solana Explorer ↗
+      </a>
     </div>
   );
 }

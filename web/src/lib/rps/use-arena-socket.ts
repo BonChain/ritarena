@@ -6,8 +6,8 @@ import type { MatchPhase } from "./match-state";
 
 type ServerMessage =
   | { type: "round-start"; round: number; deadline: number }
-  | { type: "round-result"; round: number; choices: RpsChoice[]; scores: number[]; pubkeys: string[] }
-  | { type: "match-complete"; finalRanks: { pubkey: string; rank: number; score: number }[] }
+  | { type: "round-result"; round: number; choices: RpsChoice[]; scores: number[]; pubkeys: string[]; tx: string }
+  | { type: "match-complete"; finalRanks: { pubkey: string; rank: number; score: number }[]; tx: string }
   | { type: "error"; message: string }
   | { type: "pong" };
 
@@ -36,10 +36,11 @@ export function useArenaSocket(arenaId: string | null) {
             choices: msg.choices,
             scores: msg.scores,
             pubkeys: msg.pubkeys,
+            tx: msg.tx,
           });
           break;
         case "match-complete":
-          setPhase({ kind: "complete", finalRanks: msg.finalRanks });
+          setPhase({ kind: "complete", finalRanks: msg.finalRanks, tx: msg.tx });
           break;
       }
     };

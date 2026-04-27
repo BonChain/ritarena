@@ -9,6 +9,7 @@ export type LogEntry = {
   choice: RpsChoice;
   score: number;
   ts: number;
+  tx: string;
 };
 
 export class LogWriter {
@@ -19,7 +20,8 @@ export class LogWriter {
     round: number,
     pubkeys: readonly string[],
     choices: readonly RpsChoice[],
-    scores: readonly number[]
+    scores: readonly number[],
+    tx: string
   ): Promise<void> {
     await mkdir(this.dir, { recursive: true });
     const path = join(this.dir, `${arenaId}.jsonl`);
@@ -32,6 +34,7 @@ export class LogWriter {
         choice: choices[i],
         score: scores[i],
         ts,
+        tx,
       } satisfies LogEntry)
     ).join("\n") + "\n";
     await appendFile(path, lines, "utf-8");

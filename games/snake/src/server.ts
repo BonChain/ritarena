@@ -4,8 +4,8 @@ import { createServer } from "http";
 import { readFileSync } from "fs";
 import { join, extname } from "path";
 import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { GameServer, RitArena } from "@ritarena/sdk";
-import type { ScoreUpdate, GameAction } from "@ritarena/sdk";
+import { GameServer, RitArena, addressExplorerUrl } from "@ritarena/sdk";
+import type { ScoreUpdate, GameAction, LogEntry } from "@ritarena/sdk";
 import { createHash } from "crypto";
 import { WebSocketServer, WebSocket } from "ws";
 import * as fs from "fs";
@@ -14,8 +14,6 @@ import * as path from "path";
 import { GameEngine } from "./game/engine.js";
 import { TICK_MS } from "./game/constants.js";
 import { BotRunner, type BotConfig } from "./agent/bot-runner.js";
-
-interface LogEntry { message: string; kind: string; tx?: string; explorerUrl?: string; }
 interface PreflightCheck { name: string; status: "pending" | "ok" | "fail"; detail: string; }
 
 const PORT = 3000;
@@ -226,7 +224,7 @@ async function startGame(mode: "mock" | "devnet"): Promise<void> {
   };
   if (mode === "devnet" && arenaInfo?.arenaPda) {
     arenaInfoMsg.address = arenaInfo.arenaPda;
-    arenaInfoMsg.explorerUrl = `https://explorer.solana.com/address/${arenaInfo.arenaPda}?cluster=devnet`;
+    arenaInfoMsg.explorerUrl = addressExplorerUrl(arenaInfo.arenaPda);
   }
   broadcast(arenaInfoMsg);
 

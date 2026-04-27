@@ -11,8 +11,8 @@ import type { RpsOracle } from "./oracle-client.js";
 
 export type GameRunnerEvents = {
   "round-start": { round: number; deadline: number };
-  "round-result": { round: number; choices: RpsChoice[]; scores: number[]; pubkeys: string[] };
-  "match-complete": { finalRanks: { pubkey: string; rank: number; score: number }[] };
+  "round-result": { round: number; choices: RpsChoice[]; scores: number[]; pubkeys: string[]; tx: string };
+  "match-complete": { finalRanks: { pubkey: string; rank: number; score: number }[]; tx: string };
   error: { message: string };
 };
 
@@ -122,9 +122,9 @@ export class RpsGameRunner extends EventEmitter {
       entryAccounts: this.entryPdas,
     };
 
-    await this.oracle.underlying.finalizeArena(this.arenaIdNum, params);
+    const finalizeTx = await this.oracle.underlying.finalizeArena(this.arenaIdNum, params);
 
-    this.emit("match-complete", { finalRanks });
+    this.emit("match-complete", { finalRanks, tx: finalizeTx });
   }
 
   private async runRound(round: number): Promise<void> {
@@ -206,7 +206,7 @@ export class RpsGameRunner extends EventEmitter {
       entryAccounts: this.entryPdas,
     };
 
-    await this.oracle.underlying.submitElimination(this.arenaIdNum, submitParams);
+    const roundTx = await this.oracle.underlying.submitElimination(this.arenaIdNum, submitParams);
 
     this.history.push({
       choices: [...allChoices],
@@ -218,6 +218,7 @@ export class RpsGameRunner extends EventEmitter {
       choices: allChoices,
       scores: [...result.scores],
       pubkeys: ownerPubkeys.map((pk) => pk.toBase58()),
+      tx: roundTx,
     });
   }
 

@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { WebSocketServer } from "ws";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { TxLog } from "@ritarena/sdk";
 import { RpsOracle } from "./oracle-client.js";
 import { RpsGameRunner } from "./game-runner.js";
 import { attachSocket } from "./human-actions.js";
@@ -12,6 +13,7 @@ import { loadBotKeypairs, ensureBotProfiles } from "./bot-keypairs.js";
 const PORT = Number(process.env.PORT ?? 3001);
 const RPC_URL = process.env.RPC_URL ?? "https://api.devnet.solana.com";
 const LOG_DIR = process.env.LOG_DIR ?? "./arena-logs";
+const TX_LOG_DIR = process.env.TX_LOG_DIR ?? "./arena-tx-logs";
 const ORACLE_KEYPAIR_PATH = process.env.ORACLE_KEYPAIR_PATH;
 if (!ORACLE_KEYPAIR_PATH) {
   throw new Error("ORACLE_KEYPAIR_PATH env var is required");
@@ -23,6 +25,7 @@ const oracleKp = Keypair.fromSecretKey(
 );
 const oracle = new RpsOracle(connection, oracleKp);
 const logWriter = new LogWriter(LOG_DIR);
+const txLog = new TxLog({ dir: TX_LOG_DIR });
 
 const botKeypairs = loadBotKeypairs();
 await ensureBotProfiles(connection, botKeypairs);
@@ -48,8 +51,9 @@ const http = createServer(async (req, res) => {
       const { humanPubkey } = JSON.parse(body) as { humanPubkey: string };
       if (!humanPubkey) throw new Error("humanPubkey required");
 
-      const { arenaId } = await oracle.createRpsArena();
+      const { arenaId, tx: createTx } = await oracle.createRpsArena();
       const arenaIdNum = Number(arenaId);
+      txLog.append({ arenaId: arenaIdNum, kind: "create", tx: createTx }).catch(() => {});
 
       // Wait for the newly-created arena account to become visible via this RPC
       // node before firing the enter_arena txs. Devnet read-after-write is often
@@ -81,7 +85,12 @@ const http = createServer(async (req, res) => {
       );
 
       runner.on("round-result", (e) => {
-        logWriter.appendRound(arenaId, e.round, e.pubkeys, e.choices, e.scores).catch(() => {});
+        logWriter.appendRound(arenaId, e.round, e.pubkeys, e.choices, e.scores, e.tx).catch(() => {});
+        txLog.append({ arenaId: arenaIdNum, kind: "round", round: e.round + 1, tx: e.tx }).catch(() => {});
+      });
+
+      runner.on("match-complete", (e) => {
+        txLog.append({ arenaId: arenaIdNum, kind: "finalize", tx: e.tx }).catch(() => {});
       });
 
       runners.set(arenaId, runner);

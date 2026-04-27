@@ -8,8 +8,8 @@ export type ClientMessage =
 
 export type ServerMessage =
   | { type: "round-start"; round: number; deadline: number }
-  | { type: "round-result"; round: number; choices: RpsChoice[]; scores: number[]; pubkeys: string[] }
-  | { type: "match-complete"; finalRanks: { pubkey: string; rank: number; score: number }[] }
+  | { type: "round-result"; round: number; choices: RpsChoice[]; scores: number[]; pubkeys: string[]; tx: string }
+  | { type: "match-complete"; finalRanks: { pubkey: string; rank: number; score: number }[]; tx: string }
   | { type: "error"; message: string }
   | { type: "pong" };
 
@@ -27,9 +27,11 @@ export function attachSocket(ws: WebSocket, runner: RpsGameRunner): void {
     choices: RpsChoice[];
     scores: number[];
     pubkeys: string[];
+    tx: string;
   }) => send({ type: "round-result", ...e });
   const onMatchComplete = (e: {
     finalRanks: { pubkey: string; rank: number; score: number }[];
+    tx: string;
   }) => send({ type: "match-complete", ...e });
   const onError = (e: { message: string }) =>
     send({ type: "error", message: e.message });
