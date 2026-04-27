@@ -5,9 +5,17 @@ dotenv.config();
 const num = (key: string, def: number) => Number(process.env[key] ?? def);
 const text = (key: string, def: string) => process.env[key] ?? def;
 
+const prizeSplitParser = (def: number[]): number[] => {
+  const val = process.env["PRIZE_SPLIT"] ?? "";
+  if (!val) return def;
+  const parsed = val.split(",").map(Number).filter(n => !isNaN(n) && n >= 0 && n <= 100);
+  return parsed.length > 0 ? parsed : def;
+};
+
 export const config = {
   port: num("PORT", 3000),
-  autoSpawnAgents: num("AUTO_SPAWN_AGENTS", 5),
+  nodeEnv: text("NODE_ENV", "production"),
+  autoSpawnAgents: num("AUTO_SPAWN_AGENTS", 0),
 
   blockchain: {
     mode: text("ARENA_MODE", "mock"),
@@ -17,7 +25,7 @@ export const config = {
     arena: {
       entryFee: num("ARENA_ENTRY_FEE", 1_000),
       duration: num("ARENA_DURATION", 60),
-      prizeSplit: [60, 30, 10],
+      prizeSplit: prizeSplitParser([60, 30, 10]),
       actionSchema: text("ARENA_ACTION_SCHEMA", "move,attack"),
     },
   },
@@ -44,17 +52,17 @@ export const config = {
 
     attack: {
       damage: num("ATTACK_DAMAGE", 20),
-      cooldown: num("ATTACK_COOLDOWN", 0.5),
-      knockback: num("ATTACK_KNOCKBACK", 10),
+      cooldown: num("ATTACK_COOLDOWN", 2),
+      knockback: num("ATTACK_KNOCKBACK", 100),
       stun: num("ATTACK_STUN", 0.2),
-      invuln: num("INVULN_TIME", 0.3),
+      invuln: num("INVULN_TIME", 0.1),
     },
 
     zone: {
       radius: num("ZONE_RADIUS", 3),
       scoreRate: num("ZONE_SCORE_RATE", 2),
       spawnInterval: num("ZONE_SPAWN_INTERVAL", 10),
-      minDistance: num("ZONE_MIN_DISTANCE", 5),
+      minDistance: num("ZONE_MIN_DISTANCE", 10),
     },
   },
 };

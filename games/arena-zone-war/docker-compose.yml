@@ -45,6 +45,10 @@ services:
       - PROFILE_NAME=${PROFILE_NAME:-ArenaZoneWar}
       - RPC_URL=${RPC_URL:-https://api.devnet.solana.com}
       - WALLET_PATH=${WALLET_PATH:-./keypair.json}
+      - AGENT_MIN_SOL=0.08
+      - AGENT_EXPECTED_ENTRY_FEE_MICRO=${ARENA_ENTRY_FEE:-1000}
+      - AGENT_JOIN_SOFT_RETRIES=48
+      - AGENT_JOIN_DELAY_MS=500
     volumes:
       - ./server/keypair.json:/app/keypair.json:ro
     restart: unless-stopped

@@ -47,7 +47,20 @@ function loadOrCreateKeypair(keypairPath) {
 }
 
 async function ensureSolBalance(connection, pubkey, minLamports, rpcUrl) {
-  let balance = await connection.getBalance(pubkey);
+  let balance = 0;
+  for (let attempt = 0; attempt < 24; attempt++) {
+    try {
+      balance = await connection.getBalance(pubkey);
+      break;
+    } catch (e) {
+      if (isRateLimitError(e)) {
+        await sleep(5000 * (attempt + 1));
+        continue;
+      }
+      throw e;
+    }
+  }
+
   if (balance >= minLamports) {
     return;
   }
@@ -81,6 +94,55 @@ async function ensureSolBalance(connection, pubkey, minLamports, rpcUrl) {
       `Could not reach minimum SOL after airdrops (${(balance / LAMPORTS_PER_SOL).toFixed(4)} SOL). Try again later or fund ${pubkey.toBase58()}.`,
     );
   }
+}
+
+function isRateLimitError(error) {
+  if (!error) return false;
+  const msg = error?.message || String(error);
+  return /429|Too Many Requests|fetch failed|ConnectTimeoutError|ECONNREFUSED/i.test(msg);
+}
+
+async function registerProfileWithRetry(sdk, name) {
+  for (let i = 0; i < 24; i++) {
+    try {
+      return await sdk.registerProfile(name);
+    } catch (e) {
+      if (isRateLimitError(e)) {
+        const wait = 5000 * (i + 1);
+        console.log(`[chain] registerProfile rate-limited, retrying in ${wait}ms...`);
+        await sleep(wait);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error("registerProfile failed after 2 minutes of retries");
+}
+
+async function waitForProfile(sdk, pubkey) {
+  for (let i = 0; i < 24; i++) {
+    const profile = await sdk.getProfile(pubkey);
+    if (profile) return profile;
+    await sleep(5000 * (i + 1));
+  }
+  throw new Error("Profile did not propagate after 2 minutes");
+}
+
+async function enterArenaWithRetry(sdk, arenaId) {
+  for (let i = 0; i < 24; i++) {
+    try {
+      return await sdk.enterArena(arenaId);
+    } catch (e) {
+      if (isRateLimitError(e)) {
+        const wait = 5000 * (i + 1);
+        console.log(`[chain] enterArena rate-limited, retrying in ${wait}ms...`);
+        await sleep(wait);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error(`enterArena ${arenaId} failed after 2 minutes of retries`);
 }
 
 async function readUsdcMicroBalance(connection, usdcMint, owner) {
@@ -163,11 +225,12 @@ export async function bootstrapAgentOnchain() {
   if (!existing) {
     const name = (process.env.AGENT_NAME || keypair.publicKey.toBase58()).slice(0, 32);
     console.log(`[chain] registerProfile ${name}`);
-    await sdk.registerProfile(name);
+    await registerProfileWithRetry(sdk, name);
+    await waitForProfile(sdk, keypair.publicKey);
   }
 
   console.log(`[chain] enterArena ${arenaId}`);
-  await sdk.enterArena(arenaId);
+  await enterArenaWithRetry(sdk, arenaId);
 
   return {
     pubkey: keypair.publicKey.toBase58(),

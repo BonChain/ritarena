@@ -44,7 +44,10 @@ export class ArenaService {
   private sdk: RitArena | null = null;
   private usdcMint: PublicKey | null = null;
   private arenaId: number | null = null;
-  private roundNumber = 0;
+  private confirmedRound = 0;
+  private pendingRound = 0;
+  private reportInProgress = false;
+  private roundPersistencePath: string;
   private mode: string;
   private profileName: string;
   private arenaConfig: ArenaServiceConfig["arena"];
@@ -60,6 +63,10 @@ export class ArenaService {
     this.connection = new Connection(config.rpcUrl, "confirmed");
     this.profileName = config.profileName;
     this.arenaConfig = config.arena;
+    this.roundPersistencePath = path.resolve(
+      process.cwd(),
+      "arena-round.json",
+    );
 
     if (this.isMockMode()) {
       console.log("Arena mode: mock");
@@ -101,6 +108,7 @@ export class ArenaService {
 
     const keypair = this.requireKeypair();
     this.sdk = RitArena.fromKeypair(this.connection, keypair);
+    this.loadPersistedRound();
 
     const protocol = await this.sdk.getProtocol();
     if (!protocol) {
@@ -124,7 +132,7 @@ export class ArenaService {
     this.server = this.createGameServer();
     this.bindServerEvents();
     this.arenaId = await this.server.createAndWait();
-    this.roundNumber = 0;
+    this.pendingRound = this.confirmedRound;
     this.participantEntries.clear();
     console.log("Arena (new session):", this.arenaId);
   }
@@ -155,7 +163,7 @@ export class ArenaService {
 
   async createArena() {
     this.arenaId = await this.server.createAndWait();
-    this.roundNumber = 0;
+    this.pendingRound = this.confirmedRound;
     this.participantEntries.clear();
     console.log("Arena:", this.arenaId);
   }
@@ -213,9 +221,14 @@ export class ArenaService {
       return this.server.reportRound(eliminated, scores, actions);
     }
 
+    if (this.reportInProgress) {
+      console.log("[arena] reportRound skipped: previous round still in progress");
+      return null;
+    }
+
     const arenaId = this.requireArenaId();
     const sdk = this.requireSdk();
-    const nextRound = this.roundNumber + 1;
+    const nextRound = this.pendingRound + 1;
 
     const eliminatedEntries = eliminated.map((pubkey) => {
       const entry = this.participantEntries.get(pubkey.toBase58());
@@ -243,18 +256,25 @@ export class ArenaService {
       ),
     );
 
-    const tx = await sdk.submitElimination(arenaId, {
-      merkleRoot: new Uint8Array(merkleRoot),
-      roundNumber: nextRound,
-      eliminated: eliminatedEntries,
-      scores: scoreUpdates,
-      entryAccounts: [...this.participantEntries.values()],
-    });
+    this.reportInProgress = true;
+    try {
+      const tx = await sdk.submitElimination(arenaId, {
+        merkleRoot: new Uint8Array(merkleRoot),
+        roundNumber: nextRound,
+        eliminated: eliminatedEntries,
+        scores: scoreUpdates,
+        entryAccounts: [...this.participantEntries.values()],
+      });
 
-    this.roundNumber = nextRound;
-    console.log("Round reported:", nextRound, tx);
+      this.pendingRound = nextRound;
+      this.confirmedRound = nextRound;
+      this.savePersistedRound();
+      console.log("Round reported:", nextRound, tx);
 
-    return { round: nextRound, tx };
+      return { round: nextRound, tx };
+    } finally {
+      this.reportInProgress = false;
+    }
   }
 
   async finishArena(winners: Array<{ pubkey: PublicKey; rank: number }>) {
@@ -283,7 +303,7 @@ export class ArenaService {
       winners.map((winner) =>
         hashLeaf({
           snakeId: winner.pubkey.toBase58(),
-          round: this.roundNumber,
+          round: this.confirmedRound,
           tick: winner.rank,
           action: "finish",
           result: `rank:${winner.rank}`,
@@ -466,5 +486,32 @@ export class ArenaService {
       throw new Error("USDC mint is not initialized");
     }
     return this.usdcMint;
+  }
+
+  isReportInProgress() {
+    return this.reportInProgress;
+  }
+
+  private loadPersistedRound() {
+    try {
+      if (fs.existsSync(this.roundPersistencePath)) {
+        const data = JSON.parse(fs.readFileSync(this.roundPersistencePath, "utf-8"));
+        this.confirmedRound = data.round ?? 0;
+        console.log(`[arena] restored round ${this.confirmedRound} from persistence`);
+      }
+    } catch {
+      // start fresh if file is corrupted
+    }
+  }
+
+  private savePersistedRound() {
+    try {
+      fs.writeFileSync(
+        this.roundPersistencePath,
+        JSON.stringify({ round: this.confirmedRound, timestamp: Date.now() }),
+      );
+    } catch {
+      console.warn("[arena] could not persist round state");
+    }
   }
 }

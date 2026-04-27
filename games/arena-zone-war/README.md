@@ -171,11 +171,22 @@ ARENA_ENTRY_FEE=1000
 # Match duration in seconds
 ARENA_DURATION=60
 
-# Prize distribution: 1st%, 2nd%, 3rd%
+# Prize distribution: comma-separated percentages (any number of winners)
+# Examples: "60,30,10" (3 winners), "100" (1 winner), "50,25,15,10" (4 winners)
+# Values must be 0-100 and will be normalized if they don't sum to 100
 PRIZE_SPLIT=60,30,10
 
 # Allowed actions
 ARENA_ACTION_SCHEMA=move,attack
+
+# ============================================
+# AGENT (for auto-spawned bots inside container)
+# ============================================
+
+AGENT_MIN_SOL=0.08
+AGENT_EXPECTED_ENTRY_FEE_MICRO=1000
+AGENT_JOIN_SOFT_RETRIES=48
+AGENT_JOIN_DELAY_MS=500
 ```
 
 ---
@@ -206,81 +217,37 @@ VITE_SCALE=20
 #### `server/.env` — Local Server Development
 
 ```env
-# ===== Server =====
-
+NODE_ENV=development
 PORT=3000
-
-# ===== Arena Mode =====
-
-# Use "mock" for off-chain (no Solana), "onchain" for Solana Devnet
 ARENA_MODE=onchain
-
-# Number of agents to auto-spawn inside server on startup
-# In mock mode: spawns bot agents to fill the arena
-# In onchain mode: agents join via their own wallets
-AUTO_SPAWN_AGENTS=5
-
-# ===== Game Loop =====
-
+AUTO_SPAWN_AGENTS=0
 TICK_RATE=60
 WAIT_TIME=5
 ROUND_TIME=60
-
-# ===== Match Size =====
-
 MIN_PLAYERS=5
 MAX_PLAYERS=9
-
-# ===== Map =====
-
 MAP_WIDTH=20
 MAP_HEIGHT=20
-
-# ===== Player Stats =====
-
 PLAYER_SPEED=5
 PLAYER_FRICTION=0.9
 PLAYER_RADIUS=0.5
 PLAYER_HP=100
 DEATH_PENALTY=10
-
-# ===== Combat =====
-
 ATTACK_DAMAGE=20
 ATTACK_COOLDOWN=2
 ATTACK_STUN=0.2
 INVULN_TIME=0.1
 ATTACK_KNOCKBACK=100
-
-# ===== Zone =====
-
 ZONE_RADIUS=3
 ZONE_SCORE_RATE=2
 ZONE_MIN_DISTANCE=10
 ZONE_SPAWN_INTERVAL=10
-
-# ===== Blockchain / On-Chain Arena =====
-
-# Solana RPC URL (public devnet or private RPC)
-RPC_URL=https://api.devnet.solana.com
-
-# Path to server wallet keypair (generated via solana-keygen)
-# Wallet needs SOL for fees + USDC for arena creation
-WALLET_PATH=./keypair.json
-
-# On-chain profile name for this server
 PROFILE_NAME=ArenaZoneWar
-
-# Entry fee in micro-USDC (1000 = 0.001 USDC)
+RPC_URL=https://api.devnet.solana.com
+WALLET_PATH=./keypair.json
 ARENA_ENTRY_FEE=1000
-
-# Match duration in seconds (on-chain)
 ARENA_DURATION=60
-
-# Prize distribution: 1st %, 2nd %, 3rd %
 PRIZE_SPLIT=60,30,10
-
-# Allowed player actions on-chain
 ARENA_ACTION_SCHEMA=move,attack
 ```
 
@@ -289,55 +256,16 @@ ARENA_ACTION_SCHEMA=move,attack
 #### `agent/.env` — Local Agent Development
 
 ```env
-# Agent Bot Environment Variables
-# Used when running agents directly (not via Docker)
-# For Docker deployment, agents are spawned inside the container via AUTO_SPAWN_AGENTS
-
-# ============================================
-# CONNECTION
-# ============================================
-
-# Game server URL
 SERVER_URL=http://localhost:3000
-
-# Arena ID to join (set dynamically by server on arena_ready)
 ARENA_ID=0
-
-# ============================================
-# AGENT CONFIGURATION
-# ============================================
-
-# Number of agent instances to spawn (via spawn.js)
 AGENT_COUNT=5
-
-# Onchain mode: wallet keypair path (required for onchain)
-# Example: ./bots/bot-0.json
-AGENT_KEYPAIR_PATH=
-
-# Agent profile name (onchain mode)
-AGENT_NAME=
-
-# ============================================
-# BLOCKCHAIN (On-Chain Mode Only)
-# ============================================
-
-# Solana RPC URL
+AGENT_KEYPAIR_PATH=./bots/bot-0.json
+AGENT_NAME=bot-0
+ARENA_MODE=onchain
 RPC_URL=https://api.devnet.solana.com
-
-# Minimum SOL balance required before joining arena
 AGENT_MIN_SOL=0.08
-
-# Expected entry fee in micro-USDC (must match server ARENA_ENTRY_FEE)
 AGENT_EXPECTED_ENTRY_FEE_MICRO=1000
-
-# ============================================
-# RETRY SETTINGS
-# ============================================
-
-# Max retry attempts when join fails (onchain mode)
 AGENT_JOIN_SOFT_RETRIES=48
-
-# Initial delay before joining (ms) - only for onchain mode
 AGENT_JOIN_DELAY_MS=500
 ```
 

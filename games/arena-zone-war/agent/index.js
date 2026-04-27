@@ -94,7 +94,7 @@ function scheduleJoinSoftRetry() {
   }
 
   joinSoftRetryAttempts += 1;
-  const delay = Math.min(12_000, 400 + joinSoftRetryAttempts * 400);
+  const delay = Math.min(120_000, 5000 + joinSoftRetryAttempts * 5000);
 
   joinSoftRetryTimer = setTimeout(() => {
     joinSoftRetryTimer = null;

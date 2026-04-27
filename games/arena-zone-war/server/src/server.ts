@@ -249,6 +249,10 @@ setInterval(() => {
 }, 1000 / tickRate);
 
 async function processArenaRound() {
+  if (arenaService.isReportInProgress()) {
+    return;
+  }
+
   if (!arenaStarted && game.state.players.length >= game.minPlayers) {
     try {
       await arenaService.startArena();
