@@ -3,6 +3,23 @@ title: Changelog
 description: Version history for @ritarena/sdk.
 ---
 
+## v0.5.4 (April 2026)
+
+**New features:**
+- `TxLog` — per-arena JSONL audit log for on-chain tx signatures. Survives server restart, queryable by `kind` and `round`. Replaces ad-hoc `connection.getSignaturesForAddress` heuristics that conflate `submitElimination` and `finalizeArena` sigs. See [API Reference → TxLog & Explorer](/docs/api-reference/tx-log).
+- `txExplorerUrl(tx, cluster?)` and `addressExplorerUrl(address, cluster?)` — pure helpers for Solana Explorer URLs. Defaults to `devnet`. Use everywhere instead of hardcoded `https://explorer.solana.com/...?cluster=devnet` strings.
+- `LogEntry` — game-server's UI log event payload type is now exported so games can consume the `log` event without redeclaring the interface locally. Snake's server, web, and `arena-zone-war` were each redefining it.
+
+**Cleanup:**
+- `REGISTRATION_FEE` constant export removed. The v0.5.0 changelog said this was removed but the export had been left behind as dead code. No consumer used it (the on-chain instruction stopped charging in v0.5.0). If you imported it, just delete the import — registration is free.
+
+**Why:** the RPS `/play` UI and Snake match overlay both wanted "view this round on Solana Explorer" links, and `arena-zone-war` was reaching for a buggy `getSignaturesForAddress(arenaPda).find(s => s.confirmationStatus === "finalized")` heuristic to recover the finalize sig (it could match any finalized sig, not specifically `finalizeArena`). One persisted log + one URL helper closes the gap.
+
+**Migration:** additive only; no breaking changes for actual usage. Existing games keep working. To adopt:
+1. Construct a `TxLog` instance once at game-server startup
+2. Call `txLog.append({ arenaId, kind, tx })` after each SDK write
+3. Replace inline `https://explorer.solana.com/...` strings with `txExplorerUrl()` / `addressExplorerUrl()`
+
 ## v0.5.3 (April 2026)
 
 **New features:**

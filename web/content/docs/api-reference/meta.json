@@ -1,4 +1,4 @@
 {
   "title": "API Reference",
-  "pages": ["index", "constructors", "write-methods", "read-methods", "pda-helpers", "game-server", "types"]
+  "pages": ["index", "constructors", "write-methods", "read-methods", "pda-helpers", "game-server", "tx-log", "types"]
 }

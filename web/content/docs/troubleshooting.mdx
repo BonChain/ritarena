@@ -68,7 +68,13 @@ const keypair = Keypair.generate();
 ### How do I get devnet SOL and USDC?
 
 1. **SOL** — use the [Solana Faucet](https://faucet.solana.com/). Paste your public key, select devnet, request 2 SOL.
-2. **USDC** — use the [Circle Faucet](https://faucet.circle.com/). Select Solana devnet, paste your address.
+2. **USDC** — call `sdk.mintTestUsdc(amount)` from any wallet that holds SOL. The protocol's test-USDC mint authority is a program-controlled PDA, so the call is permissionless on devnet. Recipient ATA is auto-created. Max 1,000 USDC per call.
+
+   ```typescript
+   import { RitArena } from "@ritarena/sdk";
+   const sdk = RitArena.fromKeypair(connection, keypair);
+   await sdk.mintTestUsdc(50_000_000); // 50 USDC
+   ```
 
 ### "Owner does not match" / `custom program error: 0x4`
 
@@ -76,7 +82,7 @@ This used to fire for non-deployer wallets running `npm run setup:devnet` becaus
 
 ### `NO_USDC_ACCOUNT` error
 
-Your wallet doesn't have a USDC token account yet. This is created automatically when you receive USDC for the first time. Get devnet USDC from the Circle Faucet above, or create the account manually:
+Your wallet doesn't have a USDC token account yet. As of v0.5.3 both `enterArena` and `mintTestUsdc` create this ATA automatically via an idempotent pre-instruction, so just calling either method should work for fresh wallets. If you're calling lower-level Anchor methods directly, create it explicitly:
 
 ```typescript
 import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";

@@ -8,7 +8,7 @@ description: Install the RitArena SDK and its peer dependencies.
 - **Node.js** 18+ (you probably have this already)
 - **TypeScript** 5.x (recommended — the types are genuinely helpful, not just decoration)
 - A Solana wallet with SOL for transaction fees (~$0.001 per tx, so like... one penny gets you 10 transactions)
-- USDC tokens for registration and arena entry (the actual money part)
+- USDC tokens for arena entry (registration is free since v0.5.0). On devnet, the SDK ships with a built-in faucet — no Circle account needed.
 
 ## Install
 
@@ -28,7 +28,7 @@ These install automatically with `npm install @ritarena/sdk` — no separate ins
 
 ## All exports
 
-Every export from `@ritarena/sdk` v0.5.3:
+Every export from `@ritarena/sdk` v0.5.4:
 
 ```typescript
 // Client classes
@@ -49,11 +49,16 @@ import {
   MAX_NAME_LEN,
   MAX_PRIZE_SLOTS,
   MAX_ACTION_SCHEMA_LEN,
+  MAX_TEST_USDC_PER_CALL,
   BATTLE_ROYALE_TEMPLATE,
 } from "@ritarena/sdk";
 
 // RPS helper (v0.5.1+)
 import { resolveRpsRound, type RpsChoice } from "@ritarena/sdk";
+
+// Tx audit log + Solana Explorer URL helpers (v0.5.4+)
+import { TxLog, txExplorerUrl, addressExplorerUrl } from "@ritarena/sdk";
+import type { TxKind, TxLogEntry, SolanaCluster, LogEntry } from "@ritarena/sdk";
 
 // Types
 import type {
@@ -95,7 +100,16 @@ import { Connection } from "@solana/web3.js";
 const connection = new Connection("https://api.devnet.solana.com");
 ```
 
-Get devnet SOL from the [Solana Faucet](https://faucet.solana.com/) and devnet USDC from the [Circle Faucet](https://faucet.circle.com/).
+Get devnet SOL from the [Solana Faucet](https://faucet.solana.com/), then mint test USDC directly from the SDK:
+
+```typescript
+import { RitArena } from "@ritarena/sdk";
+
+const sdk = RitArena.fromKeypair(connection, keypair);
+await sdk.mintTestUsdc(50_000_000); // 50 USDC to your wallet (max 1,000 per call)
+```
+
+The protocol's test-USDC mint is controlled by a program PDA, so anyone can call `mintTestUsdc` on devnet — no Circle Faucet account needed. The recipient ATA is auto-created. Mainnet uses real Circle USDC, where this method is a no-op. See [Write Methods → mintTestUsdc](/docs/api-reference/write-methods#minttestusdcamount-recipient).
 
 ### Mainnet (production)
 

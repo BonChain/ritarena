@@ -41,6 +41,8 @@ try {
 | `ROUND_IN_PROGRESS` | `reportRound` | Previous round still submitting |
 | `WINNER_NOT_FOUND` | `finish` | Winner not in tracked entries |
 | `WINNERS_MISMATCH` | `finish` | Winners count doesn't match prizeSplit length |
+| `INVALID_TREASURY` | Internal helpers | Treasury PDA passed to a method does not match the on-chain protocol treasury |
+| `INSUFFICIENT_VAULT_BALANCE` | `claimPrize`, `claimCreatorFee` | Vault balance is below the amount being claimed |
 
 ## Common patterns
 

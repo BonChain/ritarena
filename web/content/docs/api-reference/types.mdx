@@ -317,11 +317,14 @@ import {
   MAX_PRIZE_SLOTS,      // 10
   MAX_ACTION_SCHEMA_LEN,// 256
   BATTLE_ROYALE_TEMPLATE, // CreateArenaConfig with sensible defaults
-  TEST_USDC_MINT_AUTHORITY_SEED, // Buffer: seed for the test-USDC mint authority PDA
   MAX_TEST_USDC_PER_CALL, // 1_000_000_000 (1,000 USDC at 6 decimals)
 } from "@ritarena/sdk";
 
-// Removed in v0.5.0: REGISTRATION_FEE. Profile registration is now free.
+// Removed:
+// - v0.5.0: REGISTRATION_FEE. Profile registration is now free.
+//   The export was finally deleted in v0.5.4 (see Changelog).
+// - TEST_USDC_MINT_AUTHORITY_SEED is defined internally in the SDK but is not
+//   re-exported. If you need the PDA, use `pdas.testUsdcMintAuthority()`.
 ```
 
 ### BATTLE_ROYALE_TEMPLATE
