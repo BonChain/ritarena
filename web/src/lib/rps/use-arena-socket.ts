@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { RpsChoice } from "@ritarena/sdk";
-import type { MatchPhase } from "./match-state";
+import type { MatchPhase, RunningState } from "./match-state";
+import { EMPTY_RUNNING } from "./match-state";
 
 type ServerMessage =
   | { type: "round-start"; round: number; deadline: number }
@@ -16,12 +17,17 @@ const RPS_SERVER_WS =
 
 export function useArenaSocket(arenaId: string | null) {
   const [phase, setPhase] = useState<MatchPhase>({ kind: "waiting" });
+  const [running, setRunning] = useState<RunningState>(EMPTY_RUNNING);
+  const [connected, setConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (!arenaId) return;
     const ws = new WebSocket(`${RPS_SERVER_WS}/arenas/${arenaId}`);
     wsRef.current = ws;
+
+    ws.onopen = () => setConnected(true);
+    ws.onclose = () => setConnected(false);
 
     ws.onmessage = (ev) => {
       const msg = JSON.parse(ev.data) as ServerMessage;
@@ -37,6 +43,17 @@ export function useArenaSocket(arenaId: string | null) {
             scores: msg.scores,
             pubkeys: msg.pubkeys,
             tx: msg.tx,
+          });
+          setRunning((prev) => {
+            const prevTotals = prev.runningScores && prev.lastPubkeys
+              ? new Map(prev.lastPubkeys.map((pk, i) => [pk, prev.runningScores![i]]))
+              : new Map<string, number>();
+            const nextTotals = msg.pubkeys.map((pk, i) => (prevTotals.get(pk) ?? 0) + msg.scores[i]);
+            return {
+              lastChoices: [...msg.choices],
+              lastPubkeys: [...msg.pubkeys],
+              runningScores: nextTotals,
+            };
           });
           break;
         case "match-complete":
@@ -55,5 +72,5 @@ export function useArenaSocket(arenaId: string | null) {
     wsRef.current?.send(JSON.stringify({ type: "submit_action", round, choice }));
   }
 
-  return { phase, submit };
+  return { phase, running, submit, connected };
 }

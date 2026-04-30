@@ -56,9 +56,13 @@ import {
 // RPS helper (v0.5.1+)
 import { resolveRpsRound, type RpsChoice } from "@ritarena/sdk";
 
-// Tx audit log + Solana Explorer URL helpers (v0.5.4+)
-import { TxLog, txExplorerUrl, addressExplorerUrl } from "@ritarena/sdk";
-import type { TxKind, TxLogEntry, SolanaCluster, LogEntry } from "@ritarena/sdk";
+// Solana Explorer URL helpers (v0.5.4+)
+import { txExplorerUrl, addressExplorerUrl } from "@ritarena/sdk";
+import type { SolanaCluster, LogEntry } from "@ritarena/sdk";
+
+// Tx audit log — Node-only, served from a subpath so it doesn't leak into browser bundles (v0.5.5+)
+import { TxLog } from "@ritarena/sdk/tx-log";
+import type { TxKind, TxLogEntry } from "@ritarena/sdk/tx-log";
 
 // Types
 import type {

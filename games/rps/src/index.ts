@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { WebSocketServer } from "ws";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { TxLog } from "@ritarena/sdk";
+import { TxLog } from "@ritarena/sdk/tx-log";
 import { RpsOracle } from "./oracle-client.js";
 import { RpsGameRunner } from "./game-runner.js";
 import { attachSocket } from "./human-actions.js";

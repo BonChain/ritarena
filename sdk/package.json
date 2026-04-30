@@ -9,6 +9,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./tx-log": {
+      "import": "./dist/tx-log.js",
+      "require": "./dist/tx-log.js",
+      "types": "./dist/tx-log.d.ts"
     }
   },
   "files": [

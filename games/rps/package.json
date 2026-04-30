@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.0",
-    "@ritarena/sdk": "file:../../sdk",
+    "@ritarena/sdk": "^0.5.4",
     "@solana/web3.js": "^1.98.4",
     "dotenv": "^16.4.5",
     "ws": "^8.18.0"

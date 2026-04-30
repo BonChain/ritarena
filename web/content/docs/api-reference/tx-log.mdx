@@ -6,10 +6,13 @@ description: Persist on-chain tx signatures per arena and build Solana Explorer 
 `TxLog` records every oracle write tx for an arena to a JSONL file, so the Solana Explorer link UX survives a server restart. The accompanying URL helpers (`txExplorerUrl`, `addressExplorerUrl`) replace hardcoded `https://explorer.solana.com/...?cluster=devnet` strings throughout your game and frontend.
 
 ```typescript
-import { TxLog, txExplorerUrl, addressExplorerUrl } from "@ritarena/sdk";
+import { TxLog } from "@ritarena/sdk/tx-log";
+import { txExplorerUrl, addressExplorerUrl } from "@ritarena/sdk";
 ```
 
-Added in **v0.5.4** — earlier versions surfaced tx sigs only via `GameServer`'s `log` event (transient, lost on restart).
+`TxLog` lives at the `/tx-log` subpath because it touches the Node filesystem (`node:fs/promises`) and would otherwise leak into browser bundles when the main barrel is imported from a Next.js client component.
+
+Added in **v0.5.4** — earlier versions surfaced tx sigs only via `GameServer`'s `log` event (transient, lost on restart). The subpath split landed in **v0.5.5**.
 
 ## Why this exists
 
@@ -127,7 +130,8 @@ addressExplorerUrl(pk.toBase58(), "mainnet-beta");
 ## End-to-end example
 
 ```typescript
-import { RitArena, TxLog, txExplorerUrl } from "@ritarena/sdk";
+import { RitArena, txExplorerUrl } from "@ritarena/sdk";
+import { TxLog } from "@ritarena/sdk/tx-log";
 
 const sdk = RitArena.fromKeypair(connection, oracle);
 const txLog = new TxLog({ dir: "./arena-tx-logs" });
