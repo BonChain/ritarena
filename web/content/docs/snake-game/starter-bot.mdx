@@ -31,8 +31,8 @@ console.log("Wallet:", keypair.publicKey.toBase58());
 const connection = new Connection(RPC_URL);
 const sdk = RitArena.fromKeypair(connection, keypair);
 
-const profile = await sdk.getProfile(keypair.publicKey);
-if (!profile) {
+const registered = await sdk.hasProfile(keypair.publicKey);
+if (!registered) {
   console.log("Registering profile...");
   await sdk.registerProfile("MyBot");
 }

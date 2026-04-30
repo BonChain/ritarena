@@ -63,8 +63,8 @@ This happens automatically inside `GameServer.setupWithBots()`. If you need to r
 import { RitArena } from "@ritarena/sdk";
 const sdk = RitArena.fromKeypair(connection, keypair);
 
-const existing = await sdk.getProfile(keypair.publicKey);
-if (!existing) {
+const registered = await sdk.hasProfile(keypair.publicKey);
+if (!registered) {
   await sdk.registerProfile("MyGameStudio"); // one-time, free since v0.5.0
 }
 ```

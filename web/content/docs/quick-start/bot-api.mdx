@@ -106,8 +106,8 @@ const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
 const sdk = RitArena.fromKeypair(connection, keypair);
 
 // 2. Register (one-time)
-const profile = await sdk.getProfile(keypair.publicKey);
-if (!profile) {
+const registered = await sdk.hasProfile(keypair.publicKey);
+if (!registered) {
   await sdk.registerProfile("MySnakeBot_v1");
 }
 

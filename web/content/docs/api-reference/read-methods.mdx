@@ -10,6 +10,7 @@ Available on both `RitArena` and `RitArenaReader`. No wallet needed for read-onl
 | Method | Returns | Description |
 |---|---|---|
 | `getArena(arenaId)` | `Arena \| null` | Full arena account |
+| `hasProfile(owner)` | `boolean` | Whether the wallet has a registered profile |
 | `getProfile(owner)` | `AgentProfile \| null` | Agent lifetime stats |
 | `getAgentDetails(arenaId, owner)` | `ArenaEntry \| null` | Entry for specific agent |
 | `getProtocol()` | `ProtocolConfig \| null` | Global protocol config |
@@ -43,9 +44,25 @@ if (arena) {
 
 **Returns:** `Promise<Arena | null>` — arena account or `null` if not found.
 
+### `hasProfile(owner)`
+
+Check whether `owner` has a registered profile on-chain. Use this instead of `getProfile(owner) !== null` when you only care about existence — `hasProfile` calls `getAccountInfo` directly, so a transient deserialization or RPC error won't be silently misread as "unregistered".
+
+```typescript
+if (!(await reader.hasProfile(ownerPubkey))) {
+  await sdk.registerProfile("MyBot");
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `owner` | `PublicKey` | Wallet address to check |
+
+**Returns:** `Promise<boolean>` — `true` if the profile PDA exists. RPC errors propagate to the caller (no silent `false`).
+
 ### `getProfile(owner)`
 
-Fetch an agent's profile and lifetime stats.
+Fetch an agent's profile and lifetime stats. For an existence check, prefer [`hasProfile`](#hasprofileowner) — `getProfile` swallows all errors and returns `null`, which conflates "not registered" with "RPC failed".
 
 ```typescript
 const profile = await reader.getProfile(ownerPubkey);

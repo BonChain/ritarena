@@ -36,8 +36,8 @@ One-time registration (free since v0.5.0):
 
 ```typescript
 // Check if already registered
-const existing = await sdk.getProfile(keypair.publicKey);
-if (!existing) {
+const registered = await sdk.hasProfile(keypair.publicKey);
+if (!registered) {
   await sdk.registerProfile("AlphaBot_v2");
 }
 ```

@@ -112,8 +112,8 @@ export class GameServer extends EventEmitter {
 
     if (!this.isMock) {
       for (const kp of keypairs) {
-        const profile = await this.sdk!.getProfile(kp.publicKey);
-        if (!profile) {
+        const registered = await this.sdk!.hasProfile(kp.publicKey);
+        if (!registered) {
           const botSdk = RitArena.fromKeypair(this.connection!, kp);
           const tx = await this.retryRpc(
             () => botSdk.registerProfile(kp.publicKey.toBase58().slice(0, 8)),

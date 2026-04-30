@@ -39,9 +39,9 @@ export default function PlayPage() {
     (async () => {
       try {
         const reader = RitArena.readOnly(connection);
-        const profile = await reader.getProfile(publicKey);
+        const registered = await reader.hasProfile(publicKey);
         if (cancelled) return;
-        if (profile) {
+        if (registered) {
           setResting("ready");
         } else {
           setResting("unregistered");

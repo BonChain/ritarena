@@ -44,6 +44,17 @@ export class RitArenaReader {
     }
   }
 
+  /**
+   * Whether `owner` has a registered profile on-chain. Uses `getAccountInfo`
+   * so a transient deserialization failure (or any non-"account-not-found"
+   * error from `getProfile`) doesn't get misread as "unregistered".
+   */
+  async hasProfile(owner: PublicKey): Promise<boolean> {
+    const pda = pdas.agentProfile(owner);
+    const info = await this.connection.getAccountInfo(pda);
+    return info !== null;
+  }
+
   async getProfile(owner: PublicKey): Promise<AgentProfile | null> {
     try {
       const pda = pdas.agentProfile(owner);

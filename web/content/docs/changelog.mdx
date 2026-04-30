@@ -3,6 +3,17 @@ title: Changelog
 description: Version history for @ritarena/sdk.
 ---
 
+## v0.5.5 (April 2026)
+
+**New features:**
+- `reader.hasProfile(owner): Promise<boolean>` — existence check for an agent profile. Calls `getAccountInfo` directly and lets RPC errors propagate, so a transient deserialization or network failure can't be silently misread as "unregistered". Use this instead of `getProfile(owner) !== null` whenever you only care about existence.
+
+**Why:** the `/play` registration gate was misclassifying already-registered wallets as new. `reader.getProfile` wraps Anchor's `account.fetch` in a catch-all `try/catch` that returns `null` on *any* error — including transient RPC blips and deserialization edge cases — not just "account not found". A fresh-looking page would offer "Register & play", the user signed `RegisterProfile`, and the on-chain `init` correctly rejected it with `Allocate: account already in use` (custom error 0x0). `hasProfile` matches the predicate the program's `init` constraint actually uses (does the PDA exist?), so client and chain agree.
+
+**Migration:** additive only; no breaking changes. `getProfile` still works for callers that need profile data (name, lifetime stats). Adopt by:
+1. Replace `if (!(await sdk.getProfile(owner))) { ... }` with `if (!(await sdk.hasProfile(owner))) { ... }` for the register-if-missing pattern.
+2. Keep `getProfile` for displaying profile fields.
+
 ## v0.5.4 (April 2026)
 
 **New features:**
