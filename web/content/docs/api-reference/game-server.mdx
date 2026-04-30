@@ -165,7 +165,8 @@ interface ArenaInfo {
   prizeSplit: number[];
   currentRound: number;
   phase: string;
-  arenaPda: string;
+  arenaPda: string;       // base58 string
+  explorerUrl?: string;   // populated by some emitters; build your own with addressExplorerUrl(arenaPda)
 }
 ```
 

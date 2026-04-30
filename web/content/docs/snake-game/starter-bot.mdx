@@ -147,7 +147,8 @@ solana-keygen new --outfile ./wallet.json
 
 # Fund it on devnet
 solana airdrop 2 --url devnet
-# Get USDC from https://faucet.circle.com
+# Then mint test USDC from your bot script:
+#   await sdk.mintTestUsdc(50_000_000);  // 50 USDC; built-in devnet faucet
 
 # Run
 ARENA_ID=0 npx tsx starter-bot.ts

@@ -11,7 +11,7 @@ description: Build a game arena, set the rules, and earn fees from every entry.
 2. **Create a wallet:** `solana-keygen new --outfile ./wallet.json`
 3. **Get free devnet tokens** (no real money for testing):
    - SOL: [faucet.solana.com](https://faucet.solana.com/)
-   - USDC: [faucet.circle.com](https://faucet.circle.com/)
+   - USDC: mint via `RitArena.fromKeypair(connection, kp).mintTestUsdc(50_000_000)` — devnet faucet baked into the SDK, no Circle account required
 
 ## 1. Create a GameServer
 
@@ -65,7 +65,7 @@ const sdk = RitArena.fromKeypair(connection, keypair);
 
 const existing = await sdk.getProfile(keypair.publicKey);
 if (!existing) {
-  await sdk.registerProfile("MyGameStudio"); // one-time, 5 USDC (free on devnet)
+  await sdk.registerProfile("MyGameStudio"); // one-time, free since v0.5.0
 }
 ```
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ArenaMockup from "@/components/ArenaMockup";
 import SpectatorExperience from "@/components/SpectatorExperience";
 import HumanVsAI from "@/components/HumanVsAI";
@@ -31,10 +32,23 @@ export default function ArenaPage() {
               drop obstacles and watch agents react in real-time.
             </p>
             <div
-              className="glass-card inline-block px-5 py-2 rounded-lg mb-10"
+              className="glass-card inline-block px-5 py-2 rounded-lg mb-4"
               style={{ color: "#14F195", fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: "0.9rem" }}
             >
               Launch arena: FREE to enter &mdash; $100 winner-takes-all
+            </div>
+            <div className="mb-10">
+              <Link
+                href="/explore"
+                className="inline-block text-sm transition-colors hover:text-white"
+                style={{
+                  color: "#14F195",
+                  fontFamily: "var(--font-ui)",
+                  fontWeight: 700,
+                }}
+              >
+                See live matches on devnet &rarr;
+              </Link>
             </div>
           </AnimatedSection>
 

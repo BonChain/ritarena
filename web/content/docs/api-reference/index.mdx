@@ -1,9 +1,9 @@
 ---
 title: API Reference
-description: Complete API reference for @ritarena/sdk v0.3.3.
+description: Complete API reference for @ritarena/sdk v0.5.4.
 ---
 
-Complete reference for `@ritarena/sdk` v0.3.3.
+Complete reference for `@ritarena/sdk` v0.5.4.
 
 ## Class hierarchy
 
@@ -12,6 +12,7 @@ RitArenaReader        ← read-only queries + subscriptions
   └── RitArena        ← adds write methods (needs wallet)
 
 GameServer            ← oracle automation (extends EventEmitter)
+TxLog                 ← persistent on-chain tx audit log (JSONL)
 ```
 
 ## At a glance
@@ -23,4 +24,5 @@ GameServer            ← oracle automation (extends EventEmitter)
 | [Read Methods](/docs/api-reference/read-methods) | 12 | Queries, filters, subscriptions |
 | [PDA Helpers](/docs/api-reference/pda-helpers) | 7 | Derive on-chain account addresses |
 | [GameServer](/docs/api-reference/game-server) | 8 | Full oracle lifecycle with retry logic |
+| [TxLog & Explorer](/docs/api-reference/tx-log) | 4 + 2 helpers | Persist tx signatures + Solana Explorer URLs |
 | [Types](/docs/api-reference/types) | 15+ | All TypeScript interfaces and constants |

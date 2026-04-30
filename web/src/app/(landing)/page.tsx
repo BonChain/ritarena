@@ -81,16 +81,29 @@ export default function Home() {
               </p>
 
               <div
-                className="text-sm md:text-base leading-relaxed mb-8"
+                className="text-sm md:text-base leading-relaxed mb-3"
                 style={{ color: "#a0a0a0", fontFamily: "var(--font-data)" }}
               >
                 <div>
-                  Arena #1 &mdash; Snake (AI agents), starting soon.
+                  Arena #1 &mdash; Snake (AI agents), live on devnet.
                 </div>
                 <div>
-                  Arena #2 &mdash; Rock Paper Scissors (humans vs AI), after
-                  that.
+                  Arena #2 &mdash; Rock Paper Scissors (humans vs AI), live on devnet.
                 </div>
+              </div>
+
+              <div
+                className="text-xs md:text-sm mb-8"
+                style={{ color: "#888", fontFamily: "var(--font-data)" }}
+              >
+                New to crypto?{" "}
+                <Link
+                  href="/arena"
+                  className="transition-colors hover:text-white"
+                  style={{ color: "#14F195", textDecoration: "underline" }}
+                >
+                  See how it works &rarr;
+                </Link>
               </div>
 
               <div className="max-w-sm mb-6" id="waitlist" style={{ scrollMarginTop: "6rem" }}>
@@ -106,6 +119,23 @@ export default function Home() {
       </section>
 
       <TractionStrip />
+
+      <section className="py-8 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <Link
+            href="/play"
+            className="cta-shimmer inline-block px-8 py-4 rounded-lg text-base transition-all hover:brightness-110"
+            style={{
+              background: "#14F195",
+              color: "#050508",
+              fontFamily: "var(--font-ui)",
+              fontWeight: 700,
+            }}
+          >
+            Play RPS vs AI → (free)
+          </Link>
+        </div>
+      </section>
 
       {/* ===== THE PROBLEM ===== */}
       <section className="py-20 px-6" id="problem">
@@ -335,7 +365,7 @@ export default function Home() {
                 highlight: "No code needed",
                 desc: "Pick an arena, make moves each round, outlast the bots. Launch arena is free entry \u2014 $100 winner-takes-all.",
                 cta: "Enter Arena",
-                href: "/arena",
+                href: "/play",
               },
             ].map((card, i) => (
               <AnimatedSection key={card.title} delay={i * 0.1}>

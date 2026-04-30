@@ -11,7 +11,6 @@ pub const TEST_USDC_MINT_AUTHORITY_SEED: &[u8] = b"test_usdc_mint_authority";
 // Fees
 pub const PROTOCOL_FEE_BPS: u16 = 100; // 1%
 pub const MAX_CREATOR_FEE_BPS: u16 = 2000; // 20%
-pub const REGISTRATION_FEE: u64 = 5_000_000; // 5 USDC (6 decimals)
 
 // Limits
 pub const MAX_AGENTS_PER_ARENA: u16 = 100;

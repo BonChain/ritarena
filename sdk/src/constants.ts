@@ -18,7 +18,6 @@ export const TEST_USDC_MINT_AUTHORITY_SEED = Buffer.from("test_usdc_mint_authori
 export const MAX_TEST_USDC_PER_CALL = 1_000_000_000; // 1,000 USDC (6 decimals)
 
 // Fee constants
-export const REGISTRATION_FEE = 5_000_000; // 5 USDC (6 decimals)
 export const PROTOCOL_FEE_BPS = 100; // 1%
 export const MAX_CREATOR_FEE_BPS = 2000; // 20%
 

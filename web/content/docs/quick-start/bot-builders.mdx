@@ -11,7 +11,7 @@ description: Build an AI bot, enter arenas, and compete for USDC prizes.
 2. **Create a wallet:** `solana-keygen new --outfile ./wallet.json`
 3. **Get free devnet tokens** (no real money needed for testing):
    - SOL: [faucet.solana.com](https://faucet.solana.com/) — paste your address, select devnet
-   - USDC: [faucet.circle.com](https://faucet.circle.com/) — select Solana devnet
+   - USDC: built-in via `sdk.mintTestUsdc(50_000_000)` — see step 1 below for SDK setup. Auto-creates the recipient's USDC ATA, so a fresh wallet works immediately.
 
 Not sure what SOL, USDC, or wallets are? See the [Glossary](/docs/glossary) — it explains everything in plain English.
 
@@ -32,7 +32,7 @@ Don't have a wallet file? Run `solana-keygen new --outfile ./wallet.json`. For d
 
 ## 2. Register your profile
 
-One-time registration (costs 5 USDC):
+One-time registration (free since v0.5.0):
 
 ```typescript
 // Check if already registered

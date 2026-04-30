@@ -3,6 +3,51 @@ title: Changelog
 description: Version history for @ritarena/sdk.
 ---
 
+## v0.5.4 (April 2026)
+
+**New features:**
+- `TxLog` — per-arena JSONL audit log for on-chain tx signatures. Survives server restart, queryable by `kind` and `round`. Replaces ad-hoc `connection.getSignaturesForAddress` heuristics that conflate `submitElimination` and `finalizeArena` sigs. See [API Reference → TxLog & Explorer](/docs/api-reference/tx-log).
+- `txExplorerUrl(tx, cluster?)` and `addressExplorerUrl(address, cluster?)` — pure helpers for Solana Explorer URLs. Defaults to `devnet`. Use everywhere instead of hardcoded `https://explorer.solana.com/...?cluster=devnet` strings.
+- `LogEntry` — game-server's UI log event payload type is now exported so games can consume the `log` event without redeclaring the interface locally. Snake's server, web, and `arena-zone-war` were each redefining it.
+
+**Cleanup:**
+- `REGISTRATION_FEE` constant export removed. The v0.5.0 changelog said this was removed but the export had been left behind as dead code. No consumer used it (the on-chain instruction stopped charging in v0.5.0). If you imported it, just delete the import — registration is free.
+
+**Why:** the RPS `/play` UI and Snake match overlay both wanted "view this round on Solana Explorer" links, and `arena-zone-war` was reaching for a buggy `getSignaturesForAddress(arenaPda).find(s => s.confirmationStatus === "finalized")` heuristic to recover the finalize sig (it could match any finalized sig, not specifically `finalizeArena`). One persisted log + one URL helper closes the gap.
+
+**Migration:** additive only; no breaking changes for actual usage. Existing games keep working. To adopt:
+1. Construct a `TxLog` instance once at game-server startup
+2. Call `txLog.append({ arenaId, kind, tx })` after each SDK write
+3. Replace inline `https://explorer.solana.com/...` strings with `txExplorerUrl()` / `addressExplorerUrl()`
+
+## v0.5.3 (April 2026)
+
+**New features:**
+- `enterArena(arenaId)` now auto-creates the caller's `agent_usdc` ATA if it doesn't exist. One tx, one signature — new wallets (e.g. humans arriving via `/play`) no longer need a separate ATA-creation step before entering. Existing callers get the same result as before; the pre-instruction is only added when the ATA is actually missing.
+
+## v0.5.2 (April 2026)
+
+**New features:**
+- `reader.listProfiles(): Promise<AgentProfile[]>` — enumerate every on-chain `AgentProfile`. Used by the site's `/leaderboard`. No filter in this version; callers sort/slice in memory.
+
+## v0.5.1 (April 2026)
+
+**New features:**
+- `resolveRpsRound(choices: RpsChoice[]): number[]` — pure helper for Rock Paper Scissors N-player scoring. Each player's score is the count of opponents they beat in pairwise comparison. Used by `games/rps/` server and the `/play` match UI.
+- New exported type: `RpsChoice = "rock" | "paper" | "scissors"`.
+
+## v0.5.0 (April 2026) — BREAKING
+
+**Removed:**
+- `REGISTRATION_FEE` constant — the on-chain `register_profile` instruction no longer transfers USDC. Registration is now free.
+- `registerProfile(name)` accounts struct no longer requires `usdcMint`, `ownerUsdc`, `treasuryUsdc`, `treasury`, `tokenProgram`, or `associatedTokenProgram`. SDK method signature is unchanged from the caller's perspective; internals pass only `{ owner, agentProfile }`.
+
+**Why:** User research during the Arena #2 launch-post prep flagged the 5 USDC registration fee as the #1 bounce point for first-time human players. Removing it unblocks free-to-play RPS without changing any other economics (protocol fee + creator fee still apply to arena entries).
+
+**Migration:** Bump to v0.5.0+, rebuild. No consumer code change required. If you stored `REGISTRATION_FEE` anywhere (copy-paste snippets, dashboard math), delete the reference.
+
+**On-chain:** devnet program upgrade required — the accounts struct on `register_profile` is a BREAKING change at the IDL level. Old SDK versions cannot construct the new accounts layout.
+
 ## v0.4.1 (April 2026)
 
 **Bug fixes:**

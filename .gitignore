@@ -50,3 +50,7 @@ web/.source/
 
 # Next.js build output
 web/.next/
+
+# Per-game runtime logs (play-data + on-chain tx audit)
+games/*/arena-logs/
+games/*/arena-tx-logs/

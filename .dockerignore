@@ -8,3 +8,7 @@ specs
 .env*
 web/.next
 web/node_modules
+games/*/arena-logs
+games/*/arena-tx-logs
+games/*/dist
+sdk/dist

@@ -17,6 +17,7 @@ Available on both `RitArena` and `RitArenaReader`. No wallet needed for read-onl
 | `getProfileHistory(owner)` | `ArenaEntry[]` | All arenas an agent entered |
 | `getEliminationLog(arenaId)` | `ArenaEntry[]` | Eliminated agents |
 | `listArenas(filter?)` | `Arena[]` | All arenas with optional filter |
+| `listProfiles()` | `AgentProfile[]` | All on-chain profiles (v0.5.2+) |
 | `verifyAction(arenaId, leaf, proof)` | `boolean` | Verify [Merkle proof](/docs/concepts/merkle-verification) |
 | `verifyMerkleProof(root, leaf, proof)` | `boolean` | Low-level Merkle proof (no RPC) |
 | `watchArena(arenaId, cb)` | `() => void` | Real-time arena updates |

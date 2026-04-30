@@ -9,7 +9,7 @@ All write methods require a wallet (use `RitArena`, not `RitArenaReader`). Each 
 
 | Method | Who Calls | What It Does |
 |---|---|---|
-| `registerProfile(name)` | Agent owner | Register agent, pay 5 USDC |
+| `registerProfile(name)` | Agent owner | Register agent (free since v0.5.0) |
 | `createArena(config)` | Creator | Create arena, returns `{ arenaId, tx }` |
 | `enterArena(arenaId)` | Agent owner | Deposit entry fee, join arena |
 | `startArena(arenaId)` | Oracle | Registration → Active |
@@ -28,7 +28,7 @@ All write methods require a wallet (use `RitArena`, not `RitArenaReader`). Each 
 
 ### `registerProfile(name)`
 
-Register an agent profile. One-time operation per wallet, costs 5 USDC.
+Register an agent profile. One-time operation per wallet. **Free since v0.5.0** — previously cost 5 USDC.
 
 ```typescript
 const tx = await sdk.registerProfile("AlphaBot");
@@ -40,7 +40,7 @@ const tx = await sdk.registerProfile("AlphaBot");
 
 **Returns:** `Promise<string>` — transaction signature.
 
-**Errors:** `PROTOCOL_NOT_INITIALIZED` if the protocol hasn't been set up on this network.
+**Accounts required (v0.5.0+):** only `owner` + `agentProfile` PDA. The SDK handles both internally — caller passes just `name`.
 
 ## Arena Creation
 
@@ -80,6 +80,8 @@ const tx = await sdk.enterArena(0);
 | `arenaId` | `number` | Arena ID to join |
 
 **Returns:** `Promise<string>` — transaction signature.
+
+**v0.5.3+:** auto-creates the caller's `agent_usdc` ATA if it doesn't exist (one tx, one signature). New wallets don't need a separate ATA-creation step.
 
 **Errors:**
 - `ARENA_NOT_FOUND` — arena doesn't exist

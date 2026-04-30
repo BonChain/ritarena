@@ -1,0 +1,65 @@
+FROM node:20-alpine AS sdk-builder
+WORKDIR /app/sdk
+COPY sdk/package.json sdk/package-lock.json ./
+RUN npm ci
+COPY sdk/tsconfig.json ./
+COPY sdk/src ./src
+RUN npm run build
+
+FROM node:20-alpine AS rps-builder
+WORKDIR /app
+COPY --from=sdk-builder /app/sdk ./sdk
+WORKDIR /app/games/rps
+COPY games/rps/package.json games/rps/package-lock.json ./
+RUN npm install --no-audit --no-fund
+COPY games/rps/tsconfig.json ./
+COPY games/rps/src ./src
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app/games/rps
+ENV NODE_ENV=production
+ENV ORACLE_KEYPAIR_PATH=/tmp/keys/oracle.json
+ENV BOT_KEYPAIRS_DIR=/tmp/keys/bots
+ENV LOG_DIR=/tmp/arena-logs
+ENV TX_LOG_DIR=/tmp/arena-tx-logs
+ENV RPC_URL=https://api.devnet.solana.com
+
+COPY --from=sdk-builder /app/sdk /app/sdk
+COPY --from=rps-builder /app/games/rps/node_modules ./node_modules
+COPY --from=rps-builder /app/games/rps/dist ./dist
+COPY games/rps/package.json ./
+
+RUN cat > /usr/local/bin/entrypoint.sh <<'EOF'
+#!/bin/sh
+set -e
+mkdir -p /tmp/keys/bots /tmp/arena-logs /tmp/arena-tx-logs
+
+require() {
+  if [ -z "$2" ]; then
+    echo "ERROR: env var $1 is required" >&2
+    exit 1
+  fi
+}
+
+require ORACLE_KEYPAIR_JSON     "$ORACLE_KEYPAIR_JSON"
+require BOT_KEYPAIR_CHAOS       "$BOT_KEYPAIR_CHAOS"
+require BOT_KEYPAIR_COPYCAT     "$BOT_KEYPAIR_COPYCAT"
+require BOT_KEYPAIR_COUNTER     "$BOT_KEYPAIR_COUNTER"
+require BOT_KEYPAIR_LAST_WINNER "$BOT_KEYPAIR_LAST_WINNER"
+require BOT_KEYPAIR_ROCK_HEAD   "$BOT_KEYPAIR_ROCK_HEAD"
+
+printf '%s' "$ORACLE_KEYPAIR_JSON"     > /tmp/keys/oracle.json
+printf '%s' "$BOT_KEYPAIR_CHAOS"       > /tmp/keys/bots/chaos.json
+printf '%s' "$BOT_KEYPAIR_COPYCAT"     > /tmp/keys/bots/copycat.json
+printf '%s' "$BOT_KEYPAIR_COUNTER"     > /tmp/keys/bots/counter-predictor.json
+printf '%s' "$BOT_KEYPAIR_LAST_WINNER" > /tmp/keys/bots/last-winner.json
+printf '%s' "$BOT_KEYPAIR_ROCK_HEAD"   > /tmp/keys/bots/rock-head.json
+
+exec "$@"
+EOF
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 3001
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["node", "dist/index.js"]

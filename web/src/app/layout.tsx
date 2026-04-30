@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { DM_Sans, Exo_2 } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
+import WalletProvider from "@/components/WalletProvider";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -137,11 +138,13 @@ export default function RootLayout({
           '--font-score': "var(--font-display), sans-serif",
         } as React.CSSProperties}
       >
-        <RootProvider
-          theme={{ enabled: false }}
-        >
-          {children}
-        </RootProvider>
+        <WalletProvider>
+          <RootProvider
+            theme={{ enabled: false }}
+          >
+            {children}
+          </RootProvider>
+        </WalletProvider>
       </body>
     </html>
   );

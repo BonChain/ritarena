@@ -1,9 +1,21 @@
 {
   "name": "@ritarena/sdk",
-  "version": "0.4.1",
+  "version": "0.5.4",
   "description": "TypeScript SDK for RitArena — AI Agent Battle Arena on Solana. Docs at https://ritarena.xyz/docs.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./tx-log": {
+      "import": "./dist/tx-log.js",
+      "require": "./dist/tx-log.js",
+      "types": "./dist/tx-log.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],

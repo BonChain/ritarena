@@ -24,7 +24,7 @@ import { hashLeaf, computeMerkleRoot } from "./merkle";
 
 type Phase = "idle" | "setup" | "active" | "finished" | "cancelled";
 
-interface LogEntry {
+export interface LogEntry {
   message: string;
   kind: string;
   tx?: string;

@@ -1,5 +1,6 @@
 // games/snake/web/src/components/MatchOverlay.tsx
 import { MatchResult } from "@ritarena/ui";
+import { txExplorerUrl } from "@ritarena/sdk";
 import { getPersonality } from "../lib/bots";
 import type { ArenaInfo, GameState } from "../lib/ws";
 
@@ -21,7 +22,7 @@ export function MatchOverlay({ state, arenaInfo, winnerTxSignature, onDismiss }:
   const prize = Math.floor((prizePoolLamports * firstPlaceShare) / 100);
 
   const explorerUrl = winnerTxSignature
-    ? `https://explorer.solana.com/tx/${winnerTxSignature}?cluster=devnet`
+    ? txExplorerUrl(winnerTxSignature)
     : arenaInfo?.explorerUrl ?? "#";
 
   return (

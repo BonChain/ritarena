@@ -126,17 +126,8 @@ fn build_create_arena_ix(
     }
 }
 
-fn build_register_profile_ix(
-    owner: &Pubkey,
-    usdc_mint: &Pubkey,
-    owner_usdc: &Pubkey,
-    name: &str,
-) -> Instruction {
-    let (protocol_pda, _) = protocol_pda();
-    let (treasury_pda, _) = treasury_pda();
+fn build_register_profile_ix(owner: &Pubkey, name: &str) -> Instruction {
     let (agent_profile, _) = agent_profile_pda(owner);
-    let treasury_usdc =
-        spl_associated_token_account::get_associated_token_address(&treasury_pda, usdc_mint);
 
     let disc = anchor_discriminator("register_profile");
     let name_bytes = name.as_bytes();
@@ -150,13 +141,6 @@ fn build_register_profile_ix(
         accounts: vec![
             AccountMeta::new(*owner, true),
             AccountMeta::new(agent_profile, false),
-            AccountMeta::new_readonly(protocol_pda, false),
-            AccountMeta::new_readonly(*usdc_mint, false),
-            AccountMeta::new(*owner_usdc, false),
-            AccountMeta::new(treasury_usdc, false),
-            AccountMeta::new_readonly(treasury_pda, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-            AccountMeta::new_readonly(spl_associated_token_account::id(), false),
             AccountMeta::new_readonly(
                 solana_pubkey::pubkey!("11111111111111111111111111111111"),
                 false,
@@ -464,7 +448,8 @@ fn get_token_balance(svm: &litesvm::LiteSVM, account: &Pubkey) -> u64 {
 
 // ── Scaffolding helpers ──────────────────────────────────────────────
 
-/// Set up SVM with protocol initialized, creator funded, and profile registered.
+/// Set up SVM with protocol initialized, creator funded, profile registered,
+/// and treasury USDC token account created.
 /// Returns (svm, creator, usdc_mint, creator_usdc).
 fn setup_protocol() -> (litesvm::LiteSVM, Keypair, Pubkey, Pubkey) {
     let mut svm = setup();
@@ -477,8 +462,12 @@ fn setup_protocol() -> (litesvm::LiteSVM, Keypair, Pubkey, Pubkey) {
     let creator_usdc = create_token_account(&mut svm, &creator, &usdc_mint, &creator.pubkey());
     mint_to(&mut svm, &creator, &usdc_mint, &creator_usdc, 1_000_000_000);
 
-    let reg = build_register_profile_ix(&creator.pubkey(), &usdc_mint, &creator_usdc, "Creator");
+    let reg = build_register_profile_ix(&creator.pubkey(), "Creator");
     send_tx(&mut svm, &[reg], &creator, &[&creator]).unwrap();
+
+    // Create treasury USDC token account (required by abandon_arena + collect_protocol_fee)
+    let (treasury_pda_key, _) = treasury_pda();
+    create_token_account(&mut svm, &creator, &usdc_mint, &treasury_pda_key);
 
     (svm, creator, usdc_mint, creator_usdc)
 }
@@ -517,7 +506,7 @@ fn register_agent(
     if usdc_amount > 0 {
         mint_to(svm, funder, usdc_mint, &agent_usdc, usdc_amount);
     }
-    let reg = build_register_profile_ix(&agent.pubkey(), usdc_mint, &agent_usdc, name);
+    let reg = build_register_profile_ix(&agent.pubkey(), name);
     send_tx(svm, &[reg], &agent, &[&agent]).unwrap();
     (agent, agent_usdc)
 }

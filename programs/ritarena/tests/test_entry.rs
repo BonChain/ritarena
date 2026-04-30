@@ -123,17 +123,8 @@ fn build_create_arena_ix(
     }
 }
 
-fn build_register_profile_ix(
-    owner: &Pubkey,
-    usdc_mint: &Pubkey,
-    owner_usdc: &Pubkey,
-    name: &str,
-) -> Instruction {
-    let (protocol_pda, _) = protocol_pda();
-    let (treasury_pda, _) = treasury_pda();
+fn build_register_profile_ix(owner: &Pubkey, name: &str) -> Instruction {
     let (agent_profile, _) = agent_profile_pda(owner);
-    let treasury_usdc =
-        spl_associated_token_account::get_associated_token_address(&treasury_pda, usdc_mint);
 
     let disc = anchor_discriminator("register_profile");
     let name_bytes = name.as_bytes();
@@ -147,13 +138,6 @@ fn build_register_profile_ix(
         accounts: vec![
             AccountMeta::new(*owner, true),
             AccountMeta::new(agent_profile, false),
-            AccountMeta::new_readonly(protocol_pda, false),
-            AccountMeta::new_readonly(*usdc_mint, false),
-            AccountMeta::new(*owner_usdc, false),
-            AccountMeta::new(treasury_usdc, false),
-            AccountMeta::new_readonly(treasury_pda, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-            AccountMeta::new_readonly(spl_associated_token_account::id(), false),
             AccountMeta::new_readonly(
                 solana_pubkey::pubkey!("11111111111111111111111111111111"),
                 false,
@@ -217,13 +201,8 @@ fn test_enter_arena_success() {
         200_000_000,
     );
 
-    // Register profile (costs 5 USDC)
-    let register_ix = build_register_profile_ix(
-        &authority.pubkey(),
-        &usdc_mint,
-        &authority_usdc,
-        "TestAgent",
-    );
+    // Register profile
+    let register_ix = build_register_profile_ix(&authority.pubkey(), "TestAgent");
     send_tx(&mut svm, &[register_ix], &authority, &[&authority]).unwrap();
 
     // Create arena (no bond for simplicity)

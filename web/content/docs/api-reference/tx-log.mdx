@@ -1,0 +1,152 @@
+---
+title: TxLog & Explorer Helpers
+description: Persist on-chain tx signatures per arena and build Solana Explorer URLs without hardcoding cluster.
+---
+
+`TxLog` records every oracle write tx for an arena to a JSONL file, so the Solana Explorer link UX survives a server restart. The accompanying URL helpers (`txExplorerUrl`, `addressExplorerUrl`) replace hardcoded `https://explorer.solana.com/...?cluster=devnet` strings throughout your game and frontend.
+
+```typescript
+import { TxLog } from "@ritarena/sdk/tx-log";
+import { txExplorerUrl, addressExplorerUrl } from "@ritarena/sdk";
+```
+
+`TxLog` lives at the `/tx-log` subpath because it touches the Node filesystem (`node:fs/promises`) and would otherwise leak into browser bundles when the main barrel is imported from a Next.js client component.
+
+Added in **v0.5.4** — earlier versions surfaced tx sigs only via `GameServer`'s `log` event (transient, lost on restart). The subpath split landed in **v0.5.5**.
+
+## Why this exists
+
+Game servers call `RitArena.submitElimination`, `finalizeArena`, etc. Each returns a tx signature. Without persistence, those signatures vanish after the in-memory request — a server restart loses them, and recovering them via `connection.getSignaturesForAddress(arenaPda)` is fragile because Anchor instruction names are not in the sig index.
+
+`TxLog` solves this by appending a typed audit row at the moment each tx is issued.
+
+## TxLog
+
+### Constructor
+
+```typescript
+const txLog = new TxLog({ dir: "./arena-tx-logs", cluster: "devnet" });
+```
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `dir` | `string` | required | Directory for per-arena JSONL files |
+| `cluster` | `'devnet' \| 'mainnet-beta'` | `'devnet'` | Used to compute `explorerUrl` for each entry |
+
+One file per arena: `{dir}/{arenaId}.jsonl`. Append-only.
+
+### `append(input)`
+
+Write one entry. Computes `explorerUrl` and `ts` automatically.
+
+```typescript
+await txLog.append({ arenaId, kind: "round", round: 2, tx });
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `arenaId` | `number` | Required |
+| `kind` | `TxKind` | Required (see kinds below) |
+| `tx` | `string` | Tx signature returned by the SDK write call |
+| `round` | `number?` | Required when `kind: 'round'` |
+| `pubkey` | `string?` | Useful for `kind: 'enter' \| 'claim'` |
+
+Returns the persisted `TxLogEntry`.
+
+### `list(arenaId)`
+
+Returns every entry for an arena in append order:
+
+```typescript
+const all = await txLog.list(arenaId);
+// → TxLogEntry[]
+```
+
+Returns `[]` if the arena has no log file yet.
+
+### `findByKind(arenaId, kind)`
+
+Returns the first matching entry, or `null`:
+
+```typescript
+const finalize = await txLog.findByKind(arenaId, "finalize");
+// → { kind: 'finalize', tx, explorerUrl, ts, ... } | null
+```
+
+### `findRound(arenaId, round)`
+
+Convenience for the most common query:
+
+```typescript
+const round2 = await txLog.findRound(arenaId, 2);
+```
+
+### TxKind
+
+```typescript
+type TxKind =
+  | 'create' | 'enter' | 'start' | 'round' | 'finalize'
+  | 'claim' | 'collect-fee' | 'creator-fee' | 'stake-bond'
+  | 'cancel' | 'abandon';
+```
+
+### TxLogEntry
+
+```typescript
+interface TxLogEntry {
+  arenaId: number;
+  kind: TxKind;
+  round?: number;
+  pubkey?: string;
+  tx: string;
+  explorerUrl: string;
+  ts: number;
+}
+```
+
+## Explorer URL helpers
+
+Pure functions — no I/O, no async. Use them in both server logs and frontend components to keep cluster handling consistent.
+
+### `txExplorerUrl(tx, cluster?)`
+
+```typescript
+txExplorerUrl("5xK9wQbZ...");
+// → "https://explorer.solana.com/tx/5xK9wQbZ...?cluster=devnet"
+
+txExplorerUrl(sig, "mainnet-beta");
+// → "https://explorer.solana.com/tx/.../?cluster=mainnet-beta"
+```
+
+### `addressExplorerUrl(address, cluster?)`
+
+Accepts a base58 string or a `PublicKey`:
+
+```typescript
+addressExplorerUrl(arenaPda);          // string OR PublicKey
+addressExplorerUrl(pk.toBase58(), "mainnet-beta");
+```
+
+## End-to-end example
+
+```typescript
+import { RitArena, txExplorerUrl } from "@ritarena/sdk";
+import { TxLog } from "@ritarena/sdk/tx-log";
+
+const sdk = RitArena.fromKeypair(connection, oracle);
+const txLog = new TxLog({ dir: "./arena-tx-logs" });
+
+const { arenaId, tx: createTx } = await sdk.createArena(config);
+await txLog.append({ arenaId, kind: "create", tx: createTx });
+
+const startTx = await sdk.startArena(arenaId);
+await txLog.append({ arenaId, kind: "start", tx: startTx });
+
+const roundTx = await sdk.submitElimination(arenaId, params);
+await txLog.append({ arenaId, kind: "round", round: 1, tx: roundTx });
+
+// Later — render a clickable link in your frontend:
+const round1 = await txLog.findRound(arenaId, 1);
+console.log(`Round 1 on chain: ${round1?.explorerUrl}`);
+// or build directly: txExplorerUrl(roundTx)
+```

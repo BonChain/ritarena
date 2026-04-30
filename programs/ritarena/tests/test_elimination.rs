@@ -121,17 +121,8 @@ fn build_create_arena_ix(
     }
 }
 
-fn build_register_profile_ix(
-    owner: &Pubkey,
-    usdc_mint: &Pubkey,
-    owner_usdc: &Pubkey,
-    name: &str,
-) -> Instruction {
-    let (protocol_pda, _) = protocol_pda();
-    let (treasury_pda, _) = treasury_pda();
+fn build_register_profile_ix(owner: &Pubkey, name: &str) -> Instruction {
     let (agent_profile, _) = agent_profile_pda(owner);
-    let treasury_usdc =
-        spl_associated_token_account::get_associated_token_address(&treasury_pda, usdc_mint);
 
     let disc = anchor_discriminator("register_profile");
     let name_bytes = name.as_bytes();
@@ -145,13 +136,6 @@ fn build_register_profile_ix(
         accounts: vec![
             AccountMeta::new(*owner, true),
             AccountMeta::new(agent_profile, false),
-            AccountMeta::new_readonly(protocol_pda, false),
-            AccountMeta::new_readonly(*usdc_mint, false),
-            AccountMeta::new(*owner_usdc, false),
-            AccountMeta::new(treasury_usdc, false),
-            AccountMeta::new_readonly(treasury_pda, false),
-            AccountMeta::new_readonly(spl_token::id(), false),
-            AccountMeta::new_readonly(spl_associated_token_account::id(), false),
             AccountMeta::new_readonly(
                 solana_pubkey::pubkey!("11111111111111111111111111111111"),
                 false,
@@ -273,12 +257,7 @@ fn setup_arena_with_two_agents() -> (
     let oracle_usdc = create_token_account(&mut svm, &oracle, &usdc_mint, &oracle.pubkey());
     mint_to(&mut svm, &oracle, &usdc_mint, &oracle_usdc, 500_000_000);
 
-    let register_ix = build_register_profile_ix(
-        &oracle.pubkey(),
-        &usdc_mint,
-        &oracle_usdc,
-        "OracleAgent",
-    );
+    let register_ix = build_register_profile_ix(&oracle.pubkey(), "OracleAgent");
     send_tx(&mut svm, &[register_ix], &oracle, &[&oracle]).unwrap();
 
     // Agent 1
@@ -286,12 +265,7 @@ fn setup_arena_with_two_agents() -> (
     svm.airdrop(&agent1.pubkey(), 10_000_000_000).unwrap();
     let agent1_usdc = create_token_account(&mut svm, &oracle, &usdc_mint, &agent1.pubkey());
     mint_to(&mut svm, &oracle, &usdc_mint, &agent1_usdc, 500_000_000);
-    let reg1 = build_register_profile_ix(
-        &agent1.pubkey(),
-        &usdc_mint,
-        &agent1_usdc,
-        "Agent1",
-    );
+    let reg1 = build_register_profile_ix(&agent1.pubkey(), "Agent1");
     send_tx(&mut svm, &[reg1], &agent1, &[&agent1]).unwrap();
 
     // Agent 2
@@ -299,12 +273,7 @@ fn setup_arena_with_two_agents() -> (
     svm.airdrop(&agent2.pubkey(), 10_000_000_000).unwrap();
     let agent2_usdc = create_token_account(&mut svm, &oracle, &usdc_mint, &agent2.pubkey());
     mint_to(&mut svm, &oracle, &usdc_mint, &agent2_usdc, 500_000_000);
-    let reg2 = build_register_profile_ix(
-        &agent2.pubkey(),
-        &usdc_mint,
-        &agent2_usdc,
-        "Agent2",
-    );
+    let reg2 = build_register_profile_ix(&agent2.pubkey(), "Agent2");
     send_tx(&mut svm, &[reg2], &agent2, &[&agent2]).unwrap();
 
     // Create arena
