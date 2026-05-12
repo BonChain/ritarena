@@ -1,8 +1,8 @@
 // games/snake/web/src/components/MatchOverlay.tsx
 import { MatchResult } from "@ritarena/ui";
-import { txExplorerUrl } from "@ritarena/sdk";
 import { getPersonality } from "../lib/bots";
 import type { ArenaInfo, GameState } from "../lib/ws";
+import { txExplorerUrl } from "@ritarena/sdk";
 
 export interface MatchOverlayProps {
   state: GameState;
