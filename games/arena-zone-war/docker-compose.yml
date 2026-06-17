@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  game-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_SERVER_URL: http://localhost:3000
+    image: arena-zone-war:latest
+    container_name: game-server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ARENA_MODE=${ARENA_MODE:-mock}
+      - AUTO_SPAWN_AGENTS=${AUTO_SPAWN_AGENTS:-0}
+      - TICK_RATE=${TICK_RATE:-60}
+      - WAIT_TIME=${WAIT_TIME:-5}
+      - ROUND_TIME=${ROUND_TIME:-60}
+      - MIN_PLAYERS=${MIN_PLAYERS:-5}
+      - MAX_PLAYERS=${MAX_PLAYERS:-9}
+      - MAP_WIDTH=${MAP_WIDTH:-20}
+      - MAP_HEIGHT=${MAP_HEIGHT:-20}
+      - PLAYER_SPEED=${PLAYER_SPEED:-5}
+      - PLAYER_FRICTION=${PLAYER_FRICTION:-0.9}
+      - PLAYER_RADIUS=${PLAYER_RADIUS:-0.5}
+      - PLAYER_HP=${PLAYER_HP:-100}
+      - DEATH_PENALTY=${DEATH_PENALTY:-10}
+      - ATTACK_DAMAGE=${ATTACK_DAMAGE:-20}
+      - ATTACK_COOLDOWN=${ATTACK_COOLDOWN:-2}
+      - ATTACK_STUN=${ATTACK_STUN:-0.2}
+      - INVULN_TIME=${INVULN_TIME:-0.1}
+      - ATTACK_KNOCKBACK=${ATTACK_KNOCKBACK:-100}
+      - ZONE_RADIUS=${ZONE_RADIUS:-3}
+      - ZONE_SCORE_RATE=${ZONE_SCORE_RATE:-2}
+      - ZONE_MIN_DISTANCE=${ZONE_MIN_DISTANCE:-10}
+      - ZONE_SPAWN_INTERVAL=${ZONE_SPAWN_INTERVAL:-10}
+      - ARENA_ENTRY_FEE=${ARENA_ENTRY_FEE:-1000}
+      - ARENA_DURATION=${ARENA_DURATION:-60}
+      - PRIZE_SPLIT=${PRIZE_SPLIT:-60,30,10}
+      - ARENA_ACTION_SCHEMA=${ARENA_ACTION_SCHEMA:-move,attack}
+      - PROFILE_NAME=${PROFILE_NAME:-ArenaZoneWar}
+      - RPC_URL=${RPC_URL:-https://api.devnet.solana.com}
+      - WALLET_PATH=${WALLET_PATH:-./keypair.json}
+      - AGENT_MIN_SOL=0.08
+      - AGENT_EXPECTED_ENTRY_FEE_MICRO=${ARENA_ENTRY_FEE:-1000}
+      - AGENT_JOIN_SOFT_RETRIES=48
+      - AGENT_JOIN_DELAY_MS=500
+    volumes:
+      - ./server/keypair.json:/app/keypair.json:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - game-net
+
+networks:
+  game-net:
+    driver: bridge
